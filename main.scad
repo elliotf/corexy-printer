@@ -50,28 +50,28 @@ x_carriage_width = bearing_len * 2 + 10;
 clamp_screw_diam = 3;
 clamp_screw_nut_diam = 5.5;
 
-rod_z = rod_diam/2 + belt_bearing_diam/2 + belt_bearing_thickness/2 + spacer;
+rod_z = belt_bearing_diam/2 + belt_bearing_thickness/2 + spacer;
 
 // X rods
 x_rod_clamp_len = bearing_len*2 + spacer + min_material_thickness*2;
-x_rod_len = build_x + x_clamp_len * 2 + x_carriage_width;
+x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + bearing_diam;
 x_rod_z = rod_z;
 
 // Y rods
 y_rod_len = build_y + x_rod_spacing + sheet_min_width*2;
 y_rod_x = x_rod_len/2 + bearing_diam/2;
 //y_rod_z = x_rod_z + bearing_diam/2 + rod_diam/2 + min_material_thickness;
-y_rod_z = rod_z;
+y_rod_z = rod_z + bearing_diam/2 + rod_diam/2;
 
 module motor() {
   translate([0,0,-motor_side/2]) cube([motor_side,motor_side,motor_side],center=true);
   cylinder(r=5/2,h=motor_side,center=true);
 
-  translate([0,0,sheet_thickness+pulley_height/2]) cylinder(r=pulley_diam/2,h=pulley_height,center=true);
+  translate([0,0,sheet_thickness+spacer+pulley_height/2]) cylinder(r=pulley_diam/2,h=pulley_height,center=true);
 }
 
 module bearing() {
-  rotate([90,0,0]) cylinder(r=bearing_diam/2,h=bearing_len,center=true);
+  rotate([90,0,0]) rotate([0,0,22.5]) cylinder(r=da8*bearing_diam,h=bearing_len,center=true,$fn=8);
 }
 
 module idler_bearing() {
@@ -83,14 +83,44 @@ module idler_bearing() {
 
 // y carriage
 y_carriage_len = x_rod_spacing + rod_diam + min_material_thickness*2;
-y_carriage_width = bearing_diam/2 + min_material_thickness;
-y_carriage_height = bearing_diam + min_material_thickness*2;
+
 module y_carriage() {
-  for(side=[front,rear]) {
-    % translate([0,(y_carriage_len/2-bearing_len/2-min_material_thickness)*side,0]) bearing();
+  bearing_clamp_width = bearing_diam+min_material_thickness*2;
+  module y_carriage_body() {
+    // y bearing clamp
+    rotate([90,0,0]) rotate([0,0,22.5])
+      cylinder(r=da8*bearing_clamp_width,h=y_carriage_len,center=true,$fn=8);
   }
 
-  translate([y_carriage_width/2,0,0]) cube([y_carriage_width,y_carriage_len,y_carriage_height],center=true);
+  module y_carriage_holes() {
+    bearing_y = y_carriage_len/2-bearing_len/2-min_material_thickness;
+
+    // bearing holes
+    rotate([0,45,0]) {
+      // material trim
+      translate([-bearing_clamp_width/2-rod_diam+1,0,0])
+        cube([bearing_clamp_width+0.5,y_carriage_len+1,bearing_clamp_width+0.5],center=true);
+
+      // bearing holes
+      for(side=[front,rear]) {
+        translate([0,bearing_y*side,0]) {
+          translate([-bearing_diam/2,0,0])
+            cube([bearing_diam,bearing_len,bearing_diam],center=true);
+          # bearing();
+        }
+      }
+
+      // y rod holes
+      translate([-rod_diam/2,0,0]) cube([rod_diam+1,y_carriage_len+1,rod_diam+1],center=true);
+      rotate([90,0,0]) rotate([0,0,22.5])
+        cylinder(r=(rod_diam+1)*da8,h=y_carriage_len+1,center=true,$fn=8);
+    }
+  }
+
+  difference() {
+    y_carriage_body();
+    y_carriage_holes();
+  }
 }
 
 for(side=[left,right]) {
@@ -101,20 +131,20 @@ for(side=[left,right]) {
 color("grey", .5) {
   // X
   for(side=[-1,1]) {
-    translate([0,(side*x_rod_spacing/2),x_rod_z]) rotate([0,90,0])
-      cylinder(r=rod_diam/2,h=x_rod_len,center=true);
+    translate([0,(side*x_rod_spacing/2),x_rod_z]) rotate([0,90,0]) rotate([0,0,22.5])
+      cylinder(r=da8*rod_diam,h=x_rod_len,center=true,$fn=8);
   }
 
   // Y
   for(side=[-1,1]) {
-    translate([side*y_rod_x,0,y_rod_z]) rotate([90,0,0])
-      cylinder(r=rod_diam/2,h=y_rod_len,center=true);
+    translate([side*y_rod_x,0,y_rod_z]) rotate([90,0,0]) rotate([0,0,22.5])
+      cylinder(r=da8*rod_diam,h=y_rod_len,center=true,$fn=8);
   }
 }
 
 xy_idler_x = y_rod_x - bearing_diam/2 - belt_bearing_diam/2 - min_material_thickness - spacer;
 xy_idler_y = x_rod_spacing/2 - rod_diam/2 - belt_bearing_inner/2 - min_material_thickness;
-xy_idler_z = x_rod_z + rod_diam/2 + belt_bearing_thickness/2;
+xy_idler_z = x_rod_z + belt_bearing_diam/2;
 
 front_idler_x = xy_idler_x + belt_bearing_diam/2;
 front_idler_y = -y_rod_len/2;
@@ -130,7 +160,7 @@ upper_rear_idler_z = xy_idler_z;
 
 xy_motor_x = motor_side/2 + spacer/2;
 xy_motor_y = lower_rear_idler_y + belt_bearing_diam/2 + pulley_diam/2;
-xy_motor_z = lower_rear_idler_z-sheet_thickness-spacer;
+xy_motor_z = -sheet_thickness;
 
 module idlers() {
 
@@ -213,4 +243,11 @@ color("red",0.5) mirror([1,0,0]) idlers();
 color("red",0.5) mirror([1,0,0]) line();
 
 // top plate
-translate([0,0,-sheet_thickness/2]) cube([build_x+sheet_min_width,build_y+sheet_min_width,sheet_thickness],center=true);
+color("Khaki", 0.5) translate([0,0,-sheet_thickness/2]) {
+  difference() {
+    translate([0,motor_side/4,0]) cube([y_rod_x*2+sheet_min_width*2,y_rod_len+sheet_min_width*2,sheet_thickness],center=true);
+    cube([build_x+x_carriage_width,build_y+x_rod_spacing,sheet_thickness+1],center=true);
+  }
+
+}
+% translate([0,0,-build_z/2]) cube([build_x,build_y,build_z],center=true);
