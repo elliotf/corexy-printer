@@ -5,8 +5,16 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
+// lm8uu, M8 rods
 bearing_diam = 15;
 bearing_len  = 24;
+rod_diam = 8;
+
+// lm6uu, M6 rods
+bearing_diam = 12;
+bearing_len  = 19;
+rod_diam = 6;
+
 belt_bearing_diam = 16;
 belt_bearing_thickness = 5;
 
@@ -16,7 +24,6 @@ pulley_diam = 18;
 pulley_height = belt_bearing_diam + 8;
 min_material_thickness = 2;
 
-rod_diam = 8;
 sheet_thickness = 6;
 sheet_min_width = 30;
 spacer = 4;
@@ -32,13 +39,13 @@ clamp_screw_nut_diam = 5.5;
 // X rods
 x_rod_clamp_len = bearing_len*2 + spacer + min_material_thickness*2;
 x_rod_len = build_x + x_clamp_len * 2 + x_carriage_width;
+x_rod_z = bearing_diam/2 + min_material_thickness;
 
 // Y rods
 y_rod_len = build_y + x_rod_spacing + sheet_min_width*2;
-y_rod_x = x_rod_len/2 - rod_diam/2;
-
-y_rod_z = 0;
-x_rod_z = y_rod_z + bearing_diam/2 + rod_diam/2 + min_material_thickness;
+y_rod_x = x_rod_len/2 + bearing_diam/2;
+//y_rod_z = x_rod_z + bearing_diam/2 + rod_diam/2 + min_material_thickness;
+y_rod_z = x_rod_z;
 
 module motor() {
   translate([0,0,-motor_side/2]) cube([motor_side,motor_side,motor_side],center=true);
@@ -82,7 +89,7 @@ upper_rear_idler_x = lower_rear_idler_x;
 upper_rear_idler_y = y_rod_len/2 - spacer;
 upper_rear_idler_z = x_y_idler_z;
 
-xy_motor_x = motor_side/2 + spacer;
+xy_motor_x = motor_side/2 + spacer/2;
 xy_motor_y = lower_rear_idler_y + belt_bearing_diam/2 + pulley_diam/2;
 xy_motor_z = lower_rear_idler_z-sheet_thickness-spacer;
 
