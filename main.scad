@@ -40,7 +40,7 @@ min_material_thickness = 2;
 
 sheet_thickness = 6;
 sheet_min_width = 30;
-spacer = 2;
+spacer = 1;
 
 x_clamp_len = 10;
 y_clamp_len = 20;
@@ -59,9 +59,10 @@ x_rod_z = rod_z;
 
 // Y rods
 y_rod_len = build_y + x_rod_spacing + sheet_min_width*2;
-y_rod_x = x_rod_len/2 + bearing_diam/2;
+y_rod_x = x_rod_len/2;
 //y_rod_z = x_rod_z + bearing_diam/2 + rod_diam/2 + min_material_thickness;
-y_rod_z = rod_z + bearing_diam/2 + rod_diam/2;
+y_rod_z_distance_to_x = bearing_diam/2 + rod_diam/2;
+y_rod_z = rod_z + y_rod_z_distance_to_x;
 
 module motor() {
   translate([0,0,-motor_side/2]) cube([motor_side,motor_side,motor_side],center=true);
@@ -90,6 +91,17 @@ module y_carriage() {
     // y bearing clamp
     rotate([90,0,0]) rotate([0,0,22.5])
       cylinder(r=da8*bearing_clamp_width,h=y_carriage_len,center=true,$fn=8);
+
+
+    // x rod clamp
+    translate([0,0,-y_rod_z_distance_to_x]) {
+      for(side=[front,rear]) {
+        translate([0,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
+          cylinder(r=da8*(rod_diam+min_material_thickness*2),h=bearing_len,center=true,$fn=8);
+      }
+      // y bearing clamp support
+      cube([rod_diam*1.1,y_carriage_len,rod_diam+min_material_thickness*2],center=true);
+    }
   }
 
   module y_carriage_holes() {
@@ -98,8 +110,13 @@ module y_carriage() {
     // bearing holes
     rotate([0,45,0]) {
       // material trim
-      translate([-bearing_clamp_width/2-rod_diam+1,0,0])
+      translate([-bearing_clamp_width/2-rod_diam+1,0,0]) {
         cube([bearing_clamp_width+0.5,y_carriage_len+1,bearing_clamp_width+0.5],center=true);
+      }
+      translate([-bearing_clamp_width*.7,0,0]) {
+        rotate([0,45,0]) cube([bearing_clamp_width,y_carriage_len+1,bearing_clamp_width],center=true);
+      }
+
 
       // bearing holes
       for(side=[front,rear]) {
@@ -111,9 +128,17 @@ module y_carriage() {
       }
 
       // y rod holes
-      translate([-rod_diam/2,0,0]) cube([rod_diam+1,y_carriage_len+1,rod_diam+1],center=true);
+      translate([-rod_diam/2,0,0])
+        cube([rod_diam+1,y_carriage_len+1,rod_diam+1],center=true);
       rotate([90,0,0]) rotate([0,0,22.5])
         cylinder(r=(rod_diam+1)*da8,h=y_carriage_len+1,center=true,$fn=8);
+    }
+
+    // x rod holes
+    for(side=[front,rear]) {
+      translate([0,x_rod_spacing/2*side,-y_rod_z_distance_to_x])
+        rotate([0,90,0]) rotate([0,0,22.5])
+          cylinder(r=rod_diam*da8,h=y_carriage_len,center=true,$fn=8);
     }
   }
 
