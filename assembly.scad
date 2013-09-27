@@ -8,6 +8,7 @@ for(side=[left,right]) {
 // y end front
 for(side=[left,right]) {
   translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front();
+  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear();
 }
 
 // shift one line's bearings up or down to avoid rubbing?
