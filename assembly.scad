@@ -18,13 +18,50 @@ color("red",0.5) mirror([1,0,0]) idlers();
 color("red",0.5) mirror([1,0,0]) line();
 
 // top plate
-color("Khaki", 0.5) translate([0,0,-sheet_thickness/2]) {
-  difference() {
-    translate([0,motor_side/4,0]) cube([y_rod_x*2+sheet_min_width*2,y_rod_len+sheet_min_width*2,sheet_thickness],center=true);
-    cube([build_x+x_carriage_width,build_y+x_rod_spacing,sheet_thickness+1],center=true);
+module plates() {
+  top_plate_width = y_rod_x*2+sheet_min_width;
+  top_plate_depth = y_rod_len+sheet_min_width*2;
+
+  side_depth = top_plate_depth;
+  side_height = build_z + sheet_min_width;
+  front_back_width = y_rod_x*2-sheet_thickness;
+
+  side_z = -side_height/2-sheet_thickness;
+
+  translate([0,0,-sheet_thickness/2]) {
+    difference() {
+      translate([0,motor_side/4,0])
+        cube([top_plate_width,top_plate_depth,sheet_thickness],center=true);
+      cube([build_x+x_carriage_width,build_y+x_rod_spacing,sheet_thickness+1],center=true);
+    }
   }
 
+  // front/back plate
+  for(end=[front,rear]) {
+    translate([0,y_rod_len/2*end,side_z]) {
+      difference() {
+        cube([front_back_width,sheet_thickness,side_height],center=true);
+        cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
+      }
+    }
+  }
+
+  // side plates
+  for(side=[left,right]) {
+    translate([y_rod_x*side,motor_side/4,side_z]) {
+      difference() {
+        cube([sheet_thickness,side_depth,side_height],center=true);
+
+        translate([0,-motor_side/4,0])
+          cube([sheet_thickness+1,side_depth-sheet_min_width*2-motor_side/2,side_height-sheet_min_width*2],center=true);
+      }
+    }
+  }
 }
+
+color("Khaki", 0.5) plates();
+
+
 % translate([0,0,-build_z/2]) cube([build_x,build_y,build_z],center=true);
 
 // rods
