@@ -6,6 +6,10 @@ right = 1;
 front = -1;
 rear  = 1;
 
+build_x = 600;
+build_y = 600;
+build_z = 600;
+
 build_x = 200;
 build_y = 200;
 build_z = 200;
@@ -13,6 +17,11 @@ build_z = 200;
 build_x = 150;
 build_y = 150;
 build_z = 150;
+
+// lm10uu, M10 rods
+lm10uu_bearing_diam = 19;
+lm10uu_bearing_len  = 29;
+lm10uu_rod_diam = 10;
 
 // lm8uu, M8 rods
 lm8uu_bearing_diam = 15;
@@ -23,6 +32,10 @@ lm8uu_rod_diam = 8;
 lm6uu_bearing_diam = 12;
 lm6uu_bearing_len  = 19;
 lm6uu_rod_diam = 6;
+
+bearing_diam = lm10uu_bearing_diam;
+bearing_diam = lm10uu_bearing_len;
+rod_diam = lm10uu_rod_diam;
 
 bearing_diam = lm8uu_bearing_diam;
 bearing_diam = lm8uu_bearing_len;
