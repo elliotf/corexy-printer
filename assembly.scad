@@ -21,6 +21,7 @@ color("red",0.5) mirror([1,0,0]) line();
 module plates() {
   top_plate_width = y_rod_x*2+sheet_min_width;
   top_plate_depth = y_rod_len+sheet_min_width*2;
+  echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
   side_depth = top_plate_depth;
   side_height = build_z + sheet_min_width;
@@ -36,14 +37,17 @@ module plates() {
     }
   }
 
-  // front/back plate
-  for(end=[front,rear]) {
-    translate([0,y_rod_len/2*end,side_z]) {
-      difference() {
-        cube([front_back_width,sheet_thickness,side_height],center=true);
-        cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
-      }
+  // front plate
+  translate([0,y_rod_len/2*front,side_z]) {
+    difference() {
+      cube([front_back_width,sheet_thickness,side_height],center=true);
+      cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
     }
+  }
+
+  // rear plate
+  translate([0,y_rod_len/2*rear,side_z]) {
+    cube([front_back_width,sheet_thickness,side_height],center=true);
   }
 
   // side plates

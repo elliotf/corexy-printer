@@ -356,7 +356,7 @@ module y_end_front() {
         translate(outside_screw_pos) rotate([0,0,22.5])
           cylinder(r=screw_pad_outer_diam*da8,h=screw_pad_height,center=true,$fn=8);
 
-        for(vector=[screw_two,rod_end_screw_pos,inside_screw_pos]) {
+        for(vector=[rod_end_screw_pos,inside_screw_pos]) {
           translate(vector) rotate([0,0,22.5])
             cylinder(r=screw_pad_outer_diam*da8,h=screw_pad_height,center=true,$fn=8);
         }
