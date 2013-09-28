@@ -82,3 +82,7 @@ color("grey", .5) {
       cylinder(r=da8*rod_diam,h=y_rod_len,center=true,$fn=8);
   }
 }
+
+// x carriage
+//translate([-build_x/2,0,x_rod_z]) x_carriage();
+translate([0,0,x_rod_z]) x_carriage();

@@ -32,6 +32,7 @@ lm8uu_rod_diam = 8;
 lm6uu_bearing_diam = 12;
 lm6uu_bearing_len  = 19;
 lm6uu_rod_diam = 6;
+// record bearing groove offset, depth, width
 
 bearing_diam = lm10uu_bearing_diam;
 bearing_diam = lm10uu_bearing_len;
@@ -64,7 +65,7 @@ spacer = 1;
 
 y_clamp_len = 10; // amount of bar to clamp onto
 x_rod_spacing = 36 + lm8uu_bearing_diam;
-x_carriage_width = bearing_len * 2 + 10;
+x_carriage_width = bearing_len * 3;
 
 clamp_screw_diam = 3;
 clamp_screw_nut_diam = 5.5;
@@ -81,7 +82,7 @@ x_rod_z = rod_z;
 echo("X rod len: ", x_rod_len);
 
 // Y rods
-y_rod_len = build_y + x_rod_spacing + y_clamp_len*2;
+y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2 + spacer*2;
 y_rod_x = x_rod_len/2 + bearing_diam/2 + min_material_thickness;
 y_rod_z_distance_to_x = 0;
 y_rod_z = rod_z + y_rod_z_distance_to_x;
@@ -89,8 +90,11 @@ echo("Y rod len: ", y_rod_len);
 
 
 xy_idler_x = y_rod_x - bearing_diam/2 - belt_bearing_diam/2 - min_material_thickness - spacer;
+xy_idler_y = x_rod_spacing/2-rod_diam/2-belt_bearing_inner/2-min_material_thickness;
 xy_idler_y = belt_bearing_diam/2 + belt_bearing_inner/2;
+xy_idler_y = x_rod_spacing/2+bearing_diam-22;
 xy_idler_z = x_rod_z + belt_bearing_diam/2;
+xy_idler_z = x_rod_z + rod_diam/2 + belt_bearing_thickness/2 + spacer;
 
 front_idler_x = xy_idler_x + belt_bearing_diam/2;
 front_idler_y = -y_rod_len/2 - belt_bearing_inner/2 - min_material_thickness/2;
@@ -132,6 +136,115 @@ module idler_bearing() {
   difference() {
     cylinder(r=belt_bearing_diam/2,h=belt_bearing_thickness,center=true);
     rotate([0,0,22.5]) cylinder(r=belt_bearing_inner/2,h=belt_bearing_thickness+1,center=true);
+  }
+}
+
+// x carriage
+module x_carriage() {
+  carriage_thickness = bearing_diam/2-rod_diam/2+min_material_thickness;
+  carriage_depth = x_rod_spacing+bearing_diam+min_material_thickness*2;
+  carriage_bottom_z = rod_diam/2;
+
+  extruder_mount_hole_distance = 50;
+  extruder_mount_screw_diam = 4;
+  hotend_hole_diam = extruder_mount_hole_distance - extruder_mount_screw_diam*2 - min_material_thickness*2;
+
+  tension_line_y = xy_idler_y-belt_bearing_diam/2;
+  tension_screw_diam = 4;
+  tension_screw_nut_diam = 7;
+  tension_screw_nut_thickness = 2;
+  tension_screw_x = x_carriage_width/2-tension_screw_nut_diam/2-min_material_thickness;
+  tension_screw_y = tension_line_y+tension_screw_diam/2;
+  tension_screw_z = carriage_thickness/2;
+  tension_screw_post_diam = tension_screw_nut_diam+min_material_thickness;
+  tension_screw_post_height = 10;
+
+  tuning_peg_len = 22;
+
+  module x_carriage_base() {
+    // main body
+    //translate([0,0,bearing_diam/2+min_material_thickness/2])
+    translate([0,0,carriage_bottom_z+carriage_thickness/2])
+      cube([x_carriage_width-0.05,carriage_depth,carriage_thickness],center=true);
+
+    // tension screw post
+    for(side=[left,right]) {
+      for(end=[front,rear]) {
+        translate([tension_screw_x*side,tension_screw_y*end,tension_screw_z]) rotate([0,0,0])
+          cylinder(r=tension_screw_post_diam*da6,h=tension_screw_post_height,center=true,$fn=6);
+      }
+
+      /*
+      translate([tension_screw_x*side,-tuning_peg_len,carriage_bottom_z+carriage_thickness+10]) {
+        rotate([90,0,0])
+          cylinder(r=6/2,h=22,center=true);
+      }
+      */
+    }
+  }
+
+  zip_tie_width = 3;
+  zip_tie_thickness = 2;
+
+  module x_carriage_holes() {
+    // bearing slots
+    for(side=[front,rear]) {
+      // rod clearance
+      translate([0,x_rod_spacing/2*side,0]) rotate([0,90,0])
+        cylinder(r=rod_diam/2+1,h=x_carriage_width+1,center=true);
+
+      for(end=[left,right]) {
+        translate([(x_carriage_width/2-bearing_len/2)*end,x_rod_spacing/2*side,0]) {
+          rotate([0,0,90]) {
+            # rotate([90,0,0]) difference() {
+              cylinder(r=bearing_diam/2,h=bearing_len,center=true);
+              cylinder(r=rod_diam/2,h=bearing_len+1,center=true);
+            }
+            rotate([90,0,0]) rotate_extrude()
+              translate([bearing_diam/2+3,0,0])
+                square([zip_tie_thickness,zip_tie_width],center=true);
+          }
+        }
+      }
+    }
+
+    // hotend hole
+    cylinder(r=hotend_hole_diam/2,h=20,center=true);
+    // extruder mount holes
+    for(side=[left,right]) {
+      //translate([extruder_mount_hole_distance/2*side,0,0]) cylinder(r=extruder_mount_screw_diam*da8,h=20,center=true,$fn=8);
+    }
+
+    // tension screws
+    for(side=[left,right]) {
+      for(end=[front,rear]) {
+        translate([tension_screw_x*side,tension_screw_y*end,tension_screw_z]) {
+          // screw shaft
+          cylinder(r=tension_screw_diam*da6,h=tension_screw_post_height+1,center=true,$fn=6);
+
+          // captive nut s
+          translate([0,0,-tension_screw_post_height/2])
+            cylinder(r=tension_screw_nut_diam*da6,h=tension_screw_nut_thickness*2,center=true,$fn=6);
+
+          translate([0,0,carriage_thickness*1])
+            cylinder(r=tension_screw_nut_diam*da6,h=tension_screw_nut_thickness*2,center=true,$fn=6);
+        }
+
+        // slot for line
+        /*
+        # translate([(x_carriage_width/2-tension_screw_diam/2)*side,(tension_line_y-.95)*end,carriage_thickness*1.5])
+          cube([(x_carriage_width/2-tension_screw_x)*2,2,5],center=true);
+        */
+      }
+    }
+  }
+
+  // fan
+  //translate([x_carriage_width/2,0,-15]) cube([5,40,40],center=true);
+
+  difference() {
+    x_carriage_base();
+    x_carriage_holes();
   }
 }
 
