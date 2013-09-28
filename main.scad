@@ -124,7 +124,10 @@ module motor() {
   }
 
   cylinder(r=5/2,h=motor_side,center=true);
+}
 
+module motor_with_pulley() {
+  motor();
   translate([0,0,sheet_thickness+spacer+pulley_height/2]) cylinder(r=pulley_diam/2,h=pulley_height,center=true);
 }
 
@@ -541,7 +544,7 @@ module idlers() {
   translate([xy_idler_x*right,xy_idler_y*rear,xy_idler_z]) idler_bearing();
 
   // motor
-  translate([xy_motor_x*left,xy_motor_y,xy_motor_z]) motor();
+  translate([xy_motor_x*left,xy_motor_y,xy_motor_z]) motor_with_pulley();
 }
 
 module line() {
