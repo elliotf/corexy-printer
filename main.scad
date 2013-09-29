@@ -505,7 +505,7 @@ module y_end_rear() {
 
   bearing_screw_pos = [rod_end_dist_to_lower_idler_x,rod_end_dist_to_lower_idler_y,0];
   inside_screw_pos = [rod_end_dist_to_lower_idler_x+belt_bearing_diam/2+screw_pad_outer_diam/2+spacer,-clamp_len+screw_pad_outer_diam/2,0];
-  outside_screw_pos = [-clamp_width,0,0];
+  outside_screw_pos = [-clamp_width,-clamp_len+screw_pad_outer_diam/2,0];
   rod_end_screw_pos = [0,clamp_len+screw_pad_outer_diam/2,0];
 
   module y_end_rear_body() {
@@ -623,9 +623,9 @@ module y_end_front() {
   clamp_width = rod_diam+min_material_thickness*2;
   clamp_len = y_clamp_len;
 
-  outside_screw_pos = [-clamp_width,0,0];
+  outside_screw_pos = [-clamp_width,clamp_len-screw_pad_outer_diam/2,0];
   rod_end_screw_pos = [0,rod_end_dist_to_idler_y-belt_bearing_diam/2,0];
-  inside_screw_pos = [clamp_width/2+top_plate_screw_diam+spacer,clamp_len-screw_pad_outer_diam/2,0];
+  inside_screw_pos = [clamp_width/2+top_plate_screw_diam+belt_bearing_thickness,clamp_len-screw_pad_outer_diam/2,0];
 
   module y_end_front_body() {
     bearing_support_len = rod_end_dist_to_idler_x*left-belt_bearing_thickness/2+rod_diam/2+min_material_thickness;
