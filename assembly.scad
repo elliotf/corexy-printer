@@ -1,8 +1,19 @@
 include <main.scad>;
 
+// x carriage
+//translate([-build_x/2,0,x_rod_z]) x_carriage();
+translate([-build_x*0/2,0,x_rod_z]) x_carriage();
+
 // y carriage
 for(side=[left,right]) {
-  translate([y_rod_x*side,0,y_rod_z]) mirror([side+1,0,0]) y_carriage();
+  translate([y_rod_x*side,0,y_rod_z]) mirror([side+1,0,0]) {
+    y_carriage();
+
+    for(end=[front,rear]) {
+      translate([y_bar_to_x_clamp_end + clamp_area_width/2 + spacer/2,x_rod_spacing/2*end,0])
+        rotate([0,90,0]) rod_clamp(rod_diam);
+    }
+  }
 }
 
 // y end front
@@ -82,7 +93,3 @@ color("grey", .5) {
       cylinder(r=da8*rod_diam,h=y_rod_len,center=true,$fn=8);
   }
 }
-
-// x carriage
-//translate([-build_x/2,0,x_rod_z]) x_carriage();
-translate([0,0,x_rod_z]) x_carriage();
