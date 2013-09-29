@@ -254,14 +254,15 @@ module x_carriage() {
 
 // y carriage
 y_carriage_len = x_rod_spacing + rod_diam + min_material_thickness*2;
-y_bar_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_inner/2 + min_material_thickness*2;
+y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_inner/2 + min_material_thickness*2;
+y_carriage_z = bearing_diam/2+min_material_thickness;
 module y_carriage() {
   line_x = y_rod_x-xy_idler_x-belt_bearing_diam/2;
   idler_x = line_x+belt_bearing_diam/2;
   idler_z = xy_idler_z - y_rod_z;
 
   x_clamp_width = rod_diam + min_material_thickness * 2;
-  y_clamp_width = bearing_diam + min_material_thickness*2;
+  y_clamp_width = y_carriage_z*2;
 
   module y_carriage_body() {
     // bearing clamp
@@ -275,13 +276,13 @@ module y_carriage() {
         hull() {
           // x rod clamp
           translate([0,x_rod_spacing/2,0]) {
-            translate([y_bar_to_x_clamp_end/2,0,0]) {
+            translate([y_rod_to_x_clamp_end/2,0,0]) {
               rotate([0,90,0])
-                cylinder(r=x_clamp_width/2,h=y_bar_to_x_clamp_end,center=true);
+                cylinder(r=x_clamp_width/2,h=y_rod_to_x_clamp_end,center=true);
 
               // anchor to print bed
               translate([0,min_material_thickness,-y_clamp_width/4])
-                cube([y_bar_to_x_clamp_end,rod_diam,y_clamp_width/2],center=true);
+                cube([y_rod_to_x_clamp_end,rod_diam,y_clamp_width/2],center=true);
             }
           }
 
@@ -309,7 +310,7 @@ module y_carriage() {
         rotate([0,45,0]) {
           translate([-bearing_diam/2,0,0])
             cube([bearing_diam,bearing_len,bearing_diam],center=true);
-            # bearing();
+            bearing();
         }
 
         // zip tie groove
@@ -385,8 +386,8 @@ module rod_clamp(rod_diam) {
       rotate([0,0,22.5])
         cylinder(r=rod_clamp_diam/2,h=rod_clamp_width,center=true);
 
-      translate([rod_clamp_diam/2,0,0])
-        cube([clamp_screw_plate_width,rod_clamp_diam,rod_clamp_width],center=true);
+      translate([rod_diam/2+clamp_screw_diam/2+min_material_thickness,0,0])
+        cube([clamp_area_width,rod_clamp_diam,rod_clamp_width],center=true);
     }
   }
 
@@ -405,7 +406,7 @@ module rod_clamp(rod_diam) {
         cylinder(r=clamp_screw_nut_diam*da6,h=clamp_screw_nut_thickness,center=true,$fn=6);
 
       // clamp gap
-      cube([clamp_screw_plate_width+1,spacer,rod_clamp_width+1],center=true);
+      cube([clamp_area_width+1,spacer,rod_clamp_width+1],center=true);
     }
 
   }
@@ -642,7 +643,7 @@ module y_end_front() {
         rotate([0,90,0]) rotate([0,0,22.5])
           cylinder(r=(belt_bearing_nut_diam+min_material_thickness*2)/2,h=bearing_support_len,center=true);
         translate([spacer/2,0,0]) rotate([0,90,0]) rotate([0,0,22.5])
-          # cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=bearing_support_len+spacer,center=true,$fn=8);
+          cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=bearing_support_len+spacer,center=true,$fn=8);
       }
     }
 
