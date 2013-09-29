@@ -19,7 +19,7 @@ module gantry_plate() {
 
       // x rod clamps
       translate([0,0,clamp_area_width/2]) {
-        translate([0,clamp_area_width,0]) rod_clamp(rod_diam);
+        rod_clamp(rod_diam);
         translate([plate_y_carriage_x+y_rod_to_x_clamp_end,0,0]) rod_clamp(rod_diam);
       }
     }
