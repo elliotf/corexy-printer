@@ -32,7 +32,7 @@ color("red",0.5) mirror([1,0,0]) line();
 // top plate
 module plates() {
   top_plate_width = y_rod_x*2+sheet_min_width;
-  top_plate_depth = y_rod_len+sheet_min_width*2;
+  top_plate_depth = y_rod_len+sheet_min_width+motor_side;
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
   side_depth = top_plate_depth;
@@ -50,7 +50,7 @@ module plates() {
   }
 
   // front plate
-  translate([0,y_rod_len/2*front,side_z]) {
+  translate([0,(y_rod_len/2-y_end_screw_hole_y)*front,side_z]) {
     difference() {
       cube([front_back_width,sheet_thickness,side_height],center=true);
       cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
@@ -58,7 +58,7 @@ module plates() {
   }
 
   // rear plate
-  translate([0,y_rod_len/2*rear,side_z]) {
+  translate([0,(y_rod_len/2-y_end_screw_hole_y)*rear,side_z]) {
     cube([front_back_width,sheet_thickness,side_height],center=true);
   }
 
@@ -69,7 +69,7 @@ module plates() {
         cube([sheet_thickness,side_depth,side_height],center=true);
 
         translate([0,-motor_side/4,0])
-          cube([sheet_thickness+1,side_depth-sheet_min_width*2-motor_side/2,side_height-sheet_min_width*2],center=true);
+          cube([sheet_thickness+1,y_rod_len-y_end_screw_hole_y*2-sheet_min_width,side_height-sheet_min_width*2],center=true);
       }
     }
   }
