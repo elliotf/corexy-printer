@@ -772,3 +772,96 @@ module line() {
     translate([carriage_x*right,carriage_y*rear,upper_rear_idler_z]) cube(line_cube,center=true);
   }
 }
+
+module tuner() {
+  hole_to_shoulder = 22.5;
+  wire_hole_diam = 2;
+
+  thin_diam = 6;
+  thin_len_past_hole = 5;
+  thin_len = hole_to_shoulder + thin_len_past_hole;
+  thin_pos = hole_to_shoulder/2-thin_len_past_hole/2;
+
+  thick_diam = 10;
+  thick_len = 10;
+  thick_pos = hole_to_shoulder-thick_len+thick_len/2;
+
+  body_diam = 15;
+  body_thickness = 9;
+  body_square_len = 10;
+  body_pos = -hole_to_shoulder-body_thickness/2;
+
+  anchor_screw_hole_thickness = 2;
+  anchor_screw_hole_diam = 2;
+  anchor_screw_hole_width = 2;
+  anchor_screw_hole_pos_x = body_pos+body_thickness/2-anchor_screw_hole_thickness/2;
+  anchor_screw_hole_pos_y = -body_diam/2;
+  anchor_screw_hole_pos_z = -body_diam/2;
+
+  adjuster_narrow_neck_len = 2;
+  adjuster_len = 24 - body_diam + adjuster_narrow_neck_len;
+  adjuster_large_diam = 8;
+  adjuster_thin_diam = 6;
+  adjuster_x = body_pos;
+  adjuster_y = body_square_len/2;
+  adjuster_shaft_z = body_diam/2+adjuster_len/2;
+  adjuster_paddle_z = adjuster_shaft_z + adjuster_len/2 + adjuster_paddle_len/2;
+  adjuster_paddle_len = 20;
+  adjuster_paddle_width = 17.8;
+  adjuster_paddle_thickness = adjuster_thin_diam;
+
+  module tuner_body() {
+    //% translate([-hole_to_shoulder/2,-thick_diam,0]) rotate([0,90,0]) cylinder(r=thin_diam/4,h=hole_to_shoulder,center=true);
+
+    // thin shaft
+    translate([-thin_pos,0,0]) rotate([0,90,0])
+      cylinder(r=thin_diam/2,h=thin_len,center=true);
+
+    // thick shaft (area to clamp)
+    translate([-thick_pos,0,0]) rotate([0,90,0])
+      cylinder(r=thick_diam/2,h=thick_len,center=true);
+
+    // body
+    translate([body_pos,0,0]) {
+      rotate([0,90,0])
+        cylinder(r=body_diam/2,h=body_thickness,center=true);
+      translate([0,body_square_len/2,0]) cube([body_thickness,body_square_len,body_diam],center=true);
+    }
+
+    // anchor screw hole
+    translate([anchor_screw_hole_pos_x,0,0]) {
+      hull() {
+        translate([0,anchor_screw_hole_pos_y,anchor_screw_hole_pos_z]) rotate([0,90,0])
+          cylinder(r=anchor_screw_hole_diam/2+anchor_screw_hole_width,h=anchor_screw_hole_thickness,center=true);
+        rotate([0,90,0])
+          cylinder(r=thick_diam/2,h=anchor_screw_hole_thickness,center=true);
+      }
+    }
+
+    // twist adjuster
+    translate([adjuster_x,adjuster_y,adjuster_shaft_z]) {
+      hull() {
+        translate([0,0,-adjuster_len/2-.5]) cylinder(r=adjuster_large_diam/2,h=1,center=true);
+        translate([0,0,+adjuster_len/2-.5]) cylinder(r=adjuster_thin_diam/2,h=1,center=true);
+      }
+      // paddle, representing space taken when rotated
+      hull() {
+        //translate([0,0,adjuster_paddle_len/2]) cylinder(r=adjuster_paddle_width/2,h=1,center=true);
+        //translate([0,0,1]) cylinder(r=adjuster_paddle_thickness/2,h=1,center=true);
+        translate([0,0,adjuster_paddle_len-.5]) cube([adjuster_paddle_width,adjuster_paddle_thickness,1],center=true);
+        translate([0,0,adjuster_len/2]) cube([adjuster_paddle_thickness,adjuster_paddle_thickness,1],center=true);
+      }
+    }
+  }
+  module tuner_holes() {
+    cylinder(r=wire_hole_diam/3,h=thin_diam*2,center=true);
+
+    translate([anchor_screw_hole_pos_x,anchor_screw_hole_pos_y,anchor_screw_hole_pos_z]) rotate([0,90,0])
+      cylinder(r=anchor_screw_hole_diam/2,h=anchor_screw_hole_thickness+1,center=true);
+  }
+
+  difference() {
+    tuner_body();
+    tuner_holes();
+  }
+}
