@@ -256,6 +256,7 @@ module x_carriage() {
 y_carriage_len = x_rod_spacing + rod_diam + min_material_thickness*2;
 y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_inner/2 + min_material_thickness*2;
 y_carriage_z = bearing_diam/2+min_material_thickness;
+y_carriage_bearing_y = y_carriage_len/2-bearing_len/2-min_material_thickness;
 module y_carriage() {
   line_x = y_rod_x-xy_idler_x-belt_bearing_diam/2;
   idler_x = line_x+belt_bearing_diam/2;
@@ -303,6 +304,7 @@ module y_carriage() {
   }
 
   bearing_y = y_carriage_len/2-bearing_len/2-min_material_thickness;
+  bearing_y = y_carriage_bearing_y;
   module y_carriage_holes() {
     for(side=[front,rear]) {
       translate([0,bearing_y*side,0]) {

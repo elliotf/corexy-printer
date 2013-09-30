@@ -12,6 +12,7 @@ for(side=[left,right]) {
     for(end=[front,rear]) {
       translate([y_rod_to_x_clamp_end + clamp_area_width/2 + spacer/2,x_rod_spacing/2*end,0])
         rotate([0,90,0]) rod_clamp(rod_diam);
+      % translate([0,y_carriage_bearing_y*end,0]) bearing();
     }
   }
 }
