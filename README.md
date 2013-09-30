@@ -1,6 +1,8 @@
 # corexy-printer
 
-An attempt at designing a corexy printer that can be (hopefully) be lasercut.
+![rendered picture of printer](interim_front.png)
+
+An attempt at designing a corexy printer that can (hopefully) be lasercut.
 
 The printer at http://audiots.wordpress.com is beautiful, and has inspired me to create a more unique take on the coreXY reference implementation.
 
