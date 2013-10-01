@@ -8,3 +8,6 @@ m8:
 
 m10:
 	openscad -m make -o stl/m10_gantry.stl stl/m10_gantry.scad
+
+pulley:
+	openscad -m make -o stl/pulley.stl pulley.scad
