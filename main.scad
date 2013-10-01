@@ -220,7 +220,7 @@ module x_carriage() {
             // zip ties
             translate([0,0,-side*(-bearing_len/2+zip_tie_width/2+tuner_shoulder_diam)]) {
               rotate_extrude()
-                translate([bearing_diam/2+3,0,0])
+                translate([bearing_diam/2+3.1,0,0])
                   square([zip_tie_thickness,zip_tie_width],center=true);
             }
           }
