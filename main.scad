@@ -1,11 +1,6 @@
 include <config.scad>;
 include <positions.scad>;
 
-da6 = 1 / cos(180 / 6) / 2;
-da8 = 1 / cos(180 / 8) / 2;
-
-line_cube = [line_diam,line_diam,line_diam];
-
 module motor() {
   difference() {
     translate([0,0,-motor_side/2]) cube([motor_side,motor_side,motor_side],center=true);

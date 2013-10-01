@@ -1,12 +1,18 @@
+// All hail whosawhatsis
+da6 = 1 / cos(180 / 6) / 2;
+da8 = 1 / cos(180 / 8) / 2;
+
 // make coordinates more communicative
 left  = -1;
 right = 1;
 front = -1;
 rear  = 1;
 
+// material dimensions
 zip_tie_width = 3;
 zip_tie_thickness = 2;
 line_diam = .5;
+line_cube = [line_diam,line_diam,line_diam];
 
 // Printer size
 build_x = 600;
