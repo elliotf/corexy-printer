@@ -84,9 +84,9 @@ module plates() {
   }
 }
 
-//color("Khaki", 0.5) plates();
+color("Khaki", 0.5) plates();
 
-//% translate([0,0,-build_z/2]) cube([build_x,build_y,build_z],center=true);
+% translate([0,0,-build_z/2]) cube([build_x,build_y,build_z],center=true);
 
 // rods
 color("grey", .5) {

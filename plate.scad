@@ -4,7 +4,7 @@ module gantry_plate() {
   plate_y_carriage_x = y_rod_z + clamp_area_width;
 
   y_end_spacer = bearing_len;
-  for(side=[left,right]) {
+  for(side=[left,right]) translate([0,x_rod_spacing/2,0]) {
     translate([(y_rod_z + spacer*2)*-side,0,0]) mirror([1+side,0,0]) {
       translate([0,0,y_clamp_len]) {
         // y end front
@@ -22,6 +22,15 @@ module gantry_plate() {
         rod_clamp(rod_diam);
         translate([plate_y_carriage_x+y_rod_to_x_clamp_end,0,0]) rod_clamp(rod_diam);
       }
+    }
+  }
+
+  translate([x_carriage_width/2+bearing_diam,-x_rod_spacing/2-bearing_diam,bearing_diam/2]) x_carriage();
+
+  % translate([0,0,-.5]) {
+    difference() {
+      cube([200,200,1],center=true);
+      cube([150,150,2],center=true);
     }
   }
 }

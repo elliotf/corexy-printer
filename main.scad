@@ -186,6 +186,11 @@ module x_carriage() {
         cube([min_material_thickness*2,x_rod_spacing,carriage_thickness],center=true);
       }
 
+      translate([x_carriage_width/2*side,line_y,line_z/2-bearing_diam/4+0.025]) {
+        // rear line anchor
+        cylinder(r=(3+min_material_thickness)*da8,h=line_z+bearing_diam/2,center=true);
+      }
+
       hull() {
         translate([0,tensioner_y*front,0]) {
           translate([tensioner_x*side,0,tensioner_z]) {
@@ -247,10 +252,21 @@ module x_carriage() {
           cylinder(r=(tuner_shaft_diam+1)*da8,h=tuner_shoulder_width*3,center=true,$fn=8);
         }
       }
+
+      // rear line anchor hole
+      translate([x_carriage_width/2*side,line_y,line_z]) {
+        cylinder(r=2.7*da8,h=20,center=true);
+      }
     }
+
     // rear rod hole
-    translate([0,x_rod_spacing/2*rear,0]) rotate([0,90,0])
-      cylinder(r=(rod_diam+2)*da6,h=x_carriage_width+1,center=true,$fn=6);
+    translate([0,x_rod_spacing/2*rear,0]) {
+      rotate([0,90,0])
+        cylinder(r=(rod_diam+2)*da6,h=x_carriage_width+1,center=true,$fn=6);
+
+      // trim rear overhangs
+      translate([0,0,0]) cube([x_carriage_width+1,rod_diam*.8,bearing_diam+1],center=true);
+    }
 
     // front rod hole
     translate([0,x_rod_spacing/2*front,0]) rotate([0,90,0]) rotate([0,0,22.5])
