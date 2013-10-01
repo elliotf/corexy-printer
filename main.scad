@@ -715,7 +715,7 @@ module idlers() {
   translate([xy_idler_x*right,xy_idler_y*rear,xy_idler_z]) idler_bearing();
 
   // motor
-  translate([xy_motor_x*left,xy_motor_y,xy_motor_z]) motor_with_pulley();
+  translate([xy_motor_x*right,xy_motor_y,xy_motor_z]) motor_with_pulley();
 }
 
 module line() {
@@ -751,12 +751,12 @@ module line() {
   // lower rear to pulley
   hull() {
     translate([lower_rear_idler_x*left,lower_rear_idler_y+belt_bearing_diam/2,lower_rear_idler_z]) cube(line_cube,center=true);
-    translate([xy_motor_x*left,xy_motor_y-pulley_diam/2,lower_rear_idler_z]) cube(line_cube,center=true);
+    translate([xy_motor_x*right,xy_motor_y-pulley_diam/2,lower_rear_idler_z]) cube(line_cube,center=true);
   }
 
   // pulley to upper rear
   hull() {
-    translate([xy_motor_x*left,xy_motor_y-pulley_diam/2,upper_rear_idler_z]) cube(line_cube,center=true);
+    translate([xy_motor_x*right,xy_motor_y-pulley_diam/2,upper_rear_idler_z]) cube(line_cube,center=true);
     translate([upper_rear_idler_x*right,upper_rear_idler_y+belt_bearing_diam/2,upper_rear_idler_z]) cube(line_cube,center=true);
   }
 
