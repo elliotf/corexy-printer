@@ -38,18 +38,19 @@ lm6uu_rod_diam = 6;
 // record bearing groove offset, depth, width
 
 bearing_diam = lm10uu_bearing_diam;
-bearing_diam = lm10uu_bearing_len;
+bearing_len = lm10uu_bearing_len;
 rod_diam = lm10uu_rod_diam;
 
 bearing_diam = lm8uu_bearing_diam;
-bearing_diam = lm8uu_bearing_len;
+bearing_len = lm8uu_bearing_len;
 rod_diam = lm8uu_rod_diam;
 
 bearing_diam = lm6uu_bearing_diam;
 bearing_len = lm6uu_bearing_len;
 rod_diam = lm6uu_rod_diam;
 
-belt_bearing_diam = 16;
+belt_bearing_diam = 15;
+belt_bearing_groove_depth = .5;
 belt_bearing_inner = 5;
 belt_bearing_thickness = 5;
 belt_bearing_nut_diam = 8.1;
