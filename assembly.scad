@@ -4,7 +4,7 @@ translate([0,build_y*.0,0]) {
 
   // x carriage
   translate([build_x*-.0,0,x_rod_z]) {
-    x_carriage();
+    //x_carriage();
   }
 
   // X rods
@@ -28,27 +28,29 @@ translate([0,build_y*.0,0]) {
 
 // y end front
 for(side=[left,right]) {
-  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front();
+  //translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front();
   translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear();
 }
 
 // shift one line's bearings up or down to avoid rubbing?
-color("green",0.5) idlers();
-color("green",0.5) line();
-color("red",0.5) mirror([1,0,0]) idlers();
-color("red",0.5) mirror([1,0,0]) line();
+color("red",0.5) idlers();
+color("red",0.5) line();
+color("green",0.5) mirror([1,0,0]) idlers();
+color("green",0.5) mirror([1,0,0]) line();
 
 // top plate
 module plates() {
-  top_plate_width = y_rod_x*2+sheet_min_width;
+  top_plate_width = y_rod_x*2+motor_side+spacer*2;
   top_plate_depth = y_rod_len+sheet_min_width+motor_side;
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
   side_depth = top_plate_depth;
-  side_height = build_z + sheet_min_width;
-  front_back_width = y_rod_x*2-sheet_thickness;
+  side_height = build_z;
+  front_back_width = top_plate_width;
+  front_back_height = build_z;
+  front_back_z = -front_back_height/2 - sheet_thickness;
 
-  side_z = -side_height/2-sheet_thickness;
+  side_z = -side_height/2;
 
   translate([0,0,-sheet_thickness/2]) {
     difference() {
@@ -59,7 +61,7 @@ module plates() {
   }
 
   // front plate
-  translate([0,(y_rod_len/2-y_end_screw_hole_y)*front,side_z]) {
+  translate([0,(y_rod_len/2-y_end_screw_hole_y)*front,front_back_z]) {
     difference() {
       cube([front_back_width,sheet_thickness,side_height],center=true);
       cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
@@ -67,13 +69,13 @@ module plates() {
   }
 
   // rear plate
-  translate([0,(y_rod_len/2-y_end_screw_hole_y)*rear,side_z]) {
+  translate([0,y_rod_len/2*rear,front_back_z]) {
     cube([front_back_width,sheet_thickness,side_height],center=true);
   }
 
   // side plates
   for(side=[left,right]) {
-    translate([y_rod_x*side,motor_side/4,side_z]) {
+    translate([(y_rod_x+motor_side/2+sheet_thickness/2+spacer)*side,motor_side/4,side_z]) {
       difference() {
         cube([sheet_thickness,side_depth,side_height],center=true);
 
