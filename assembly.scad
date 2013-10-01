@@ -1,18 +1,27 @@
 include <main.scad>;
 
-// x carriage
-//translate([-build_x/2,0,x_rod_z]) x_carriage();
-translate([-build_x*0/2,0,x_rod_z]) x_carriage();
+translate([0,build_y*.0,0]) {
 
-// y carriage
-for(side=[left,right]) {
-  translate([y_rod_x*side,0,y_rod_z]) mirror([side+1,0,0]) {
-    y_carriage();
+  // x carriage
+  translate([build_x*-.0,0,x_rod_z]) {
+    x_carriage();
+  }
 
-    for(end=[front,rear]) {
-      translate([y_rod_to_x_clamp_end + clamp_area_width/2 + spacer/2,x_rod_spacing/2*end,0])
-        rotate([0,90,0]) rod_clamp(rod_diam);
-      % translate([0,y_carriage_bearing_y*end,0]) bearing();
+  // X rods
+  color("grey", .5) for(side=[-1,1]) {
+    translate([0,(side*x_rod_spacing/2),x_rod_z]) rotate([0,90,0]) rotate([0,0,22.5]) cylinder(r=da8*rod_diam+0.05,h=x_rod_len,center=true,$fn=8);
+  }
+
+  // y carriage
+  for(side=[left,right]) {
+    translate([y_rod_x*side,0,y_rod_z]) mirror([side+1,0,0]) {
+      y_carriage();
+
+      for(end=[front,rear]) {
+        translate([y_rod_to_x_clamp_end + clamp_area_width/2 + spacer/2,x_rod_spacing/2*end,0])
+          rotate([0,90,0]) rod_clamp(rod_diam);
+        % translate([0,y_carriage_bearing_y*end,0]) bearing();
+      }
     }
   }
 }
@@ -75,26 +84,12 @@ module plates() {
   }
 }
 
-// tension adjustment
-for(side=[left,right]) {
-  translate([(x_carriage_width/2-8)*side,-xy_idler_y+belt_bearing_diam/2,x_rod_z+bearing_diam/2+5])
-    rotate([0,0,90]) rotate([45*side,0,0]) mirror([0,1+side,0])
-      color("grey") tuner();
-}
+//color("Khaki", 0.5) plates();
 
-color("Khaki", 0.5) plates();
-
-
-% translate([0,0,-build_z/2]) cube([build_x,build_y,build_z],center=true);
+//% translate([0,0,-build_z/2]) cube([build_x,build_y,build_z],center=true);
 
 // rods
 color("grey", .5) {
-  // X
-  for(side=[-1,1]) {
-    translate([0,(side*x_rod_spacing/2),x_rod_z]) rotate([0,90,0]) rotate([0,0,22.5])
-      cylinder(r=da8*rod_diam,h=x_rod_len,center=true,$fn=8);
-  }
-
   // Y
   for(side=[-1,1]) {
     translate([side*y_rod_x,0,y_rod_z]) rotate([90,0,0]) rotate([0,0,22.5])

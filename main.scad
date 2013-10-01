@@ -4,6 +4,15 @@ da8 = 1 / cos(180 / 8) / 2;
 zip_tie_width = 3;
 zip_tie_thickness = 2;
 
+line_diam = .5;
+line_cube = [line_diam,line_diam,line_diam];
+
+tuner_shoulder_width = 10;
+tuner_shoulder_diam  = 10;
+tuner_shaft_diam     = 6;
+tuner_hole_to_shoulder = 22.5;
+tensioner_angle = 45;
+
 left  = -1;
 right = 1;
 front = -1;
@@ -68,8 +77,8 @@ sheet_min_width = 30;
 spacer = 1;
 
 y_clamp_len = 10; // amount of bar to clamp onto
-x_rod_spacing = 36 + lm8uu_bearing_diam;
-x_carriage_width = bearing_len * 3;
+x_rod_spacing = 40 + rod_diam;
+x_carriage_width = bearing_len * 2 + 10 + min_material_thickness*4;
 
 clamp_screw_diam = 3;
 clamp_screw_nut_diam = 5.5;
@@ -100,6 +109,7 @@ xy_idler_y = x_rod_spacing/2+bearing_diam-22;
 xy_idler_y = x_rod_spacing/2-rod_diam/2-belt_bearing_inner/2-min_material_thickness/2;
 xy_idler_z = x_rod_z + belt_bearing_diam/2;
 xy_idler_z = x_rod_z + rod_diam/2 + min_material_thickness + belt_bearing_thickness/2 + spacer;
+xy_idler_z = x_rod_z + bearing_diam/2 + tuner_shoulder_diam/2 - tuner_shaft_diam/2;
 
 front_idler_x = xy_idler_x + belt_bearing_diam/2;
 front_idler_y = -y_rod_len/2 - belt_bearing_inner/2 - min_material_thickness/2;
@@ -137,18 +147,236 @@ module motor_with_pulley() {
 }
 
 module bearing() {
-  rotate([90,0,0]) rotate([0,0,22.5]) cylinder(r=da8*bearing_diam,h=bearing_len,center=true,$fn=8);
+  rotate([90,0,0]) rotate([0,0,22.5])
+    cylinder(r=da8*bearing_diam,h=bearing_len,center=true,$fn=8);
 }
 
 module idler_bearing() {
   difference() {
-    cylinder(r=belt_bearing_diam/2,h=belt_bearing_thickness,center=true);
+    cylinder(r=belt_bearing_diam/2+belt_bearing_groove_depth,h=belt_bearing_thickness,center=true);
     rotate([0,0,22.5]) cylinder(r=belt_bearing_inner/2,h=belt_bearing_thickness+1,center=true);
   }
 }
 
 // x carriage
 module x_carriage() {
+  bearing_x = x_carriage_width/2-bearing_len/2-min_material_thickness;
+  line_y = xy_idler_y-belt_bearing_diam/2;
+
+  tensioner_x = x_carriage_width/2-min_material_thickness-tuner_shoulder_diam/2;
+  tensioner_shoulder_y = line_y + tuner_hole_to_shoulder;
+  tensioner_thickness = tensioner_shoulder_y - (x_rod_spacing/2-bearing_diam/2-min_material_thickness);
+  tensioner_y = tensioner_shoulder_y - tensioner_thickness/2;
+  tensioner_z = bearing_diam/2+tuner_shoulder_diam/2;
+
+  line_z = tensioner_z - tuner_shaft_diam/2;
+  zip_tie_x = tensioner_x-tuner_shoulder_diam/2-zip_tie_width/2;
+
+  carriage_thickness = bearing_diam-0.05;
+
+  module carriage_body() {
+    for(side=[left,right]) {
+      translate([0,(x_rod_spacing/2-bearing_diam/4-min_material_thickness/2)*side,0]) {
+        // front/rear bearing holders
+        cube([x_carriage_width,bearing_diam/2+min_material_thickness,carriage_thickness],center=true);
+      }
+
+      translate([(x_carriage_width/2-min_material_thickness)*side,0,0]) {
+        // sides to connect front and rear
+        cube([min_material_thickness*2,x_rod_spacing,carriage_thickness],center=true);
+      }
+
+      hull() {
+        translate([0,tensioner_y*front,0]) {
+          translate([tensioner_x*side,0,tensioner_z]) {
+            // tensioner shoulder body
+            rotate([90,0,0])
+              cylinder(r=tuner_shoulder_diam/2+min_material_thickness,h=tensioner_thickness,center=true);
+
+            // tensioner anchor screw
+            rotate([0,tensioner_angle*side,0]) {
+              translate([-7.5*side,0,-7.5]) rotate([90,0,0])
+                cylinder(r=1+min_material_thickness,h=tensioner_thickness,center=true);
+            }
+          }
+
+          // bearing walls
+          translate([bearing_x*side,0,0]) {
+            cube([bearing_len+min_material_thickness*2,tensioner_thickness,carriage_thickness],center=true);
+          }
+        }
+      }
+    }
+  }
+
+  module carriage_holes() {
+    for(side=[left,right]) {
+      for(end=[front,rear]) {
+        translate([bearing_x*side,x_rod_spacing/2*end,0]) {
+          rotate([0,90,0]) {
+            // bearings
+            rotate([0,0,22.5]) cylinder(r=bearing_diam*da8,h=bearing_len+0.1,center=true,$fn=8);
+
+            // zip ties
+            translate([0,0,-side*(-bearing_len/2+zip_tie_width/2+tuner_shoulder_diam)]) {
+              rotate_extrude()
+                translate([bearing_diam/2+3,0,0])
+                  square([zip_tie_thickness,zip_tie_width],center=true);
+            }
+          }
+          % rotate([0,0,90]) bearing();
+          echo("bearing diam: ", bearing_diam);
+        }
+      }
+
+      // front bearing access
+      translate([bearing_x*side,x_rod_spacing/2*front,-bearing_diam/2]) {
+        cube([bearing_len,bearing_diam,bearing_diam],center=true);
+      }
+
+      // tensioner holes
+      translate([tensioner_x*side,tensioner_shoulder_y*front,tensioner_z]) {
+        // tensioner anchor screw
+        rotate([0,tensioner_angle*side,0]) {
+          translate([-7.5*side,0,-7.5]) rotate([90,0,0]) rotate([0,0,45*side])
+            cylinder(r=2*da6,h=tensioner_thickness*3,center=true,$fn=6);
+        }
+
+        translate([0,tuner_shoulder_width/2,0]) rotate([90,0,0]) rotate([0,0,22.5]){
+          cylinder(r=tuner_shoulder_diam*da8,h=tuner_shoulder_width+1,center=true,$fn=8);
+          cylinder(r=(tuner_shaft_diam+1)*da8,h=tuner_shoulder_width*3,center=true,$fn=8);
+        }
+      }
+    }
+    // rear rod hole
+    translate([0,x_rod_spacing/2*rear,0]) rotate([0,90,0])
+      cylinder(r=(rod_diam+2)*da6,h=x_carriage_width+1,center=true,$fn=6);
+
+    // front rod hole
+    translate([0,x_rod_spacing/2*front,0]) rotate([0,90,0]) rotate([0,0,22.5])
+      cylinder(r=(rod_diam+2)*da8,h=x_carriage_width+1,center=true,$fn=8);
+
+    // front rod access
+    translate([0,x_rod_spacing/2*front,-bearing_diam/2])
+      cube([x_carriage_width+1,rod_diam+2,bearing_diam],center=true);
+  }
+
+  difference() {
+    carriage_body();
+    carriage_holes();
+  }
+
+  for(side=[left,right]) {
+    translate([(x_carriage_width/2-7)*side,-xy_idler_y+belt_bearing_diam/2,bearing_diam/2+5]) {
+      rotate([0,0,90]) rotate([tensioner_angle*side,0,0]) mirror([0,1+side,0]) {
+        % tuner();
+      }
+    }
+  }
+}
+
+module recent_x_carriage() {
+  bearing_x = x_carriage_width/2-bearing_len/2;
+  line_y = xy_idler_y-belt_bearing_diam/2;
+
+  carriage_height = (bearing_diam/2-rod_diam/2)+10+min_material_thickness;
+  front_thickness = (line_y+tuner_hole_to_shoulder)-(x_rod_spacing/2-bearing_diam/2)+1;
+  front_y = (x_rod_spacing/2-bearing_diam/2+front_thickness/2-1)*front;
+  carriage_z = rod_diam/2+carriage_height/2;
+
+  tensioner_x = x_carriage_width/2-min_material_thickness-tuner_shoulder_diam/2;
+  tensioner_z = bearing_diam/2+tuner_shoulder_diam/2;
+  line_z = tensioner_z - tuner_shaft_diam/2;
+  zip_tie_x = tensioner_x-tuner_shoulder_diam/2-zip_tie_width/2;
+
+  module carriage_body() {
+    translate([0,0,carriage_z]) {
+      translate([0,front_y,0])
+        cube([x_carriage_width,front_thickness,carriage_height],center=true);
+      translate([0,x_rod_spacing/2*rear,0])
+        cube([x_carriage_width,bearing_diam,carriage_height],center=true);
+
+      translate([0,0,0]) cube([x_carriage_width,x_rod_spacing,carriage_height],center=true);
+    }
+  }
+
+  module carriage_holes() {
+    tensioner_access_hole_width = (x_rod_spacing-bearing_diam)/2;
+    for(side=[left,right]) {
+      for(end=[front,rear]) {
+        // bearings
+        translate([(bearing_x+0.05)*side,x_rod_spacing/2*end,0]) rotate([0,90,0]) {
+          cylinder(r=bearing_diam/2,h=bearing_len,center=true);
+        }
+
+        // zip ties
+        translate([zip_tie_x*side,x_rod_spacing/2*end,0]) rotate([0,90,0]) rotate_extrude() {
+          translate([bearing_diam/2+3,0,0])
+            square([zip_tie_thickness,zip_tie_width],center=true);
+        }
+      }
+
+      // tensioner holes
+      translate([tensioner_x*side,front_y-front_thickness/2+tuner_shoulder_width/2,tensioner_z]) {
+        // main shoulder and shaft
+        rotate([90,0,0]) rotate([0,0,22.5]) {
+          cylinder(r=tuner_shoulder_diam*da8,h=tuner_shoulder_width+3,center=true,$fn=8);
+          cylinder(r=(tuner_shaft_diam+.5)*da8,h=tuner_hole_to_shoulder,center=true,$fn=8);
+        }
+
+        // anchor screw hole
+        rotate([0,tensioner_angle*side,0]) {
+          translate([-7.5*side,0,-7.5]) rotate([90,0,0])
+            cylinder(r=2/2,h=front_thickness*2,center=true);
+        }
+      }
+
+      // access to tensioner
+      translate([tensioner_x*side,tensioner_access_hole_width/2*front,tensioner_z]) {
+        //cube([tuner_shoulder_diam,x_rod_spacing-bearing_diam,tuner_shoulder_diam],center=true);
+        rotate([90,0,0]) rotate([0,0,22.5])
+          cylinder(r=tuner_shoulder_diam*da8,h=tensioner_access_hole_width,center=true,$fn=8);
+        translate([tuner_shoulder_diam/2*side,0,0])
+          cube([tuner_shoulder_diam,tensioner_access_hole_width,tuner_shoulder_diam],center=true);
+      }
+
+      // line tie down
+      hull() {
+        translate([x_carriage_width/2*side,line_y,line_z]) cube(line_cube,center=true);
+        translate([(x_carriage_width/2-8)*side,x_rod_spacing/2+bearing_diam/2,line_z]) cube([line_diam*2,line_diam*2,line_diam*2],center=true);
+      }
+    }
+
+    for(side=[front,rear]) {
+      translate([0,x_rod_spacing/2*side,0]) rotate([0,90,0]) cylinder(r=(rod_diam+2)/2,h=x_carriage_width+1,center=true);
+    }
+
+    // center hole
+    translate([0,0,carriage_z]) rotate([0,0,22.5]) cylinder(r=x_rod_spacing*.9*da8,h=carriage_height*2,center=true,$fn=8);
+
+    translate([0,0,0]) rotate([0,0,0]) cylinder(r=x_carriage_width-bearing_len*2,h=x_rod_spacing*2,center=true);
+  }
+
+  // bearings
+  for(side=[left,right]) {
+    for(end=[front,rear]) {
+      % translate([bearing_x*side,x_rod_spacing/2*end,0]) rotate([0,0,90]) bearing();
+    }
+  }
+
+  difference() {
+    carriage_body();
+    carriage_holes();
+  }
+
+  for(side=[left,right]) {
+    translate([(x_carriage_width/2-7)*side,-xy_idler_y+belt_bearing_diam/2,bearing_diam/2+5])
+      rotate([0,0,90]) rotate([tensioner_angle*side,0,0]) mirror([0,1+side,0])
+        % tuner();
+  }
+}
+
+module old_x_carriage() {
   carriage_thickness = bearing_diam/2-rod_diam/2+min_material_thickness;
   carriage_depth = x_rod_spacing+bearing_diam+min_material_thickness*2;
   carriage_bottom_z = rod_diam/2;
@@ -174,21 +402,6 @@ module x_carriage() {
     //translate([0,0,bearing_diam/2+min_material_thickness/2])
     translate([0,0,carriage_bottom_z+carriage_thickness/2])
       cube([x_carriage_width-0.05,carriage_depth,carriage_thickness],center=true);
-
-    // tension screw post
-    for(side=[left,right]) {
-      for(end=[front,rear]) {
-        translate([tension_screw_x*side,tension_screw_y*end,tension_screw_z]) rotate([0,0,0])
-          cylinder(r=tension_screw_post_diam*da6,h=tension_screw_post_height,center=true,$fn=6);
-      }
-
-      /*
-      translate([tension_screw_x*side,-tuning_peg_len,carriage_bottom_z+carriage_thickness+10]) {
-        rotate([90,0,0])
-          cylinder(r=6/2,h=22,center=true);
-      }
-      */
-    }
   }
 
   module x_carriage_holes() {
@@ -205,7 +418,7 @@ module x_carriage() {
               cylinder(r=bearing_diam/2,h=bearing_len,center=true);
               cylinder(r=rod_diam/2,h=bearing_len+1,center=true);
             }
-            rotate([90,0,0]) rotate_extrude()
+            translate([0,3*end,0]) rotate([90,0,0]) rotate_extrude()
               translate([bearing_diam/2+3,0,0])
                 square([zip_tie_thickness,zip_tie_width],center=true);
           }
@@ -219,29 +432,6 @@ module x_carriage() {
     for(side=[left,right]) {
       //translate([extruder_mount_hole_distance/2*side,0,0]) cylinder(r=extruder_mount_screw_diam*da8,h=20,center=true,$fn=8);
     }
-
-    // tension screws
-    for(side=[left,right]) {
-      for(end=[front,rear]) {
-        translate([tension_screw_x*side,tension_screw_y*end,tension_screw_z]) {
-          // screw shaft
-          cylinder(r=tension_screw_diam*da6,h=tension_screw_post_height+1,center=true,$fn=6);
-
-          // captive nut s
-          translate([0,0,-tension_screw_post_height/2])
-            cylinder(r=tension_screw_nut_diam*da6,h=tension_screw_nut_thickness*2,center=true,$fn=6);
-
-          translate([0,0,carriage_thickness*1])
-            cylinder(r=tension_screw_nut_diam*da6,h=tension_screw_nut_thickness*2,center=true,$fn=6);
-        }
-
-        // slot for line
-        /*
-        # translate([(x_carriage_width/2-tension_screw_diam/2)*side,(tension_line_y-.95)*end,carriage_thickness*1.5])
-          cube([(x_carriage_width/2-tension_screw_x)*2,2,5],center=true);
-        */
-      }
-    }
   }
 
   // fan
@@ -250,6 +440,13 @@ module x_carriage() {
   difference() {
     x_carriage_base();
     x_carriage_holes();
+  }
+
+  // tension adjustment
+  for(side=[left,right]) {
+    translate([(x_carriage_width/2-7)*side,-xy_idler_y+belt_bearing_diam/2,bearing_diam/2+5])
+      rotate([0,0,90]) rotate([tensioner_angle*side,0,0]) mirror([0,1+side,0])
+        % tuner();
   }
 }
 
@@ -728,8 +925,6 @@ module line() {
 
   carriage_x = x_carriage_width/2;
   carriage_y = xy_idler_y-belt_bearing_diam/2;
-  line_diam = .5;
-  line_cube = [line_diam,line_diam,line_diam];
 
   // x carriage front to y carriage front
   hull() {
@@ -783,9 +978,9 @@ module tuner() {
   thin_len = hole_to_shoulder + thin_len_past_hole;
   thin_pos = hole_to_shoulder/2-thin_len_past_hole/2;
 
-  thick_diam = 10;
-  thick_len = 10;
-  thick_pos = hole_to_shoulder-thick_len+thick_len/2;
+  shoulder_diam = 10;
+  shoulder_len = 10;
+  shoulder_pos = hole_to_shoulder-shoulder_len+shoulder_len/2;
 
   body_diam = 15;
   body_thickness = 9;
@@ -812,15 +1007,15 @@ module tuner() {
   adjuster_paddle_thickness = adjuster_thin_diam;
 
   module tuner_body() {
-    //% translate([-hole_to_shoulder/2,-thick_diam,0]) rotate([0,90,0]) cylinder(r=thin_diam/4,h=hole_to_shoulder,center=true);
+    //% translate([-hole_to_shoulder/2,-shoulder_diam,0]) rotate([0,90,0]) cylinder(r=thin_diam/4,h=hole_to_shoulder,center=true);
 
     // thin shaft
     translate([-thin_pos,0,0]) rotate([0,90,0])
       cylinder(r=thin_diam/2,h=thin_len,center=true);
 
     // thick shaft (area to clamp)
-    translate([-thick_pos,0,0]) rotate([0,90,0])
-      cylinder(r=thick_diam/2,h=thick_len,center=true);
+    translate([-shoulder_pos,0,0]) rotate([0,90,0])
+      cylinder(r=shoulder_diam/2,h=shoulder_len,center=true);
 
     // body
     translate([body_pos,0,0]) {
@@ -835,7 +1030,7 @@ module tuner() {
         translate([0,anchor_screw_hole_pos_y,anchor_screw_hole_pos_z]) rotate([0,90,0])
           cylinder(r=anchor_screw_hole_diam/2+anchor_screw_hole_width,h=anchor_screw_hole_thickness,center=true);
         rotate([0,90,0])
-          cylinder(r=thick_diam/2,h=anchor_screw_hole_thickness,center=true);
+          cylinder(r=shoulder_diam/2,h=anchor_screw_hole_thickness,center=true);
       }
     }
 
