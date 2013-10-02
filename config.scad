@@ -116,3 +116,8 @@ tuner_shoulder_diam  = 10;
 tuner_shaft_diam     = 6;
 tuner_hole_to_shoulder = 22.5;
 tensioner_angle = 45;
+
+// Power supply
+psu_length = 215;
+psu_width = 114;
+psu_height = 50;

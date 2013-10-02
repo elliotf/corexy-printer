@@ -54,7 +54,7 @@ module plates() {
     difference() {
       translate([0,motor_side/4,0])
         cube([top_plate_width,top_plate_depth,sheet_thickness],center=true);
-      cube([build_x+x_carriage_width,build_y+x_rod_spacing,sheet_thickness+1],center=true);
+      cube([x_rod_len-x_carriage_width,y_rod_len-y_clamp_len*2-sheet_thickness*2,sheet_thickness+1],center=true);
     }
   }
 
@@ -96,3 +96,7 @@ color("grey", .5) {
       cylinder(r=da8*rod_diam,h=y_rod_len,center=true,$fn=8);
   }
 }
+
+// power supply
+translate([0,xy_motor_y,-sheet_thickness-spacer-psu_length/2]) rotate([90,0,0])
+  % cube([psu_width,psu_length,psu_height],center=true);

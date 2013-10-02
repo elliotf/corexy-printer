@@ -29,6 +29,6 @@ upper_rear_idler_y = lower_rear_idler_y;
 upper_rear_idler_z = xy_idler_z;
 
 // motors
-xy_motor_x = motor_side/2 + spacer;
+xy_motor_x = y_rod_x-motor_side/2-sheet_thickness/2 - spacer;
 xy_motor_y = y_rod_len/2 + motor_side/2 + sheet_thickness/2 + spacer;
 xy_motor_z = -sheet_thickness;
