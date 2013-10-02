@@ -1,6 +1,9 @@
 include <config.scad>;
 include <positions.scad>;
 
+echo("x rod len: ",x_rod_len);
+echo("y rod len: ",y_rod_len);
+
 module motor() {
   difference() {
     translate([0,0,-motor_side/2]) cube([motor_side,motor_side,motor_side],center=true);
@@ -103,7 +106,6 @@ module x_carriage() {
             }
           }
           % rotate([0,0,90]) bearing();
-          echo("bearing diam: ", bearing_diam);
         }
       }
 

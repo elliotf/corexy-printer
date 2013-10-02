@@ -19,13 +19,13 @@ build_x = 600;
 build_y = 600;
 build_z = 600;
 
-build_x = 200;
-build_y = 200;
-build_z = 200;
-
 build_x = 150;
 build_y = 150;
 build_z = 150;
+
+build_x = 200;
+build_y = 200;
+build_z = 200;
 
 // Linear bearings and rods
 // should record bearing groove offset, depth, width
@@ -105,10 +105,10 @@ x_rod_spacing = 40 + rod_diam;
 x_carriage_width = bearing_len * 2 + 10 + min_material_thickness*4;
 
 // calculated rod lengths
-
-// calculated rod lengths
 x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + bearing_diam;
 y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2 + spacer*2;
+//x_rod_len = 270; // have avail
+//y_rod_len = 265; // have avail
 
 // tuner dimensions (pull out into a different file)
 tuner_shoulder_width = 10;
