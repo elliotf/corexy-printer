@@ -272,7 +272,7 @@ y_carriage_len = x_rod_spacing + rod_diam + min_material_thickness*2;
 y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_inner/2 + min_material_thickness*2;
 y_carriage_z = bearing_diam/2+min_material_thickness;
 y_carriage_bearing_y = y_carriage_len/2-bearing_len/2-min_material_thickness;
-module y_carriage() {
+module y_carriage(endstop=0) {
   line_x = y_rod_x-xy_idler_x-belt_bearing_diam/2;
   idler_x = line_x+belt_bearing_diam/2;
   idler_z = xy_idler_z - y_rod_z;
@@ -288,8 +288,10 @@ module y_carriage() {
     }
 
     // endstop holder
-    translate([y_rod_to_x_clamp_end-endstop_height/2,0,-y_clamp_width/2+min_material_thickness/4])
-      cube([endstop_height,x_rod_spacing,min_material_thickness/2],center=true);
+    if(endstop) {
+      translate([y_rod_to_x_clamp_end-endstop_height/2,0,-y_clamp_width/2+min_material_thickness/4])
+        cube([endstop_height,x_rod_spacing,min_material_thickness/2],center=true);
+    }
 
     for(side=[0,1]) {
       mirror([0,side,0]) {
@@ -345,8 +347,10 @@ module y_carriage() {
         cylinder(r=belt_bearing_inner*da8,h=y_clamp_width+1,center=true,$fn=8);
 
       // endstop mount holes
-      translate([y_rod_to_x_clamp_end-endstop_hole_from_top,endstop_hole_spacing/2*side,-y_clamp_width/2])
-        cylinder(r=endstop_hole_diam*da6,h=min_material_thickness*2,center=true,$fn=6);
+      if (endstop) {
+        translate([y_rod_to_x_clamp_end-endstop_hole_from_top,endstop_hole_spacing/2*side,-y_clamp_width/2])
+          cylinder(r=endstop_hole_diam*da6,h=min_material_thickness*2,center=true,$fn=6);
+      }
     }
 
     // extreme material trim
@@ -380,8 +384,10 @@ module y_carriage() {
       rotate([90,0,0]) cylinder(r=4*da6,h=y_carriage_len+1,center=true,$fn=6);
   }
 
-  % translate([y_rod_to_x_clamp_end-endstop_height/2,0,-y_clamp_width/2+endstop_width/2+min_material_thickness])
-    rotate([0,90,0]) rotate([0,0,-90]) endstop();
+  if (endstop) {
+    % translate([y_rod_to_x_clamp_end-endstop_height/2,0,-y_clamp_width/2+endstop_width/2+min_material_thickness])
+      rotate([0,90,0]) rotate([0,0,-90]) endstop();
+  }
 
   difference() {
     y_carriage_body();

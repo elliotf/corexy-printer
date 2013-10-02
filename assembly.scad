@@ -15,7 +15,7 @@ translate([0,build_y*.0,0]) {
   // y carriage
   for(side=[left,right]) {
     translate([y_rod_x*side,0,y_rod_z]) mirror([side+1,0,0]) {
-      y_carriage();
+      y_carriage(1-side);
 
       for(end=[front,rear]) {
         translate([y_rod_to_x_clamp_end + clamp_area_width/2 + spacer/2,x_rod_spacing/2*end,0])
