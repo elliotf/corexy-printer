@@ -57,6 +57,14 @@ bearing_diam = lm6uu_bearing_diam;
 bearing_len = lm6uu_bearing_len;
 rod_diam = lm6uu_rod_diam;
 
+// endstop dimensions
+endstop_len = 20;
+endstop_width = 6;
+endstop_height = 8;
+endstop_hole_spacing = 10;
+endstop_hole_diam = 2;
+endstop_hole_from_top = 5;
+
 // Screws, nuts
 m3_diam = 3;
 m3_nut_diam  = 5.5;

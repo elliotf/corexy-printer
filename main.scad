@@ -287,6 +287,10 @@ module y_carriage() {
       cylinder(r=y_clamp_width*da8,h=y_carriage_len,center=true,$fn=8);
     }
 
+    // endstop holder
+    translate([y_rod_to_x_clamp_end-endstop_height/2,0,-y_clamp_width/2+min_material_thickness/4])
+      cube([endstop_height,x_rod_spacing,min_material_thickness/2],center=true);
+
     for(side=[0,1]) {
       mirror([0,side,0]) {
         hull() {
@@ -339,6 +343,10 @@ module y_carriage() {
       // idler bearing holes
       translate([idler_x,xy_idler_y*side,0]) rotate([0,0,22.5])
         cylinder(r=belt_bearing_inner*da8,h=y_clamp_width+1,center=true,$fn=8);
+
+      // endstop mount holes
+      translate([y_rod_to_x_clamp_end-endstop_hole_from_top,endstop_hole_spacing/2*side,-y_clamp_width/2])
+        cylinder(r=endstop_hole_diam*da6,h=min_material_thickness*2,center=true,$fn=6);
     }
 
     // extreme material trim
@@ -386,6 +394,9 @@ module y_carriage() {
     translate([line_x,0,idler_z-belt_bearing_diam])
       rotate([90,0,0]) cylinder(r=4*da6,h=y_carriage_len+1,center=true,$fn=6);
   }
+
+  % translate([y_rod_to_x_clamp_end-endstop_height/2,0,-y_clamp_width/2+endstop_width/2+min_material_thickness])
+    rotate([0,90,0]) rotate([0,0,-90]) endstop();
 
   difference() {
     y_carriage_body();
@@ -807,4 +818,11 @@ module tuner() {
     tuner_body();
     tuner_holes();
   }
+}
+
+module endstop() {
+  cube([endstop_len,endstop_width,endstop_height],center=true);
+
+  translate([0,0,endstop_height/2+.5]) rotate([0,5,0])
+    cube([endstop_len-4,endstop_width-1,.5],center=true);
 }
