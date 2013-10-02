@@ -375,21 +375,6 @@ module y_carriage() {
 
     }
 
-    // x rod clamp
-
-    /*
-    clamp_screw_x = idler_x-belt_bearing_inner/2-spacer/2-clamp_screw_diam/2;
-    clamp_screw_z = -rod_diam/2-clamp_screw_diam/2-spacer/2;
-    for(side=[0,1]) {
-      mirror([0,side,0]) {
-        translate([clamp_screw_x,x_rod_spacing/2,clamp_screw_z]) {
-          rotate([90,0,0]) rotate([0,0,22.5])
-            cylinder(r=clamp_screw_diam*da8,h=30,center=true,$fn=8);
-        }
-      }
-    }
-    */
-
     // line clearance
     translate([line_x,0,idler_z-belt_bearing_diam])
       rotate([90,0,0]) cylinder(r=4*da6,h=y_carriage_len+1,center=true,$fn=6);
