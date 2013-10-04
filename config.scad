@@ -19,13 +19,13 @@ build_x = 600;
 build_y = 600;
 build_z = 600;
 
-build_x = 150;
-build_y = 150;
-build_z = 150;
-
 build_x = 200;
 build_y = 200;
 build_z = 200;
+
+build_x = 150;
+build_y = 150;
+build_z = 150;
 
 // Linear bearings and rods
 // should record bearing groove offset, depth, width
@@ -33,28 +33,46 @@ build_z = 200;
 // lm10uu, M10 rods
 lm10uu_bearing_diam = 19;
 lm10uu_bearing_len  = 29;
+lm10uu_bearing_groove_spacing = 0;
+lm10uu_bearing_groove_width = 0;
+lm10uu_bearing_groove_depth = 0;
 lm10uu_rod_diam = 10;
 
 // lm8uu, M8 rods
 lm8uu_bearing_diam = 15;
 lm8uu_bearing_len  = 24;
+lm8uu_bearing_groove_spacing = 0;
+lm8uu_bearing_groove_width = 0;
+lm8uu_bearing_groove_depth = 0;
 lm8uu_rod_diam = 8;
 
 // lm6uu, M6 rods
 lm6uu_bearing_diam = 12;
 lm6uu_bearing_len  = 19;
+lm6uu_bearing_groove_spacing = 10;
+lm6uu_bearing_groove_width = .5;
+lm6uu_bearing_groove_depth = .2;
 lm6uu_rod_diam = 6;
 
 bearing_diam = lm10uu_bearing_diam;
 bearing_len = lm10uu_bearing_len;
+bearing_groove_spacing = lm10uu_bearing_groove_spacing;
+bearing_groove_width = lm10uu_bearing_groove_width;
+bearing_groove_depth = lm10uu_bearing_groove_depth;
 rod_diam = lm10uu_rod_diam;
 
 bearing_diam = lm8uu_bearing_diam;
 bearing_len = lm8uu_bearing_len;
+bearing_groove_spacing = lm8uu_bearing_groove_spacing;
+bearing_groove_width = lm8uu_bearing_groove_width;
+bearing_groove_depth = lm8uu_bearing_groove_depth;
 rod_diam = lm8uu_rod_diam;
 
 bearing_diam = lm6uu_bearing_diam;
 bearing_len = lm6uu_bearing_len;
+bearing_groove_spacing = lm6uu_bearing_groove_spacing;
+bearing_groove_width = lm6uu_bearing_groove_width;
+bearing_groove_depth = lm6uu_bearing_groove_depth;
 rod_diam = lm6uu_rod_diam;
 
 // endstop dimensions
@@ -113,7 +131,7 @@ x_rod_spacing = 40 + rod_diam;
 x_carriage_width = bearing_len * 2 + 10 + min_material_thickness*4;
 
 // calculated rod lengths
-x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + bearing_diam;
+x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + bearing_diam + min_material_thickness*2;
 y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2 + spacer*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail

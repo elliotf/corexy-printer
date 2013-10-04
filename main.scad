@@ -22,9 +22,37 @@ module motor_with_pulley() {
   translate([0,0,sheet_thickness+spacer+pulley_height/2]) cylinder(r=pulley_diam/2,h=pulley_height,center=true);
 }
 
+module bearing_zip_tie() {
+  rotate([90,0,0])
+    rotate_extrude()
+      translate([bearing_diam/2+3,0,0])
+        square([zip_tie_thickness,zip_tie_width],center=true);
+}
+
 module bearing() {
   rotate([90,0,0]) rotate([0,0,22.5])
     cylinder(r=da8*bearing_diam,h=bearing_len,center=true,$fn=8);
+}
+
+module bearing_cavity() {
+  rotate([90,0,0])
+    difference() {
+      // main body
+      cylinder(r=bearing_diam/2+0.05,h=bearing_len+0.05,center=true);
+
+      // grooves
+      for(side=[left,right]) {
+        translate([0,0,bearing_groove_spacing/2*side])
+          rotate_extrude()
+            translate([bearing_diam/2,0,0])
+              square([bearing_groove_depth*2,bearing_groove_width],center=true);
+      }
+    }
+}
+
+module bearing_with_zip_tie() {
+  bearing_cavity();
+  bearing_zip_tie();
 }
 
 module idler_bearing() {
@@ -269,10 +297,118 @@ module recent_x_carriage() {
 
 // y carriage
 y_carriage_len = x_rod_spacing + rod_diam + min_material_thickness*2;
-y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_inner/2 + min_material_thickness*2;
+y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_diam/2 + 1;
 y_carriage_z = bearing_diam/2+min_material_thickness;
 y_carriage_bearing_y = y_carriage_len/2-bearing_len/2-min_material_thickness;
-module y_carriage(endstop=0) {
+
+module y_carriage(endstop=1) {
+  y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_diam/2 + belt_bearing_groove_depth;
+
+  bearing_y = y_carriage_len/2-bearing_len/2;
+  idler_x = y_rod_x - xy_idler_x;
+  idler_z = xy_idler_z - y_rod_z;
+
+  x_clamp_thickness = idler_z*2-belt_bearing_thickness-min_material_thickness;
+
+  idler_screw_len = idler_z-belt_bearing_thickness/2 + x_clamp_thickness/2;
+  echo("IDLER SCREW LEN: ", idler_screw_len);
+
+
+  module body() {
+    // bearing holder
+    translate([min_material_thickness*1.6,0,0])
+      rotate([90,0,0]) rotate([0,0,22.5])
+        cylinder(r=da8*bearing_diam,h=y_carriage_len,center=true,$fn=8);
+
+    translate([y_rod_to_x_clamp_end/2,0,0]) {
+      // clamp space filler
+      cube([y_rod_to_x_clamp_end,x_rod_spacing,x_clamp_thickness],center=true);
+    }
+
+    for(side=[front,rear]) {
+      // bearing
+      //% translate([0,bearing_y*side,0]) bearing();
+
+      translate([idler_x,xy_idler_y*side,idler_z-belt_bearing_thickness]) {
+        // idler shaft
+        hull() {
+          rotate([0,0,22.5]) {
+            translate([0,0,.4]) cylinder(r=belt_bearing_inner*da8,h=belt_bearing_thickness,center=true,$fn=8);
+
+            translate([0,0,-.1]) cylinder(r=belt_bearing_diam/2,h=min_material_thickness,center=true,$fn=8);
+          }
+        }
+      }
+
+      hull() {
+        // x clamp
+        translate([y_rod_to_x_clamp_end/2,0,0]) {
+          translate([0,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
+            cylinder(r=(rod_diam+min_material_thickness*2)*da8,h=y_rod_to_x_clamp_end,center=true,$fn=8);
+
+          // avoid overhangs on the bearing holder
+          translate([0,(y_carriage_len/2-min_material_thickness/2)*side,0])
+            cube([y_rod_to_x_clamp_end,min_material_thickness,bearing_diam/2],center=true);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    for(side=[front,rear]) {
+      // x rod opening
+      translate([y_rod_to_x_clamp_end,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
+        cylinder(r=rod_diam*da8,h=belt_bearing_diam*2,center=true,$fn=8);
+
+      translate([idler_x,xy_idler_y*side,0]) {
+        // idler hole
+        rotate([0,0,22.5])
+          cylinder(r=belt_bearing_inner*da8,h=belt_bearing_diam,center=true,$fn=8);
+
+        // idler clearance
+        translate([0,0,idler_z]) rotate([0,0,22.5]) {
+          hull() {
+            translate([0,0,belt_bearing_thickness/2])
+              cylinder(r=(belt_bearing_diam+belt_bearing_groove_depth*2+belt_bearing_thickness*2-2.5)*da8,h=0.1,center=true,$fn=8);
+            cylinder(r=(belt_bearing_diam+belt_bearing_groove_depth*2+0.1)*da8,h=belt_bearing_thickness,center=true,$fn=8);
+          }
+        }
+
+        // captive nut
+        //translate([0,0,idler_z-idler_screw_len-belt_bearing_nut_thickness/2])
+        translate([0,0,idler_z-10-belt_bearing_nut_thickness/2])
+          cylinder(r=belt_bearing_nut_diam*da6,h=belt_bearing_nut_thickness,center=true,$fn=6);
+      }
+
+      // bearing holders
+      translate([0,bearing_y*side,0]) {
+        bearing_cavity();
+
+        translate([0,-1*side,0])
+          rotate([90,0,0]) {
+            // zip tie groove
+            rotate_extrude()
+              translate([bearing_diam/2+3,0,0])
+                square([zip_tie_thickness,zip_tie_width],center=true);
+          }
+      }
+    }
+
+    // bearing-side material trim
+    translate([-bearing_diam+rod_diam*1.5,0,0])
+      cube([bearing_diam,y_carriage_len+1,bearing_diam*2],center=true);
+
+    // y rod opening
+    rotate([90,0,0]) cylinder(r=(bearing_diam-3)/2,h=y_carriage_len+1,center=true);
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module old_y_carriage(endstop=0) {
   line_x = y_rod_x-xy_idler_x-belt_bearing_diam/2;
   idler_x = line_x+belt_bearing_diam/2;
   idler_z = xy_idler_z - y_rod_z;
