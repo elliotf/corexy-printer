@@ -1,6 +1,6 @@
 include <main.scad>;
 
-module plates() {
+module top_plate() {
   top_plate_width = y_rod_x*2+sheet_min_width;
   top_plate_depth = y_rod_len+sheet_min_width+motor_side;
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
@@ -74,4 +74,4 @@ module plates() {
 }
 
 //color("Khaki") plates();
-projection() color("Khaki") plates();
+//projection() color("Khaki") plates();

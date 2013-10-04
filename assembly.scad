@@ -1,4 +1,5 @@
 include <main.scad>;
+include <sheet_plates.scad>;
 
 translate([0,0,0]) y_end_front_screw_holes();
 
@@ -40,17 +41,6 @@ color("green",0.5) mirror([1,0,0]) line();
 
 top_plate_width = y_rod_x*2+sheet_min_width;
 top_plate_depth = y_rod_len+sheet_min_width+motor_side;
-module top_plate() {
-  module plate_body() {
-    translate([0,0,-sheet_thickness/2]) {
-      difference() {
-        translate([0,motor_side/4,0])
-          cube([top_plate_width,top_plate_depth,sheet_thickness],center=true);
-        cube([x_rod_len-x_carriage_width,y_rod_len-y_clamp_len*2-sheet_thickness*2,sheet_thickness+1],center=true);
-      }
-    }
-  }
-}
 
 // top plate
 module plates() {
@@ -62,13 +52,7 @@ module plates() {
 
   side_z = -side_height/2-sheet_thickness;
 
-  translate([0,0,-sheet_thickness/2]) {
-    difference() {
-      translate([0,motor_side/4,0])
-        cube([top_plate_width,top_plate_depth,sheet_thickness],center=true);
-      cube([x_rod_len-x_carriage_width,y_rod_len-y_clamp_len*2-sheet_thickness*2,sheet_thickness+1],center=true);
-    }
-  }
+  top_plate();
 
   // front plate
   translate([0,(y_rod_len/2-y_end_screw_hole_y)*front,side_z]) {
