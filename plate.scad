@@ -8,7 +8,7 @@ module gantry_plate() {
     translate([(y_rod_z + spacer*2)*-side,0,0]) mirror([1+side,0,0]) {
       translate([0,0,y_clamp_len]) {
         // y end front
-        translate([0,-y_end_spacer,0]) rotate([0,0,-90]) rotate([-90,0,0]) y_end_front();
+        translate([0,-y_end_spacer+rod_diam,0]) rotate([0,0,-90]) rotate([-90,0,0]) y_end_front(1-side);
 
         // y end rear
         translate([0,y_end_spacer,0]) rotate([0,0,90]) rotate([90,0,0]) y_end_rear();

@@ -1,5 +1,7 @@
 include <main.scad>;
 
+translate([0,0,0]) y_end_front_screw_holes();
+
 translate([0,build_y*.0,0]) {
 
   // x carriage
@@ -18,8 +20,6 @@ translate([0,build_y*.0,0]) {
       y_carriage(1-side);
 
       for(end=[front,rear]) {
-        translate([y_rod_to_x_clamp_end + clamp_area_width/2 + spacer/2,x_rod_spacing/2*end,0])
-          rotate([0,90,0]) rod_clamp(rod_diam);
         % translate([0,y_carriage_bearing_y*end,0]) bearing();
       }
     }
@@ -28,20 +28,32 @@ translate([0,build_y*.0,0]) {
 
 // y end front
 for(side=[left,right]) {
-  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front();
-  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear();
+  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front(1-side);
+  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(1-side);
 }
 
 // shift one line's bearings up or down to avoid rubbing?
-color("green",0.5) idlers();
-color("green",0.5) line();
-color("red",0.5) mirror([1,0,0]) idlers();
-color("red",0.5) mirror([1,0,0]) line();
+color("red",0.5) idlers();
+color("red",0.5) line();
+color("green",0.5) mirror([1,0,0]) idlers();
+color("green",0.5) mirror([1,0,0]) line();
+
+top_plate_width = y_rod_x*2+sheet_min_width;
+top_plate_depth = y_rod_len+sheet_min_width+motor_side;
+module top_plate() {
+  module plate_body() {
+    translate([0,0,-sheet_thickness/2]) {
+      difference() {
+        translate([0,motor_side/4,0])
+          cube([top_plate_width,top_plate_depth,sheet_thickness],center=true);
+        cube([x_rod_len-x_carriage_width,y_rod_len-y_clamp_len*2-sheet_thickness*2,sheet_thickness+1],center=true);
+      }
+    }
+  }
+}
 
 // top plate
 module plates() {
-  top_plate_width = y_rod_x*2+sheet_min_width;
-  top_plate_depth = y_rod_len+sheet_min_width+motor_side;
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
   side_depth = top_plate_depth;

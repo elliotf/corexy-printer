@@ -13,6 +13,7 @@ xy_idler_y = belt_bearing_diam/2 + belt_bearing_inner/2;
 xy_idler_y = x_rod_spacing/2+bearing_diam-22;
 xy_idler_y = x_rod_spacing/2-rod_diam/2-belt_bearing_inner/2-min_material_thickness/2;
 xy_idler_z = x_rod_z + belt_bearing_diam/2;
+xy_idler_z = x_rod_z + belt_bearing_thickness/2 + spacer;
 xy_idler_z = x_rod_z + rod_diam/2 + min_material_thickness + belt_bearing_thickness/2 + spacer;
 xy_idler_z = x_rod_z + bearing_diam/2 + tuner_shoulder_diam/2 - tuner_shaft_diam/2;
 
