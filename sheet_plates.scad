@@ -17,8 +17,10 @@ module top_plate() {
   }
 
   module sheet_holes() {
-    translate([0,0,-sheet_thickness/2])
-      cube([x_rod_len-x_carriage_width,y_rod_len-y_clamp_len*2-sheet_thickness*2,sheet_thickness+1],center=true);
+    //translate([0,0,-sheet_thickness/2]) cube([x_rod_len-x_carriage_width,y_rod_len-y_clamp_len*2-sheet_thickness*2,sheet_thickness+1],center=true);
+    top_opening_depth = y_rod_len-y_clamp_len*2-sheet_thickness*2;
+    translate([0,top_opening_depth/2*front,-sheet_thickness/2])
+      cube([x_rod_len-x_carriage_width,top_opening_depth*2,sheet_thickness+1],center=true);
 
 
     for(side=[left,right]) {

@@ -7,6 +7,8 @@ left  = -1;
 right = 1;
 front = -1;
 rear  = 1;
+top = 1;
+bottom  = -1;
 
 // material dimensions
 zip_tie_width = 3;
@@ -26,6 +28,9 @@ build_z = 200;
 build_x = 150;
 build_y = 150;
 build_z = 150;
+
+hotend_len = 51;
+hotend_diam = 16;
 
 // Linear bearings and rods
 // should record bearing groove offset, depth, width
@@ -101,11 +106,14 @@ belt_bearing_nut_thickness = m5_nut_thickness;
 
 // Motor
 motor_side = 43;
+motor_len = motor_side;
 motor_hole_spacing = 31;
 motor_screw_diam = m3_diam;
+motor_shaft_diam = 5;
+motor_shaft_len = 20;
 
 // Pulley
-pulley_diam = 18;
+pulley_diam = 20;
 pulley_height = belt_bearing_diam + 8;
 
 // Frame sheet
@@ -128,13 +136,20 @@ clamp_area_width = clamp_screw_diam+min_material_thickness*2;
 // Printer settings
 y_clamp_len = 10; // amount of bar to clamp onto
 x_rod_spacing = 40 + rod_diam;
+x_rod_spacing = bearing_len * 2 + min_material_thickness * 2;
 x_carriage_width = bearing_len * 2 + 10 + min_material_thickness*4;
+x_carriage_width = bearing_len * 2 + min_material_thickness*3;
 
 // calculated rod lengths
-x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + bearing_diam + min_material_thickness*2;
+x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
 y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2 + spacer*2;
+z_rod_len = build_z + motor_len;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
+z_leadscrew_clamp_len = 10;
+
+// z carriage
+z_carriage_width = bearing_diam+min_material_thickness*2+sheet_thickness*2;
 
 // tuner dimensions (pull out into a different file)
 tuner_shoulder_width = 10;

@@ -1,13 +1,50 @@
 include <main.scad>;
 include <sheet_plates.scad>;
+use <inc/jhead.scad>;
 
 translate([0,0,0]) y_end_front_screw_holes();
+
+for(side=[left,right]) {
+  color("blue",.6) translate([z_motor_x*side,0,0]) {
+    translate([0,z_motor_y*side,z_motor_z]) motor();
+    translate([0,0,z_rod_z])
+      cylinder(r=rod_diam/2,h=z_rod_len,center=true);
+  }
+
+  translate([z_rod_x*side,0,z_carriage_z]) rotate([0,0,180*1-side]) z_carriage();
+  % translate([0,0,z_carriage_z-bearing_len]) {
+    translate([0,(z_carriage_width/2+sheet_thickness/2)*side,0])
+      cube([z_rod_x*2,sheet_thickness,bearing_len*2],center=true);
+
+    // Y support
+    translate([(z_motor_x-motor_side/2-sheet_thickness/2)*side,0,0])
+      cube([sheet_thickness,build_y,bearing_len*2],center=true);
+
+    // main sheet
+    translate([0,0,bearing_len+sheet_thickness/2])
+      cube([(z_motor_x-motor_side/2)*2+10,build_y,sheet_thickness],center=true);
+  }
+
+  /*
+  translate([(build_x/2+motor_side/2)*side,-motor_side/2*side,0]) {
+    translate([0,-motor_side/2*side,0]) {
+      color("blue") cylinder(r=rod_diam/2,h=build_z,center=true);
+    }
+    translate([0,motor_side/2*side,0]) {
+      color("blue") motor();
+    }
+  }
+  */
+}
 
 translate([0,build_y*.0,0]) {
 
   // x carriage
   translate([build_x*-.0,0,x_rod_z]) {
     x_carriage();
+    //% translate([0,0,-x_rod_z+hotend_len/2]) cylinder(r=hotend_diam/2,h=hotend_len,center=true);
+    //% translate([0,0,-x_rod_z+hotend_len/2]) rotate([180,0,0]) hotend_jhead();
+    translate([0,0,-x_rod_z+hotend_len/2+4.6+4.7]) rotate([180,0,0]) hotend_jhead();
   }
 
   // X rods
@@ -46,8 +83,12 @@ top_plate_depth = y_rod_len+sheet_min_width+motor_side;
 module plates() {
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
+  build_top = x_rod_z-(hotend_len-10);
+  echo("BUILD TOP: ", build_top);
+
   side_depth = top_plate_depth;
-  side_height = build_z + sheet_min_width;
+  side_height = build_z+sheet_min_width*2;
+  side_height = side_panel_height;
   front_back_width = y_rod_x*2-sheet_thickness;
 
   side_z = -side_height/2-sheet_thickness;
@@ -55,10 +96,14 @@ module plates() {
   top_plate();
 
   // front plate
+  front_opening_width  = x_rod_len-x_carriage_width;
+  front_opening_height = build_z;
   translate([0,(y_rod_len/2-y_end_screw_hole_y)*front,side_z]) {
     difference() {
       cube([front_back_width,sheet_thickness,side_height],center=true);
-      cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
+      //cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
+      translate([0,0,-side_z])
+        cube([front_opening_width,sheet_thickness+1,front_opening_height*2],center=true);
     }
   }
 
@@ -74,7 +119,7 @@ module plates() {
         cube([sheet_thickness,side_depth,side_height],center=true);
 
         translate([0,-motor_side/4,0])
-          cube([sheet_thickness+1,y_rod_len-y_end_screw_hole_y*2-sheet_min_width,side_height-sheet_min_width*2],center=true);
+          cube([sheet_thickness+1,y_rod_len-y_end_screw_hole_y*2-sheet_min_width,build_z],center=true);
       }
     }
   }
@@ -82,7 +127,9 @@ module plates() {
 
 color("Khaki", 0.5) plates();
 
-% translate([0,0,-build_z/2]) cube([build_x,build_y,build_z],center=true);
+//# translate([0,0,x_rod_z-build_z/2-40])
+# translate([0,0,bed_zero+build_z/2])
+  cube([build_x,build_y,build_z],center=true);
 
 // rods
 color("grey", .5) {
