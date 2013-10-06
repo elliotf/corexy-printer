@@ -15,7 +15,8 @@ module gantry_plate() {
       }
 
       // y carriage
-      translate([plate_y_carriage_x,0,y_rod_to_x_clamp_end]) rotate([0,0,180]) rotate([0,90,0]) y_carriage();
+      translate([plate_y_carriage_x,0,y_rod_to_x_clamp_end]) rotate([0,0,180]) rotate([0,90,0])
+        y_carriage();
     }
   }
 

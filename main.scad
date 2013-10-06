@@ -395,13 +395,10 @@ module recent_x_carriage() {
 
 // y carriage
 y_carriage_len = x_rod_spacing + rod_diam + min_material_thickness*2;
-y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_diam/2 + 1;
+y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_diam/2 + belt_bearing_groove_depth*2;
 y_carriage_z = bearing_diam/2+min_material_thickness;
 y_carriage_bearing_y = y_carriage_len/2-bearing_len/2;
-
 module y_carriage(endstop=1) {
-  y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_diam/2 + belt_bearing_groove_depth;
-
   idler_x = y_rod_x - xy_idler_x;
   idler_z = xy_idler_z - y_rod_z;
 
