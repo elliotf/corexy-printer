@@ -17,6 +17,19 @@ module motor() {
   translate([0,0,motor_shaft_len/2]) cylinder(r=motor_shaft_diam/2,h=motor_shaft_len,center=true);
 }
 
+module nema14() {
+  difference() {
+    translate([0,0,-nema14_side/2]) cube([nema14_side,nema14_side,nema14_side],center=true);
+    for(end=[left,right]) {
+      for(side=[front,rear]) {
+        translate([nema14_hole_spacing/2*side,nema14_hole_spacing/2*end,0]) cylinder(r=nema14_screw_diam/2,h=100,center=true);
+      }
+    }
+  }
+
+  translate([0,0,nema14_shaft_len/2]) cylinder(r=nema14_shaft_diam/2,h=nema14_shaft_len,center=true);
+}
+
 module motor_with_pulley() {
   motor();
   translate([0,0,sheet_thickness+spacer+pulley_height/2]) cylinder(r=pulley_diam/2,h=pulley_height,center=true);

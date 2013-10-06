@@ -21,13 +21,13 @@ build_x = 600;
 build_y = 600;
 build_z = 600;
 
-build_x = 200;
-build_y = 200;
-build_z = 200;
-
 build_x = 150;
 build_y = 150;
 build_z = 150;
+
+build_x = 200;
+build_y = 200;
+build_z = 200;
 
 hotend_len = 51;
 hotend_diam = 16;
@@ -105,12 +105,33 @@ belt_bearing_nut_diam = m5_nut_diam;
 belt_bearing_nut_thickness = m5_nut_thickness;
 
 // Motor
-motor_side = 43;
+nema17_side = 43;
+nema17_len = nema17_side;
+nema17_hole_spacing = 31;
+nema17_screw_diam = m3_diam;
+nema17_shaft_diam = 5;
+nema17_shaft_len = 20;
+
+nema14_side = 35.3;
+nema14_len = nema14_side;
+nema14_hole_spacing = 26;
+nema14_screw_diam = m3_diam;
+nema14_shaft_diam = 5;
+nema14_shaft_len = 20;
+
+motor_side = nema17_side;
 motor_len = motor_side;
-motor_hole_spacing = 31;
-motor_screw_diam = m3_diam;
-motor_shaft_diam = 5;
-motor_shaft_len = 20;
+motor_hole_spacing = nema17_hole_spacing;
+motor_screw_diam = nema17_screw_diam;
+motor_shaft_diam = nema17_shaft_diam;
+motor_shaft_len = nema17_shaft_len;
+
+z_motor_side = nema14_side;
+z_motor_len = z_motor_side;
+z_motor_hole_spacing = nema14_hole_spacing;
+z_motor_screw_diam = nema14_screw_diam;
+z_motor_shaft_diam = nema14_shaft_diam;
+z_motor_shaft_len = nema14_shaft_len;
 
 // Pulley
 pulley_diam = 20;
@@ -143,13 +164,13 @@ x_carriage_width = bearing_len * 2 + min_material_thickness*3;
 // calculated rod lengths
 x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
 y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2 + spacer*2;
-z_rod_len = build_z + motor_len;
+z_rod_len = build_z + motor_len*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
 z_leadscrew_clamp_len = 10;
 
 // z carriage
-z_carriage_width = bearing_diam+min_material_thickness*2+sheet_thickness*2;
+z_carriage_width = bearing_diam+min_material_thickness*2;
 
 // tuner dimensions (pull out into a different file)
 tuner_shoulder_width = 10;
