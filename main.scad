@@ -76,44 +76,31 @@ module idler_bearing() {
 }
 
 // x carriage
+x_carriage_thickness = rod_diam;
+x_carriage_thickness = bearing_diam*.7;
+x_carriage_thickness = xy_idler_z-x_rod_z;
 module x_carriage() {
-  bearing_x = x_carriage_width/2-bearing_len/2-min_material_thickness;
-  carriage_thickness = rod_diam;
-  carriage_thickness = bearing_diam*.7;
-  carriage_depth = x_rod_spacing+bearing_diam;
-  carriage_depth = x_rod_spacing-rod_diam-spacer*2;
-  carriage_z = rod_diam/2+carriage_thickness/2;
-  carriage_z = 0;
-
-  hole_width = x_carriage_width - min_material_thickness*6;
-  hole_depth = x_rod_spacing - bearing_diam;
-  hole_depth = x_rod_spacing - bearing_diam - min_material_thickness*2;
-
   line_y = xy_idler_y-belt_bearing_diam/2;
   line_z = xy_idler_z-x_rod_z;
+
+  bearing_x = x_carriage_width/2-bearing_len/2-min_material_thickness;
+  carriage_depth = x_rod_spacing-rod_diam-spacer*2;
+  carriage_depth = x_rod_spacing+bearing_diam + min_material_thickness;
+  carriage_z = rod_diam/2+x_carriage_thickness/2;
+  carriage_z = 0;
+  carriage_z = rod_diam*.7;
+  carriage_z = line_z-x_carriage_thickness/2;
+
+  hole_width = x_carriage_width - min_material_thickness*6;
+  hole_depth = x_rod_spacing - bearing_diam - min_material_thickness*2;
+  hole_depth = x_rod_spacing - bearing_diam - min_material_thickness;
 
   extruder_mount_hole_spacing = 45;
   tensioner_screw_diam = 4;
 
   module body() {
-    translate([0,0,carriage_z]) cube([x_carriage_width,carriage_depth,carriage_thickness],center=true);
+    translate([0,0,carriage_z]) cube([x_carriage_width,carriage_depth,x_carriage_thickness],center=true);
     //translate([0,0,0]) cube([x_carriage_width,x_rod_spacing-rod_diam-spacer*2,bearing_diam*.75],center=true);
-
-    /*
-    for(side=[left,right]) {
-      translate([extruder_mount_hole_spacing/2*side,0,carriage_z]) rotate([0,0,22.5])
-        cylinder(r=(tensioner_screw_diam+min_material_thickness*2)*da8,h=carriage_thickness,center=true,$fn=8);
-    }
-    */
-
-    for(side=[left,right]) {
-      hull() {
-        for(end=[front,rear]) {
-          translate([(x_carriage_width/2-min_material_thickness*1.5)*side,(line_y+tensioner_screw_diam/2)*end,line_z/2])
-            cylinder(r=min_material_thickness*1.5,h=line_z,center=true);
-        }
-      }
-    }
   }
 
   module holes() {
@@ -123,35 +110,25 @@ module x_carriage() {
           bearing_cavity();
           bearing_zip_tie();
 
-          % bearing();
+          //% bearing();
         }
       }
+
+      // rod opening
+      translate([0,x_rod_spacing/2*end,0]) rotate([0,90,0])
+        cylinder(r=bearing_diam/2-1,h=x_carriage_width+1,center=true);
     }
 
     // main hole
     translate([0,0,carriage_z])
-      cube([hole_width,hole_depth,carriage_thickness+1],center=true);
+      cube([hole_width,hole_depth,x_carriage_thickness+1],center=true);
 
     // tensioner
     for(side=[left,right]) {
       for(end=[front,rear]) {
-        translate([(x_carriage_width/2-min_material_thickness*1.5)*side,(line_y+tensioner_screw_diam/2)*end,line_z/2])
+        translate([(x_carriage_width/2-min_material_thickness*1.5)*side,(line_y+tensioner_screw_diam/2)*end,line_z/2]) rotate([0,0,22.5])
           cylinder(r=tensioner_screw_diam*da8,h=line_z*4,center=true,$fn=8);
-        /*
-        translate([(x_carriage_width/2-min_material_thickness*1.25)*side,(line_y+tensioner_screw_diam/2)*end,carriage_z]) {
-          rotate([0,0,22.5])
-            cylinder(r=tensioner_screw_diam*da8,h=carriage_thickness*2,center=true,$fn=8);
-        }
-        */
       }
-
-      /*
-      translate([extruder_mount_hole_spacing/2*side,0,carriage_z]) {
-        rotate([0,0,22.5])
-          cylinder(r=tensioner_screw_diam*da8,h=carriage_thickness*2,center=true,$fn=8);
-        translate([-tensioner_screw_diam/4*side,-tensioner_screw_diam/4,0]) cube([tensioner_screw_diam/2,tensioner_screw_diam/2,carriage_thickness*2],center=true);
-      }
-      */
     }
   }
 
@@ -518,10 +495,6 @@ module y_carriage(endstop=1) {
 
     // y rod opening
     rotate([90,0,0]) cylinder(r=(bearing_diam-3)/2,h=y_carriage_len+1,center=true);
-
-    // room for x carriage tensioner
-    //translate([y_rod_to_x_clamp_end,0,0]) rotate([0,0,22.5]) cylinder(r=12*da8,h=20,center=true,$fn=8);
-    //translate([y_rod_to_x_clamp_end,0,0]) rotate([0,0,45]) cube([10,10,20],center=true);
   }
 
   difference() {

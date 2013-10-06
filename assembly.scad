@@ -47,7 +47,6 @@ for(side=[left,right]) {
 }
 
 translate([0,build_y*.0,0]) {
-
   // x carriage
   translate([build_x*-.0,0,x_rod_z]) {
     x_carriage();
@@ -117,7 +116,7 @@ module plates() {
         translate([0,0,side_height/2])
           cube([front_opening_width,sheet_thickness+1,1],center=true);
         translate([0,0,-front_opening_height/4])
-          cube([build_x*.9,sheet_thickness+1,1],center=true);
+          cube([build_x*.8,sheet_thickness+1,1],center=true);
       }
     }
   }

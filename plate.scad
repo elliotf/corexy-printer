@@ -20,7 +20,8 @@ module gantry_plate() {
     }
   }
 
-  translate([x_carriage_width/2+bearing_diam,-x_rod_spacing/2-bearing_diam,bearing_diam/2]) x_carriage();
+  translate([x_carriage_width/2+bearing_diam,-x_rod_spacing/2-bearing_diam,x_carriage_thickness]) rotate([0,180,0])
+    x_carriage();
 
   % translate([0,0,-.5]) {
     difference() {
