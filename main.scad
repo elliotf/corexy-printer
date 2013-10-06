@@ -397,20 +397,24 @@ module recent_x_carriage() {
 y_carriage_len = x_rod_spacing + rod_diam + min_material_thickness*2;
 y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_diam/2 + 1;
 y_carriage_z = bearing_diam/2+min_material_thickness;
-y_carriage_bearing_y = y_carriage_len/2-bearing_len/2-min_material_thickness;
+y_carriage_bearing_y = y_carriage_len/2-bearing_len/2;
 
 module y_carriage(endstop=1) {
   y_rod_to_x_clamp_end = y_rod_x - xy_idler_x + belt_bearing_diam/2 + belt_bearing_groove_depth;
 
-  bearing_y = y_carriage_len/2-bearing_len/2;
   idler_x = y_rod_x - xy_idler_x;
   idler_z = xy_idler_z - y_rod_z;
 
   x_clamp_thickness = idler_z*2-belt_bearing_thickness-min_material_thickness;
+  clamp_screw_body_len = y_clamp_len;
+  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness;
+  clamp_gap_width = spacer;
+  clamp_width = rod_diam;
+  x_clamp_x = y_rod_to_x_clamp_end-clamp_screw_body_len/2;
+  x_clamp_z = -rod_diam/2-clamp_screw_body_height/2;
 
   idler_screw_len = idler_z-belt_bearing_thickness/2 + x_clamp_thickness/2;
   echo("IDLER SCREW LEN: ", idler_screw_len);
-
 
   module body() {
     // bearing holder
@@ -424,9 +428,6 @@ module y_carriage(endstop=1) {
     }
 
     for(side=[front,rear]) {
-      // bearing
-      //% translate([0,bearing_y*side,0]) bearing();
-
       translate([idler_x,xy_idler_y*side,idler_z-belt_bearing_thickness]) {
         // idler shaft
         hull() {
@@ -439,7 +440,7 @@ module y_carriage(endstop=1) {
       }
 
       hull() {
-        // x clamp
+        // x rod holder
         translate([y_rod_to_x_clamp_end/2,0,0]) {
           translate([0,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
             cylinder(r=(rod_diam+min_material_thickness*2)*da8,h=y_rod_to_x_clamp_end,center=true,$fn=8);
@@ -447,6 +448,11 @@ module y_carriage(endstop=1) {
           // avoid overhangs on the bearing holder
           translate([0,(y_carriage_len/2-min_material_thickness/2)*side,0])
             cube([y_rod_to_x_clamp_end,min_material_thickness,bearing_diam/2],center=true);
+        }
+
+        translate([x_clamp_x,x_rod_spacing/2*side,x_clamp_z]) {
+          // x rod clamp
+          cube([clamp_screw_body_len,clamp_width,10],center=true);
         }
       }
     }
@@ -457,6 +463,23 @@ module y_carriage(endstop=1) {
       // x rod opening
       translate([y_rod_to_x_clamp_end,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
         cylinder(r=rod_diam*da8,h=belt_bearing_diam*2,center=true,$fn=8);
+
+      translate([x_clamp_x+1,x_rod_spacing/2*side,x_clamp_z-1]) {
+        // x clamp gap
+        cube([clamp_screw_body_len+4,clamp_gap_width,clamp_screw_body_height+rod_diam],center=true);
+
+        translate([0,0,0]) {
+          // clamp screw
+          rotate([90,0,0]) rotate([0,0,22.5])
+            cylinder(r=clamp_screw_diam*da8,h=clamp_width+3,center=true,$fn=8);
+
+          // clamp screw captive nut
+          for(end=[front,rear]) {
+            translate([0,(clamp_gap_width/2+min_material_thickness+clamp_screw_nut_thickness)*-side*end,0]) rotate([90,0,0])
+              cylinder(r=clamp_screw_nut_diam*da6,h=5,center=true,$fn=6);
+          }
+        }
+      }
 
       translate([idler_x,xy_idler_y*side,0]) {
         // idler hole
@@ -479,7 +502,7 @@ module y_carriage(endstop=1) {
       }
 
       // bearing holders
-      translate([0,bearing_y*side,0]) {
+      translate([0,y_carriage_bearing_y*side,0]) {
         bearing_cavity();
 
         translate([0,-1*side,0])

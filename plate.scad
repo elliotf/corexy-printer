@@ -15,13 +15,7 @@ module gantry_plate() {
       }
 
       // y carriage
-      translate([plate_y_carriage_x,0,y_carriage_z]) y_carriage();
-
-      // x rod clamps
-      translate([0,0,clamp_area_width/2]) {
-        rod_clamp(rod_diam);
-        translate([plate_y_carriage_x+y_rod_to_x_clamp_end,0,0]) rod_clamp(rod_diam);
-      }
+      translate([plate_y_carriage_x,0,y_rod_to_x_clamp_end]) rotate([0,0,180]) rotate([0,90,0]) y_carriage();
     }
   }
 

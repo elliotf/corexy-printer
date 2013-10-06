@@ -117,7 +117,7 @@ module plates() {
         translate([0,0,side_height/2])
           cube([front_opening_width,sheet_thickness+1,1],center=true);
         translate([0,0,-front_opening_height/4])
-          cube([build_x,sheet_thickness+1,1],center=true);
+          cube([build_x*.9,sheet_thickness+1,1],center=true);
       }
     }
   }
