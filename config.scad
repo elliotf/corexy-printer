@@ -147,6 +147,7 @@ top_plate_screw_diam = sheet_screw_diam;
 // Misc settings
 min_material_thickness = 2;
 spacer = 1;
+clamp_gap_width = spacer;
 
 // Screws
 clamp_screw_diam = m3_diam;
