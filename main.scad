@@ -426,7 +426,8 @@ module y_end_front(endstop=0) {
 
     if(endstop) {
       //% translate([inside_screw_pos[0]+screw_pad_outer_diam/2+endstop_width,endstop_height/2,-3]) rotate([-90,0,0]) rotate([0,0,90]) endstop();
-      % translate([y_rod_to_x_clamp_end-endstop_width/2,endstop_height/2,-3]) rotate([-90,0,0]) rotate([0,0,90]) endstop();
+      % translate([y_rod_to_x_clamp_end-endstop_width/2,endstop_height/2,-2]) rotate([-90,0,0]) rotate([0,0,90])
+        endstop();
     }
 
     // y clamp area
