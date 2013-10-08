@@ -25,7 +25,6 @@ module top_plate() {
     translate([0,top_opening_depth/2*front,-sheet_thickness/2])
       cube([top_opening_width,top_opening_depth*2,sheet_thickness+1],center=true);
 
-
     for(side=[left,right]) {
       // y ends
       //% translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front(1-side);
@@ -34,7 +33,7 @@ module top_plate() {
       translate([y_rod_x*side,y_rod_len/2*rear,-sheet_thickness/2]) mirror([side+1,0,0]) y_end_rear_screw_holes();
 
       // motor holes
-      translate([xy_motor_x*side,xy_motor_y*rear,]) {
+      translate([xy_motor_x*side,xy_motor_y*rear,0]) {
         cylinder(r=motor_hole_spacing/2,h=sheet_thickness*3,center=true);
         for(motor_side=[left,right]) {
           for(motor_end=[front,rear]) {

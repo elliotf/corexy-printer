@@ -76,14 +76,15 @@ translate([0,0,25]) cylinder(h=5,r=pulley_diam/2,center=true);
 % translate([pulley_diam/2+1.5,0,0]) cube([1,1,belt_bearing_diam],center=true);
 //pulley_diam = 20;
 groove_first_to_last_dist = belt_bearing_diam;
-groove_diam = 1;
+groove_diam = .8;
 groove_spacing = 1.2;
 turns = floor(groove_first_to_last_dist/groove_spacing); // second_number == groove spacing
 echo("groove first to last: ", groove_first_to_last_dist);
 echo("groove spacing: ", groove_spacing);
 echo("TURNS: ",turns);
 xy_motor_pulley(pulley_diam,groove_first_to_last_dist,turns,groove_diam);
-translate([-31/2,-31/2,-groove_spacing/2])
+//translate([-31/2,-31/2,-groove_spacing/2])
+translate([-31/2,-31/2,0])
   xy_motor_pulley_idler(10+4,groove_first_to_last_dist,turns,groove_diam);
 
 % translate([0,0,-groove_first_to_last_dist/2-5]) motor();

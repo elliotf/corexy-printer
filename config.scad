@@ -54,7 +54,7 @@ lm8uu_rod_diam = 8;
 // lm6uu, M6 rods
 lm6uu_bearing_diam = 12;
 lm6uu_bearing_len  = 19;
-lm6uu_bearing_groove_spacing = 10;
+lm6uu_bearing_groove_spacing = 12.25;
 lm6uu_bearing_groove_width = .5;
 lm6uu_bearing_groove_depth = .2;
 lm6uu_rod_diam = 6;
@@ -133,8 +133,16 @@ z_motor_screw_diam = nema14_screw_diam;
 z_motor_shaft_diam = nema14_shaft_diam;
 z_motor_shaft_len = nema14_shaft_len;
 
+z_motor_side = nema17_side;
+z_motor_len = z_motor_side;
+z_motor_hole_spacing = nema17_hole_spacing;
+z_motor_screw_diam = nema17_screw_diam;
+z_motor_shaft_diam = nema17_shaft_diam;
+z_motor_shaft_len = nema17_shaft_len;
+
 // Pulley
 pulley_diam = 20;
+pulley_diam = 6.366197724*2;
 pulley_height = belt_bearing_diam + 8;
 
 // Frame sheet
@@ -184,3 +192,10 @@ tensioner_angle = 45;
 psu_length = 215;
 psu_width = 114;
 psu_height = 50;
+
+// heated bed / build plate
+heatbed_thickness = 1;
+heatbed_hole_spacing = 209;
+heatbed_hole_diam = 3;
+heatbed_width = 214;
+heatbed_depth = 214;

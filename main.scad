@@ -57,8 +57,10 @@ module bearing_cavity() {
       for(side=[left,right]) {
         translate([0,0,bearing_groove_spacing/2*side])
           rotate_extrude()
-            translate([bearing_diam/2,0,0])
-              square([bearing_groove_depth*2,bearing_groove_width],center=true);
+            //translate([bearing_diam/2,0,0]) rotate([0,0])
+            //  square([bearing_groove_depth*2,bearing_groove_width],center=true);
+            translate([bearing_diam/2,0,0]) /* resize([1,1]) */ rotate([0,0,45])
+              square([1,1],center=true);
       }
     }
 }
@@ -529,6 +531,55 @@ module y_end_front(endstop=0) {
   }
 }
 
+module y_end_front_screw_holes() {
+  // top plate screw area
+  screw_pad_len = y_clamp_len*1.5;
+  screw_pad_width = y_clamp_len;
+
+  rod_end_dist_to_idler_x = front_idler_x - y_rod_x;
+  rod_end_dist_to_idler_y = front_idler_y - front*y_rod_len/2;
+  rod_end_dist_to_idler_z = front_idler_z - y_rod_z;
+
+  clamp_width = rod_diam+min_material_thickness*2;
+  clamp_len = y_clamp_len;
+  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness;
+
+  outside_screw_pos = [-clamp_width,y_end_screw_hole_y,0];
+  rod_end_screw_pos = [0,rod_end_dist_to_idler_y-belt_bearing_diam/2,0];
+  inside_screw_pos = [clamp_width/2+top_plate_screw_diam+belt_bearing_thickness,y_end_screw_hole_y,0];
+
+  for(coord=[outside_screw_pos,rod_end_screw_pos,inside_screw_pos]) {
+    translate(coord) rotate([0,0,22.5])
+      cylinder(r=top_plate_screw_diam*da8,h=sheet_thickness*3,center=true,$fn=8);
+  }
+}
+
+module y_end_rear_screw_holes() {
+  clamp_width = rod_diam+min_material_thickness*2;
+  clamp_len = y_clamp_len;
+  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness;
+
+  rod_end_dist_to_lower_idler_x = y_rod_x - lower_rear_idler_x;
+  rod_end_dist_to_lower_idler_y = lower_rear_idler_y - rear*y_rod_len/2;
+  rod_end_dist_to_lower_idler_z = lower_rear_idler_z - y_rod_z;
+  rod_end_dist_to_idler_z = front_idler_z - y_rod_z;
+
+  idler_support_thickness = belt_bearing_diam-belt_bearing_thickness-spacer*2;
+
+  bearing_screw_pos = [rod_end_dist_to_lower_idler_x,rod_end_dist_to_lower_idler_y,0];
+  inside_screw_pos = [rod_end_dist_to_lower_idler_x+belt_bearing_diam/2+screw_pad_outer_diam/2+spacer,-clamp_len+screw_pad_outer_diam/2,0];
+  outside_screw_pos = [-clamp_width,-clamp_len+screw_pad_outer_diam/2,0];
+  rod_end_screw_pos = [0,clamp_len+screw_pad_outer_diam/2,0];
+
+  for(vector=[inside_screw_pos,outside_screw_pos,rod_end_screw_pos]) {
+    translate(vector) {
+      rotate([0,0,22.5]) {
+        cylinder(r=da8*top_plate_screw_diam,h=sheet_thickness*3,center=true,$fn=8);
+      }
+    }
+  }
+}
+
 module idlers() {
 
   // carriage anchor front
@@ -718,6 +769,19 @@ module z_carriage() {
   difference() {
     body();
     holes();
+  }
+}
+
+module heatbed() {
+  hole_spacing = 209;
+  difference() {
+    cube([heatbed_width,heatbed_depth,heatbed_thickness],center=true);
+    for(side=[left,right]) {
+      for(end=[front,rear]) {
+        translate([heatbed_hole_spacing/2*side,heatbed_hole_spacing/2*end,0])
+          cylinder(r=heatbed_hole_diam/2,h=heatbed_thickness+1,center=true);
+      }
+    }
   }
 }
 
