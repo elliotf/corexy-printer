@@ -79,7 +79,7 @@ module idler_bearing() {
 
 // x carriage
 x_carriage_thickness = rod_diam;
-x_carriage_thickness = bearing_diam*.7;
+x_carriage_thickness = bearing_diam*0.7;
 x_carriage_thickness = xy_idler_z-x_rod_z;
 module x_carriage() {
   line_y = xy_idler_y-belt_bearing_diam/2;
@@ -90,7 +90,7 @@ module x_carriage() {
   carriage_depth = x_rod_spacing+bearing_diam + min_material_thickness;
   carriage_z = rod_diam/2+x_carriage_thickness/2;
   carriage_z = 0;
-  carriage_z = rod_diam*.7;
+  carriage_z = rod_diam*0.7;
   carriage_z = line_z-x_carriage_thickness/2;
 
   hole_width = x_carriage_width - min_material_thickness*6;
@@ -105,7 +105,7 @@ module x_carriage() {
     //translate([0,0,0]) cube([x_carriage_width,x_rod_spacing-rod_diam-spacer*2,bearing_diam*.75],center=true);
 
     // x endstop bumper
-    translate([-x_carriage_width/2+min_material_thickness,-xy_idler_y-1,-bearing_diam*.3])
+    translate([-x_carriage_width/2+min_material_thickness,-xy_idler_y-1,-bearing_diam*0.3])
       cube([min_material_thickness*2,8,bearing_diam],center=true);
   }
 
