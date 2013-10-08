@@ -155,8 +155,8 @@ module y_carriage(endstop=1) {
 
   x_clamp_thickness = idler_z*2-belt_bearing_thickness-min_material_thickness;
   clamp_screw_body_len = y_clamp_len;
-  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness;
-  clamp_width = rod_diam;
+  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness*2;
+  clamp_width = rod_diam+min_material_thickness*2;
   x_clamp_x = y_rod_to_x_clamp_end-clamp_screw_body_len/2;
   x_clamp_z = -rod_diam/2-clamp_screw_body_height/2;
 
@@ -194,17 +194,22 @@ module y_carriage(endstop=1) {
         // x rod holder
         translate([y_rod_to_x_clamp_end/2,0,0]) {
           translate([0,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
-            cylinder(r=(rod_diam+min_material_thickness*2)*da8,h=y_rod_to_x_clamp_end,center=true,$fn=8);
+            cylinder(r=clamp_width*da8,h=y_rod_to_x_clamp_end,center=true,$fn=8);
 
           // avoid overhangs on the bearing holder
           translate([0,(y_carriage_len/2-min_material_thickness/2)*side,0])
             cube([y_rod_to_x_clamp_end,min_material_thickness,bearing_diam/2],center=true);
         }
+      }
 
+      hull() {
         translate([x_clamp_x,x_rod_spacing/2*side,x_clamp_z]) {
           // x rod clamp
-          cube([clamp_screw_body_len,clamp_width,10],center=true);
+          cube([clamp_screw_body_len,clamp_width,clamp_screw_body_height],center=true);
         }
+
+        translate([x_clamp_x-belt_bearing_diam/2-min_material_thickness,x_rod_spacing/2*side,0])
+          cylinder(r=rod_diam/2,h=0.05,center=true);
       }
     }
   }
@@ -215,9 +220,9 @@ module y_carriage(endstop=1) {
       translate([y_rod_to_x_clamp_end,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
         cylinder(r=rod_diam*da8,h=belt_bearing_diam*2,center=true,$fn=8);
 
-      translate([x_clamp_x+1,x_rod_spacing/2*side,x_clamp_z-1]) {
+      translate([x_clamp_x,x_rod_spacing/2*side,x_clamp_z-1]) {
         // x clamp gap
-        cube([clamp_screw_body_len+4,clamp_gap_width,clamp_screw_body_height+rod_diam],center=true);
+        cube([belt_bearing_diam+min_material_thickness*2,clamp_gap_width,clamp_screw_body_height+rod_diam],center=true);
 
         translate([0,0,0]) {
           // clamp screw
