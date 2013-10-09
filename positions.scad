@@ -28,6 +28,8 @@ upper_rear_idler_z = xy_idler_z;
 xy_motor_x = y_rod_x-motor_side/2-sheet_thickness/2 - spacer;
 xy_motor_y = y_rod_len/2 + motor_side/2 + sheet_thickness/2 + spacer;
 xy_motor_z = -sheet_thickness;
+xy_pulley_above_motor_plate = (xy_idler_z-belt_bearing_diam/2)-xy_motor_z;
+echo("PULLEY ABOVE MOTOR: ", xy_pulley_above_motor_plate);
 
 bed_zero = x_rod_z - (hotend_len - 10 - bearing_diam/2) - build_z;
 side_panel_height = -1*bed_zero + motor_len + sheet_min_width;

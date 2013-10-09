@@ -2,6 +2,8 @@
 da6 = 1 / cos(180 / 6) / 2;
 da8 = 1 / cos(180 / 8) / 2;
 
+approx_pi = 3.14159;
+
 // make coordinates more communicative
 left  = -1;
 right = 1;
@@ -142,7 +144,7 @@ z_motor_shaft_len = nema17_shaft_len;
 
 // Pulley
 pulley_diam = 20;
-pulley_diam = 6.366197724*2;
+pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
 pulley_height = belt_bearing_diam;
 
 // Frame sheet
