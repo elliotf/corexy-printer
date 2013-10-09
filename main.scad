@@ -338,15 +338,15 @@ module y_end_rear() {
       hull() {
         for(vector=[outside_screw_pos,rod_end_screw_pos]) {
           translate(vector)
-            cylinder(r=da6*screw_pad_outer_diam,h=screw_pad_height,center=true,$fn=6);
+            cube([screw_pad_outer_diam+min_material_thickness*1,screw_pad_outer_diam,screw_pad_height],center=true);
         }
         translate([0,-clamp_len/2,0]) cube([clamp_width,clamp_len,screw_pad_height],center=true);
       }
     }
 
     translate([0,0,-y_rod_z/2+idler_support_thickness/4]) {
-      translate(inside_screw_pos) rotate([0,0,22.5])
-        cylinder(r=screw_pad_outer_diam*da8,h=y_rod_z+idler_support_thickness/2,center=true,$fn=8);
+      translate(inside_screw_pos)
+        cube([screw_pad_outer_diam,screw_pad_outer_diam,y_rod_z+idler_support_thickness/2],center=true);
     }
 
     // idler support
@@ -469,12 +469,9 @@ module y_end_front(endstop=0) {
     // screw pad
     hull() {
       translate([0,0,-y_rod_z+screw_pad_height/2]) {
-        translate(outside_screw_pos)
-          cylinder(r=screw_pad_outer_diam*da6,h=screw_pad_height,center=true,$fn=6);
-
-        for(vector=[rod_end_screw_pos,inside_screw_pos]) {
+        for(vector=[rod_end_screw_pos,inside_screw_pos,outside_screw_pos]) {
           translate(vector)
-            cylinder(r=screw_pad_outer_diam*da6,h=screw_pad_height,center=true,$fn=6);
+            cube([screw_pad_outer_diam+min_material_thickness*1,screw_pad_outer_diam,screw_pad_height],center=true);
         }
         translate([0,clamp_len/2,0])
           cube([clamp_width,clamp_len,screw_pad_height],center=true);
