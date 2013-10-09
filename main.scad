@@ -422,7 +422,7 @@ module y_end_front(endstop=0) {
 
   clamp_width = rod_diam+min_material_thickness*2;
   clamp_len = y_clamp_len;
-  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness;
+  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness*2;
 
   outside_screw_pos = [-clamp_width,y_end_screw_hole_y,0];
   rod_end_screw_pos = [0,rod_end_dist_to_idler_y-belt_bearing_diam/2,0];
@@ -430,40 +430,44 @@ module y_end_front(endstop=0) {
 
   endstop_holder_len = endstop_len+screw_pad_height;
 
+  bearing_support_diam = belt_bearing_nut_diam+min_material_thickness*2;
+
   module y_end_front_body() {
     bearing_support_len = rod_end_dist_to_idler_x*left-belt_bearing_thickness/2+rod_diam/2+min_material_thickness;
 
     if(endstop) {
-      //% translate([inside_screw_pos[0]+screw_pad_outer_diam/2+endstop_width,endstop_height/2,-3]) rotate([-90,0,0]) rotate([0,0,90]) endstop();
       % translate([y_rod_to_x_clamp_end-endstop_width/2,endstop_height/2,-2]) rotate([-90,0,0]) rotate([0,0,90])
         endstop();
     }
 
     // y clamp area
     hull() {
-      translate([0,clamp_len/2-(clamp_len-y_clamp_len),0]) {
-        // rod hole body
-        translate([0,0,-y_rod_z/2])
-          cube([clamp_width,clamp_len,y_rod_z],center=true);
-        rotate([90,0,0]) cylinder(r=clamp_width/2,h=clamp_len,center=true);
+      // body screw-side
+      translate([0,rod_end_dist_to_idler_y,-y_rod_z/2])
+        cube([clamp_width,bearing_support_diam,y_rod_z],center=true);
+
+      // body rod-side
+      translate([0,clamp_len/2,-y_rod_z/2])
+        cube([clamp_width,clamp_len,y_rod_z],center=true);
+
+      // bearing support
+      translate([0,rod_end_dist_to_idler_y,rod_end_dist_to_idler_z]) {
+        rotate([0,90,0]) cylinder(r=bearing_support_diam/2,h=clamp_width,center=true);
       }
 
-      translate([(bearing_support_len-clamp_width)/2-spacer,rod_end_dist_to_idler_y,rod_end_dist_to_idler_z]) {
-        rotate([0,90,0]) rotate([0,0,22.5])
-          cylinder(r=(belt_bearing_nut_diam+min_material_thickness*2)/2,h=bearing_support_len,center=true);
-
-        translate([spacer/2,0,0]) rotate([0,90,0]) rotate([0,0,22.5])
-          cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=bearing_support_len+spacer,center=true,$fn=8);
+      // clamp top
+      translate([0,clamp_len/2,clamp_screw_body_height/2+rod_diam/2]) {
+        cube([clamp_width,clamp_len,clamp_screw_body_height],center=true);
       }
+    }
 
-      translate([0,clamp_len/2,0]) {
-        // clamp body
-        translate([0,0,clamp_screw_body_height/2+rod_diam/2]) {
-          cube([rod_diam,clamp_len,clamp_screw_body_height],center=true);
-
-          translate([-clamp_width/4,0,0]) rotate([0,90,0])
-            cylinder(r=clamp_screw_nut_diam*da8,h=clamp_width/2,center=true,$fn=8);
-        }
+    // bearing support shaft
+    hull() {
+      translate([0,rod_end_dist_to_idler_y,rod_end_dist_to_idler_z]) {
+        rotate([0,90,0])
+          cylinder(r=bearing_support_diam/2,h=clamp_width,center=true);
+        translate([bearing_support_len/2-clamp_width/2,0,0]) rotate([0,90,0])
+          cylinder(r=belt_bearing_inner/2+min_material_thickness/2,h=bearing_support_len,center=true);
       }
     }
 
@@ -503,14 +507,19 @@ module y_end_front(endstop=0) {
         cylinder(r=da8*belt_bearing_inner,h=40,center=true,$fn=8);
 
       // idler screw captive nut
-      translate([-clamp_width/2-belt_bearing_nut_diam/4,0,0]) rotate([0,90,0])
+      translate([-clamp_width/2-belt_bearing_nut_thickness*.3,0,0]) rotate([0,90,0])
         cylinder(r=da6*belt_bearing_nut_diam,h=belt_bearing_nut_thickness,center=true,$fn=6);
     }
 
+    // screw holes
     translate([0,0,-y_rod_z+screw_pad_height/2]) {
       for(coord=[outside_screw_pos,rod_end_screw_pos,inside_screw_pos]) {
-        translate(coord) rotate([0,0,22.5])
+        translate(coord) rotate([0,0,22.5]) {
           cylinder(r=top_plate_screw_diam*da8,h=screw_pad_height+1,center=true,$fn=8);
+
+          // clearance for screw by bearing shaft
+          translate([0,0,y_rod_z/2+screw_pad_height/2]) cylinder(r=top_plate_screw_diam*da8+1.5,h=y_rod_z,center=true);
+        }
       }
     }
 
