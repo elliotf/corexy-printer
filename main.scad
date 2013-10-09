@@ -317,6 +317,9 @@ module y_end_rear() {
       // clamp body
       translate([0,-clamp_len/2,clamp_screw_body_height/2+rod_diam/2])
         cube([clamp_width,clamp_len,clamp_screw_body_height],center=true);
+
+      translate([0,bearing_screw_pos[1],0])
+        cube([clamp_width,bearing_support_diam,idler_support_thickness],center=true);
     }
 
     // screw pad
@@ -331,25 +334,43 @@ module y_end_rear() {
       }
     }
 
+    // inside support post
     translate([0,0,-y_rod_z/2+idler_support_thickness/4]) {
       translate(inside_screw_pos)
         cube([screw_pad_outer_diam,screw_pad_outer_diam,y_rod_z+idler_support_thickness/2],center=true);
     }
+    bearing_support_diam = belt_bearing_inner+min_material_thickness*4;
 
     // idler support
-    hull() translate([0,0,rod_end_dist_to_idler_z]) {
+    hull() {
+      // anchor to support post
+      translate(inside_screw_pos)
+        cube([screw_pad_outer_diam,screw_pad_outer_diam,idler_support_thickness],center=true);
+
+      // anchor to main post front
+      translate([0,-clamp_len+1,0])
+        cube([1,2,idler_support_thickness],center=true);
+
+      // anchor to main post rear
+      translate([0,bearing_screw_pos[1],0])
+        cube([clamp_width,bearing_support_diam,idler_support_thickness],center=true);
+
+      translate([0,0,rod_end_dist_to_idler_z]) {
+        // main bearing support
+        translate(bearing_screw_pos) {
+          cylinder(r=bearing_support_diam/2,h=idler_support_thickness,center=true);
+        }
+      }
+    }
+
+    translate([0,0,rod_end_dist_to_idler_z]) {
       // main bearing support
       translate(bearing_screw_pos) {
-        cylinder(r=belt_bearing_inner/2+min_material_thickness*1,h=idler_support_thickness+spacer*2,center=true);
+        hull() {
+          cylinder(r=belt_bearing_inner/2+min_material_thickness/2,h=idler_support_thickness+spacer*2,center=true);
+          cylinder(r=belt_bearing_inner/2+min_material_thickness*2,h=idler_support_thickness,center=true);
+        }
       }
-
-      // inside support post
-      translate(inside_screw_pos) rotate([0,0,22.5])
-        cylinder(r=screw_pad_outer_diam*da8,h=idler_support_thickness/2,center=true,$fn=8);
-
-      // anchor to bar clamp
-      translate([0,-clamp_len/2,0])
-        rotate([90,0,0]) cylinder(r=belt_bearing_inner/2+min_material_thickness,h=clamp_len,center=true);
     }
   }
 
