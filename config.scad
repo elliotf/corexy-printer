@@ -110,7 +110,7 @@ nema17_len = nema17_side;
 nema17_hole_spacing = 31;
 nema17_screw_diam = m3_diam;
 nema17_shaft_diam = 5;
-nema17_shaft_len = 20;
+nema17_shaft_len = 16.5;
 
 nema14_side = 35.3;
 nema14_len = nema14_side;
@@ -143,7 +143,7 @@ z_motor_shaft_len = nema17_shaft_len;
 // Pulley
 pulley_diam = 20;
 pulley_diam = 6.366197724*2;
-pulley_height = belt_bearing_diam + 8;
+pulley_height = belt_bearing_diam;
 
 // Frame sheet
 sheet_thickness = 6;

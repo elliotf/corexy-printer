@@ -32,7 +32,9 @@ module nema14() {
 
 module motor_with_pulley() {
   motor();
-  translate([0,0,sheet_thickness+spacer+pulley_height/2]) cylinder(r=pulley_diam/2,h=pulley_height,center=true);
+  pulley_z_above_motor_base = (xy_idler_z-belt_bearing_diam/2)-xy_motor_z;
+  translate([0,0,pulley_z_above_motor_base])
+    cylinder(r=pulley_diam/2,h=pulley_height,center=true);
 }
 
 module bearing_zip_tie() {
