@@ -293,7 +293,7 @@ screw_pad_outer_diam = top_plate_screw_diam+min_material_thickness*2; // FIXME: 
 module y_end_rear() {
   clamp_width = rod_diam+min_material_thickness*2;
   clamp_len = y_clamp_len;
-  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness;
+  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness*2;
 
   rod_end_dist_to_lower_idler_x = y_rod_x - lower_rear_idler_x;
   rod_end_dist_to_lower_idler_y = lower_rear_idler_y - rear*y_rod_len/2;
@@ -310,37 +310,24 @@ module y_end_rear() {
   module y_end_rear_body() {
     // rod hole body
     hull() {
-      translate([0,-clamp_len/2,0]) {
-        rotate([90,0,0]) rotate([0,0,22.5])
-          cylinder(r=clamp_width/2,h=clamp_len,center=true);
+      // main tower
+      translate([0,0,-y_rod_z+screw_pad_height/2])
+        cube([clamp_width,clamp_len*2,screw_pad_height],center=true);
 
-        // main tower
-        translate([0,0,-y_rod_z+screw_pad_height/2]) {
-          translate([0,clamp_len*.5,0])
-            cube([clamp_width,clamp_len,screw_pad_height],center=true);
-
-          translate([0,-clamp_len/2+clamp_width/2,0])
-            rotate([0,0,22.5]) cylinder(r=da8*clamp_width,h=screw_pad_height,center=true,$fn=8);
-        }
-
-        // clamp body
-        translate([0,0,clamp_screw_body_height/2+rod_diam/2]) {
-          cube([rod_diam,clamp_len,clamp_screw_body_height],center=true);
-
-          translate([-clamp_width/4,0,0]) rotate([0,90,0])
-            cylinder(r=clamp_screw_nut_diam*da8,h=clamp_width/2,center=true,$fn=8);
-        }
-      }
+      // clamp body
+      translate([0,-clamp_len/2,clamp_screw_body_height/2+rod_diam/2])
+        cube([clamp_width,clamp_len,clamp_screw_body_height],center=true);
     }
 
     // screw pad
-    translate([0,0,-y_rod_z+screw_pad_height/2]) {
-      hull() {
+    hull() {
+      translate([0,0,-y_rod_z+screw_pad_height/2]) {
         for(vector=[outside_screw_pos,rod_end_screw_pos]) {
           translate(vector)
-            cube([screw_pad_outer_diam+min_material_thickness*1,screw_pad_outer_diam,screw_pad_height],center=true);
+            cube([clamp_width,screw_pad_outer_diam,screw_pad_height],center=true);
         }
-        translate([0,-clamp_len/2,0]) cube([clamp_width,clamp_len,screw_pad_height],center=true);
+        translate([0,-clamp_len/2,0])
+          cube([clamp_width,clamp_len,screw_pad_height],center=true);
       }
     }
 
@@ -378,7 +365,7 @@ module y_end_rear() {
 
         // clamp screw
         rotate([0,90,0]) rotate([0,0,22.5])
-          cylinder(r=clamp_screw_diam*da8,h=clamp_width+3,center=true,$fn=8);
+          cylinder(r=clamp_screw_diam*da6,h=clamp_width+3,center=true,$fn=8);
 
         // clamp screw captive nut
         translate([clamp_gap_width/2+min_material_thickness+clamp_screw_nut_thickness,0,0]) rotate([0,90,0])
@@ -386,21 +373,14 @@ module y_end_rear() {
       }
     }
 
+    // idler bolt
     translate(bearing_screw_pos) rotate([0,0,22.5])
       cylinder(r=belt_bearing_inner*da8,h=y_rod_z*2,center=true,$fn=8);
 
-    for(vector=[inside_screw_pos,outside_screw_pos,rod_end_screw_pos])
-    translate(vector) {
-      rotate([0,0,22.5]) {
+    for(vector=[inside_screw_pos,outside_screw_pos,rod_end_screw_pos]) {
+      translate(vector) rotate([0,0,22.5])
         cylinder(r=da8*top_plate_screw_diam,h=y_rod_z*2+1,center=true,$fn=8);
-        translate([0,0,5])
-          cylinder(r=da8*top_plate_screw_diam*1.5,h=5,center=true,$fn=8);
-      }
     }
-
-    // clamp slot
-    // clamp screw
-    // clamp captive nut
   }
 
   difference() {
