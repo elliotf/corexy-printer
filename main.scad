@@ -289,7 +289,7 @@ module y_carriage(endstop=1) {
 }
 
 screw_pad_height = min_material_thickness*2;
-screw_pad_outer_diam = top_plate_screw_diam+min_material_thickness*2;
+screw_pad_outer_diam = top_plate_screw_diam+min_material_thickness*2; // FIXME: make parts fatter to make printing easier
 module y_end_rear() {
   clamp_width = rod_diam+min_material_thickness*2;
   clamp_len = y_clamp_len;
@@ -337,8 +337,8 @@ module y_end_rear() {
     translate([0,0,-y_rod_z+screw_pad_height/2]) {
       hull() {
         for(vector=[outside_screw_pos,rod_end_screw_pos]) {
-          translate(vector) rotate([0,0,22.5])
-            cylinder(r=da8*screw_pad_outer_diam,h=screw_pad_height,center=true,$fn=8);
+          translate(vector)
+            cylinder(r=da6*screw_pad_outer_diam,h=screw_pad_height,center=true,$fn=6);
         }
         translate([0,-clamp_len/2,0]) cube([clamp_width,clamp_len,screw_pad_height],center=true);
       }
@@ -469,12 +469,12 @@ module y_end_front(endstop=0) {
     // screw pad
     hull() {
       translate([0,0,-y_rod_z+screw_pad_height/2]) {
-        translate(outside_screw_pos) rotate([0,0,22.5])
-          cylinder(r=screw_pad_outer_diam*da8,h=screw_pad_height,center=true,$fn=8);
+        translate(outside_screw_pos)
+          cylinder(r=screw_pad_outer_diam*da6,h=screw_pad_height,center=true,$fn=6);
 
         for(vector=[rod_end_screw_pos,inside_screw_pos]) {
-          translate(vector) rotate([0,0,22.5])
-            cylinder(r=screw_pad_outer_diam*da8,h=screw_pad_height,center=true,$fn=8);
+          translate(vector)
+            cylinder(r=screw_pad_outer_diam*da6,h=screw_pad_height,center=true,$fn=6);
         }
         translate([0,clamp_len/2,0])
           cube([clamp_width,clamp_len,screw_pad_height],center=true);
