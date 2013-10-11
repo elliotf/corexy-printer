@@ -1,8 +1,8 @@
 include <main.scad>;
 
 module top_plate() {
-  top_plate_width = y_rod_x*2+sheet_min_width;
-  top_plate_depth = y_rod_len+sheet_min_width+motor_side;
+  top_plate_width = top_sheet_width;
+  top_plate_depth = top_sheet_depth;
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
   side_depth = top_plate_depth;
@@ -12,7 +12,7 @@ module top_plate() {
   side_z = -side_height/2-sheet_thickness;
 
   module sheet_body() {
-    translate([0,motor_side/4,-sheet_thickness/2])
+    translate([0,top_sheet_y,-sheet_thickness/2])
       cube([top_plate_width,top_plate_depth,sheet_thickness],center=true);
   }
 
