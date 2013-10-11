@@ -32,7 +32,7 @@ module nema14() {
 
 module motor_with_pulley() {
   motor();
-  pulley_z_above_motor_base = (xy_idler_z-belt_bearing_diam/2)-xy_motor_z;
+  pulley_z_above_motor_base = abs((xy_idler_z-belt_bearing_diam/2)-xy_motor_z);
   echo("PULLEY CENTER ABOVE MOTOR_PLATE: ", pulley_z_above_motor_base);
   translate([0,0,pulley_z_above_motor_base])
     cylinder(r=pulley_diam/2,h=pulley_height,center=true);
@@ -161,7 +161,7 @@ module y_carriage(endstop=1) {
   clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness*2;
   clamp_width = rod_diam+min_material_thickness*2;
   x_clamp_x = y_rod_to_x_clamp_end-clamp_screw_body_len/2;
-  x_clamp_z = -rod_diam/2-clamp_screw_body_height/2;
+  x_clamp_z = -rod_diam/2-clamp_screw_diam/2-spacer;
 
   idler_screw_len = idler_z-belt_bearing_thickness/2 + x_clamp_thickness/2;
   echo("IDLER SCREW LEN: ", idler_screw_len);
@@ -223,7 +223,7 @@ module y_carriage(endstop=1) {
       translate([y_rod_to_x_clamp_end,x_rod_spacing/2*side,0]) rotate([0,90,0]) rotate([0,0,22.5])
         cylinder(r=rod_diam*da8,h=belt_bearing_diam*2,center=true,$fn=8);
 
-      translate([x_clamp_x,x_rod_spacing/2*side,x_clamp_z-1]) {
+      translate([x_clamp_x,x_rod_spacing/2*side,x_clamp_z]) {
         // x clamp gap
         cube([belt_bearing_diam+min_material_thickness*2,clamp_gap_width,clamp_screw_body_height+rod_diam],center=true);
 
@@ -235,7 +235,7 @@ module y_carriage(endstop=1) {
           // clamp screw captive nut
           for(end=[front,rear]) {
             translate([0,(clamp_gap_width/2+min_material_thickness+clamp_screw_nut_thickness)*-side*end,0]) rotate([90,0,0])
-              cylinder(r=clamp_screw_nut_diam*da6,h=5,center=true,$fn=6);
+              cylinder(r=clamp_screw_nut_diam*da6,h=clamp_screw_nut_thickness,center=true,$fn=6);
           }
         }
       }
@@ -254,8 +254,7 @@ module y_carriage(endstop=1) {
           }
         }
 
-        // captive nut
-        //translate([0,0,idler_z-idler_screw_len-belt_bearing_nut_thickness/2])
+        // captive nut for idler
         translate([0,0,idler_z-10-belt_bearing_nut_thickness/2])
           cylinder(r=belt_bearing_nut_diam*da6,h=belt_bearing_nut_thickness,center=true,$fn=6);
       }
@@ -288,8 +287,6 @@ module y_carriage(endstop=1) {
   }
 }
 
-screw_pad_height = min_material_thickness*2;
-screw_pad_outer_diam = top_plate_screw_diam+min_material_thickness*2; // FIXME: make parts fatter to make printing easier
 module y_end_rear() {
   clamp_width = rod_diam+min_material_thickness*2;
   clamp_len = y_clamp_len;
@@ -305,7 +302,7 @@ module y_end_rear() {
   bearing_screw_pos = [rod_end_dist_to_lower_idler_x,rod_end_dist_to_lower_idler_y,0];
   inside_screw_pos = [rod_end_dist_to_lower_idler_x+belt_bearing_diam/2+screw_pad_outer_diam/2+spacer,-clamp_len+screw_pad_outer_diam/2,0];
   outside_screw_pos = [-clamp_width,-clamp_len+screw_pad_outer_diam/2,0];
-  rod_end_screw_pos = [0,clamp_len+screw_pad_outer_diam/2,0];
+  rod_end_screw_pos = [0,y_end_rear_rod_end_screw_y,0];
 
   module y_end_rear_body() {
     // rod hole body
@@ -603,9 +600,6 @@ module idlers() {
   // front idler
   translate([front_idler_x*left,front_idler_y,front_idler_z]) rotate([0,90,0]) idler_bearing();
 
-  // lower rear idler
-  translate([lower_rear_idler_x*left,lower_rear_idler_y,lower_rear_idler_z]) idler_bearing();
-
   // upper rear idler
   translate([upper_rear_idler_x*right,upper_rear_idler_y,upper_rear_idler_z]) idler_bearing();
 
@@ -614,6 +608,10 @@ module idlers() {
 
   // motor
   translate([xy_motor_x*right,xy_motor_y,xy_motor_z]) motor_with_pulley();
+
+  // pulley idler
+  translate([xy_pulley_idler_x*right,xy_pulley_idler_y,front_idler_z])
+    cylinder(r=pulley_idler_diam/2,h=pulley_idler_height,center=true);
 }
 
 module line() {
@@ -638,16 +636,10 @@ module line() {
     translate([x_most*left,front_idler_y,upper_rear_idler_z]) cube(line_cube,center=true);
   }
 
-  // front idler to lower rear
+  // front idler to pulley
   hull() {
-    translate([x_most*left,lower_rear_idler_y,lower_rear_idler_z]) cube(line_cube,center=true);
     translate([x_most*left,front_idler_y,lower_rear_idler_z]) cube(line_cube,center=true);
-  }
-
-  // lower rear to pulley
-  hull() {
-    translate([lower_rear_idler_x*left,lower_rear_idler_y+belt_bearing_diam/2,lower_rear_idler_z]) cube(line_cube,center=true);
-    translate([xy_motor_x*right,xy_motor_y-pulley_diam/2,lower_rear_idler_z]) cube(line_cube,center=true);
+    translate([(xy_motor_x+pulley_diam/2)*right,xy_motor_y,lower_rear_idler_z]) cube(line_cube,center=true);
   }
 
   // pulley to upper rear

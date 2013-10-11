@@ -112,6 +112,7 @@ module z_carriage() {
   }
 }
 
+/*
 for(side=[left,right]) {
   //color("blue", .5) translate([z_motor_x*side,z_motor_y*side,z_motor_z]) motor();
   color("blue",.6) translate([z_motor_x*side,0,0]) {
@@ -121,8 +122,9 @@ for(side=[left,right]) {
       cylinder(r=rod_diam/2,h=z_rod_len,center=true);
   }
 }
+*/
 
-color("Turquoise") translate([0,0,z_carriage_z]) z_carriage();
+//color("Turquoise") translate([0,0,z_carriage_z]) z_carriage();
 
 translate([0,build_y*.0,0]) {
   // x carriage
@@ -162,11 +164,12 @@ color("red",0.5) line();
 color("green",0.5) mirror([1,0,0]) idlers();
 color("green",0.5) mirror([1,0,0]) line();
 
+// top plate
+module plates() {
+
 top_plate_width = y_rod_x*2+sheet_min_width;
 top_plate_depth = y_rod_len+sheet_min_width+motor_side;
 
-// top plate
-module plates() {
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
   build_top = x_rod_z-(hotend_len-10);
@@ -206,7 +209,7 @@ module plates() {
 
   // side plates
   for(side=[left,right]) {
-    translate([y_rod_x*side,motor_side/4,side_z]) {
+    translate([side_sheet_x*side,top_sheet_y,side_z]) {
       difference() {
         cube([sheet_thickness,side_depth,side_height],center=true);
 
@@ -217,11 +220,11 @@ module plates() {
   }
 }
 
-//color("Khaki", 0.5) plates();
+color("Khaki", 0.5) plates();
 
 //# translate([0,0,x_rod_z-build_z/2-40])
 % translate([0,0,bed_zero+build_z/2]) cube([build_x,build_y,build_z],center=true);
-color("red") translate([0,0,bed_zero-heatbed_thickness/2]) heatbed();
+//color("red") translate([0,0,bed_zero-heatbed_thickness/2]) heatbed();
 
 // rods
 color("grey", .5) {

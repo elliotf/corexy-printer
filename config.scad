@@ -23,13 +23,19 @@ build_x = 600;
 build_y = 600;
 build_z = 600;
 
+build_x = 200;
+build_y = 200;
+build_z = 200;
+
+/*
 build_x = 150;
 build_y = 150;
 build_z = 150;
 
-build_x = 200;
-build_y = 200;
-build_z = 200;
+build_x = 50;
+build_y = 50;
+build_z = 50;
+*/
 
 hotend_len = 51;
 hotend_diam = 16;
@@ -106,6 +112,10 @@ belt_bearing_thickness = 5;
 belt_bearing_nut_diam = m5_nut_diam;
 belt_bearing_nut_thickness = m5_nut_thickness;
 
+pulley_idler_bearing_diam = 10;
+pulley_idler_bearing_inner = 3;
+pulley_idler_bearing_thickness = 6;
+
 // Motor
 nema17_side = 43;
 nema17_len = nema17_side;
@@ -141,12 +151,6 @@ z_motor_hole_spacing = nema17_hole_spacing;
 z_motor_screw_diam = nema17_screw_diam;
 z_motor_shaft_diam = nema17_shaft_diam;
 z_motor_shaft_len = nema17_shaft_len;
-
-// Pulley
-pulley_diam = 20;
-pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
-pulley_height = belt_bearing_diam;
-
 // Frame sheet
 sheet_thickness = 6;
 sheet_min_width = 30;
@@ -158,6 +162,8 @@ top_plate_screw_diam = sheet_screw_diam;
 min_material_thickness = 2;
 spacer = 1;
 clamp_gap_width = spacer;
+screw_pad_height = min_material_thickness*2;
+screw_pad_outer_diam = top_plate_screw_diam+min_material_thickness*2; // FIXME: make parts fatter to make printing easier
 
 // Screws
 clamp_screw_diam = m3_diam;
@@ -171,6 +177,7 @@ x_rod_spacing = 40 + rod_diam;
 x_rod_spacing = bearing_len * 2 + min_material_thickness * 2;
 x_carriage_width = bearing_len * 2 + 10 + min_material_thickness*4;
 x_carriage_width = bearing_len * 2 + min_material_thickness*3;
+x_carriage_depth = x_rod_spacing + bearing_diam;
 
 // calculated rod lengths
 x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
@@ -194,6 +201,14 @@ tensioner_angle = 45;
 psu_length = 215;
 psu_width = 114;
 psu_height = 50;
+
+// Pulley
+pulley_diam = 20;
+pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
+pulley_height = belt_bearing_diam;
+
+pulley_idler_diam = pulley_idler_bearing_diam + min_material_thickness*2;
+pulley_idler_height = pulley_height;
 
 // heated bed / build plate
 heatbed_thickness = 1;
