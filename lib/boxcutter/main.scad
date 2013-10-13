@@ -22,7 +22,9 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
 
   colors = ["red","green","blue","yellow"];
 
-  nut_height = 4;
+  nyloc_nut_height = 4;
+  std_nut_height = 2.5;
+  nut_height = nyloc_nut_height;
 
   tab_slot_pair_space = tab_len * 1.0;
   tab_slot_pair_len = tab_len*2 + tab_slot_pair_space;
@@ -56,30 +58,40 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
     screw_len = shoulder_width*2 + nut_height;
 
     translate([tab_slot_pair_len/2,-thickness/2,0]) {
-      translate([0,-shoulder_width-nut_height/2,0])
+      translate([0,-shoulder_width*1.5-nut_height/2,0])
         cube([nut_diam,nut_height,thick],center=true);
+
       translate([0,-screw_len/2+0.05,0])
         cube([screw_diam,screw_len,thick],center=true);
     }
   }
 
   module position_tabs_along_line(to_fill=0,with_holes=NO_HOLES) {
-    echo("to_fill: ", to_fill);
+    //echo("to_fill: ", to_fill);
     space_avail = to_fill + space_between_tab_slot_pairs;
     //echo("space_avail: ", space_avail);
 
     num_fit = floor(space_avail/pair_and_spacing_len);
 
+    //echo("NUM FIT: ", num_fit);
+
     space_consumed = pair_and_spacing_len*(num_fit-1) + tab_slot_pair_len;
     //echo("Space consumed: ", space_consumed);
     space_remaining = to_fill - space_consumed;
-    add_to_each_space_between = space_remaining/(num_fit-1);
+    //echo("Redistribute leftover space:", space_remaining);
+
+    function amount_to_add() = space_remaining/(num_fit-1);
+
+    add_to_each_space_between = amount_to_add();
     space_between = space_between_tab_slot_pairs + add_to_each_space_between;
 
-    //echo("Redistribute leftover space:", space_remaining);
+    if(num_fit==1) {
+      //echo("ONLY ONE?");
+    }
 
     translate([-to_fill/2,0,0]) {
       for(i=[0:num_fit-1]) {
+        //echo("MAKING TAB! ",space_between);
         translate([i*(tab_slot_pair_len+space_between),0,0]) {
           tab_pair(with_holes);
         }
@@ -103,7 +115,7 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
   }
 
   module screw_nut_holes(to_fill=0) {
-    echo("to_fill: ", to_fill);
+    //echo("to_fill: ", to_fill);
     space_avail = to_fill + space_between_tab_slot_pairs;
     //echo("space_avail: ", space_avail);
 
@@ -136,13 +148,13 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
             translate([0,offset_for_side(side),0]) {
               // tabs?
               if(sides[side] == 1) {
-                echo("add tabs for side ", side);
+                //echo("add tabs for side ", side);
                 position_tabs_along_line(dimensions[side%2]-tab_from_end_dist*2);
               }
 
               // slots?
               if(sides[side] == 2) {
-                echo("add material for slots on side ", side);
+                //echo("add material for slots on side ", side);
                 add_material_for_slot_side(side);
               }
             }
@@ -156,13 +168,13 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
             translate([0,offset_for_side(side),0]) {
               // tabs?
               if(sides[side] == 1) {
-                echo("add screw/nut slots between tabs!");
+                //echo("add screw/nut slots between tabs!");
                 screw_nut_holes(dimensions[side%2]-tab_from_end_dist*2);
               }
 
               // slots?
               if(sides[side] == 2) {
-                echo("add slots!");
+                //echo("add slots!");
                 scale([1,1,1.1])
                   position_tabs_along_line(dimensions[side%2]-tab_from_end_dist*2,WITH_HOLES);
               }
@@ -172,7 +184,7 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
   }
 }
 
-vol = [250,200,220];
+vol = [250,200,150];
 
 width = vol[0];
 depth = vol[1];
@@ -195,7 +207,7 @@ opening_depth = depth-shoulder_width+overhead;
 opening_height = height-shoulder_width+overhead;
 
 // top
-translate([0,0,(height/2+thickness/2)*top]) {
+translate([0,0,(height/2+thickness/2+thickness*2)*top]) {
   difference() {
     box_side([width,depth],[2,2,2,2]);
 
@@ -206,17 +218,17 @@ translate([0,0,(height/2+thickness/2)*top]) {
 }
 
 // bottom
-translate([0,0,(height/2+thickness/2)*bottom])
+translate([0,0,(height/2+thickness/2+thickness*2)*bottom])
   box_side([width,depth],[1,1,1,1]);
 
 // sides
 for(side=[-1,1]) {
-  translate([(width/2+thickness/2)*side,0,0]) rotate([0,0,90]) rotate([90,0,0])
+  translate([(width/2+thickness/2+thickness*2)*side,0,0]) rotate([0,0,90]) rotate([90,0,0])
     box_side([depth,height],[1,1,2,2]);
 }
 
 // front
-translate([0,(depth/2+thickness/2)*front,0]) rotate([90,0,0])
+translate([0,(depth/2+thickness/2+thickness*2)*front,0]) rotate([90,0,0])
   difference() {
     box_side([width,height],[1,2,2,2]);
 
@@ -232,5 +244,5 @@ translate([0,(depth/2+thickness/2)*front,0]) rotate([90,0,0])
   }
 
 // rear
-translate([0,(depth/2+thickness/2)*rear,0]) rotate([90,0,0])
+translate([0,(depth/2+thickness/2+thickness*2)*rear,0]) rotate([90,0,0])
   box_side([width,height],[1,1,2,1]);
