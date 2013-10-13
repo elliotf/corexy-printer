@@ -68,9 +68,9 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
 
   module position_along_line(to_fill=0) {
     space_avail = to_fill + space_between_tab_slot_pairs;
-    echo("to_fill: ", to_fill);
-    echo("space_avail: ", space_avail);
-    echo("tab_slot_pair_len: ", tab_slot_pair_len);
+    //echo("to_fill: ", to_fill);
+    //echo("space_avail: ", space_avail);
+    //echo("tab_slot_pair_len: ", tab_slot_pair_len);
 
     raw_num_fit = floor(space_avail/pair_and_spacing_len);
 
@@ -86,9 +86,9 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
     space_consumed = tab_slot_pair_len*num_fit;
     space_remaining = to_fill - space_consumed;
     space_between = space_remaining/(num_fit-1);
-    echo("new space between tab sets: ", space_between);
+    //echo("new space between tab sets: ", space_between);
 
-    echo("WILL FIT ", num_fit, " TAB SETS WITH ", space_between, "mm BETWEEN THEM");
+    //echo("WILL FIT ", num_fit, " TAB SETS WITH ", space_between, "mm BETWEEN THEM");
 
     if(num_fit ==1) {
       translate([-tab_slot_pair_len/2,0,0])
