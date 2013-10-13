@@ -12,7 +12,7 @@ y_end_rear_rod_end_screw_y = y_clamp_len+screw_pad_outer_diam/2;
 // idlers
 xy_idler_x = y_rod_x - bearing_diam/2 - belt_bearing_diam/2 - min_material_thickness;
 xy_idler_y = x_rod_spacing/2 - rod_diam/2 - belt_bearing_diam/2 - min_material_thickness/2;
-xy_idler_z = x_rod_z + belt_bearing_diam/2;
+xy_idler_z = x_rod_z + belt_bearing_diam*.5;
 
 front_idler_x = xy_idler_x + belt_bearing_diam/2;
 front_idler_y = -y_rod_len/2 - belt_bearing_inner/2 - min_material_thickness/2;
@@ -35,6 +35,7 @@ xy_motor_y = y_rod_len/2 + motor_side/2 + sheet_thickness/2 + spacer;
 xy_motor_y = y_end_rear_rod_end_screw_y + motor_hole_spacing/2 + y_rod_len/2;
 xy_motor_z = -sheet_thickness;
 xy_pulley_above_motor_plate = (xy_idler_z-belt_bearing_diam/2)-xy_motor_z;
+xy_pulley_above_motor_plate = sheet_thickness+spacer+pulley_height/2;
 echo("PULLEY ABOVE MOTOR: ", xy_pulley_above_motor_plate);
 
 xy_pulley_idler_x = xy_motor_x-motor_hole_spacing/2;

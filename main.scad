@@ -32,7 +32,7 @@ module nema14() {
 
 module motor_with_pulley() {
   motor();
-  pulley_z_above_motor_base = abs((xy_idler_z-belt_bearing_diam/2)-xy_motor_z);
+  pulley_z_above_motor_base = xy_pulley_above_motor_plate;
   echo("PULLEY CENTER ABOVE MOTOR_PLATE: ", pulley_z_above_motor_base);
   translate([0,0,pulley_z_above_motor_base])
     cylinder(r=pulley_diam/2,h=pulley_height,center=true);
