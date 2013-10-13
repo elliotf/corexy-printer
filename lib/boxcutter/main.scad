@@ -117,6 +117,8 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
       cube([len,thickness+shoulder_width,thickness],center=true);
   }
 
+  function tab_space_for_side(side) = dimensions[side%2]-tab_from_end_dist*2;
+
   difference() {
     union() {
       cube([dimensions[0],dimensions[1],thickness],center=true);
@@ -128,7 +130,7 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
               // tabs?
               if(sides[side] == IS_TAB) {
                 //echo("add tabs for side ", side);
-                position_along_line(dimensions[side%2]-tab_from_end_dist*2) tab_pair();
+                position_along_line(tab_space_for_side(side)) tab_pair();
               }
 
               // slots?
@@ -148,14 +150,14 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
               // tabs?
               if(sides[side] == IS_TAB) {
                 //echo("add screw/nut slots between tabs!");
-                position_along_line(dimensions[side%2]-tab_from_end_dist*2) screw_nut_hole();
+                position_along_line(tab_space_for_side(side)) screw_nut_hole();
               }
 
               // slots?
               if(sides[side] == IS_SLOT) {
                 //echo("add slots!");
                 scale([1,1,1.05])
-                  position_along_line(dimensions[side%2]-tab_from_end_dist*2) tab_pair(WITH_HOLES);
+                  position_along_line(tab_space_for_side(side)) tab_pair(WITH_HOLES);
               }
             }
       }
