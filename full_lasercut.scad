@@ -128,7 +128,8 @@ module more_lasercut() {
       translate([front_idler_x*left,front_idler_y,xy_idler_z]) dot();
     }
 
-    translate([front_idler_x*left,front_idler_y,front_idler_z]) rotate([0,90,0]) idler_bearing();
+    //translate([front_idler_x*left,front_idler_y,front_idler_z]) rotate([0,90,0]) idler_bearing();
+    translate([y_rod_x*left,front_idler_y,xy_idler_z]) rotate([0,0,0]) idler_bearing();
 
     /*
     // front to motor idler
@@ -156,6 +157,13 @@ module more_lasercut() {
 
     // front to motor
     hull() {
+      translate([(y_rod_x+belt_bearing_diam/2)*left,front_idler_y,xy_idler_z]) dot();
+      translate([(y_rod_x+belt_bearing_diam/2)*left,xy_motor_y,xy_idler_z-pulley_height]) dot();
+    }
+
+    /*
+    // front to motor
+    hull() {
       translate([front_idler_x*left,front_idler_y,xy_idler_z-belt_bearing_diam]) dot();
       translate([front_idler_x*left,xy_motor_y,front_idler_z-belt_bearing_diam/2]) dot();
     }
@@ -168,7 +176,21 @@ module more_lasercut() {
           motor_with_pulley();
       }
     }
+    */
 
+    translate([(y_rod_x+belt_bearing_diam/2+pulley_diam/2)*left,rear_sheet_y+sheet_thickness/2+motor_side/2,xy_idler_z-pulley_height/2-xy_pulley_above_motor_plate]) {
+      motor_with_pulley();
+    }
+
+    // pulley to return idler
+    hull() {
+      translate([(y_rod_x+belt_bearing_diam/2+pulley_diam/2)*left,xy_motor_y-pulley_diam/2,xy_idler_z]) dot();
+      translate([(return_idler_x-belt_bearing_diam/2)*right,return_idler_y+belt_bearing_diam/2,return_idler_z]) dot();
+    }
+
+    translate([(return_idler_x-belt_bearing_diam/2)*right,return_idler_y*rear,return_idler_z]) idler_bearing();
+
+    /*
     // pulley to return idler
     hull() {
       //translate([xy_motor_x*left,xy_motor_y+pulley_height*1.5,xy_motor_z+pulley_diam/2]) dot();
@@ -183,6 +205,7 @@ module more_lasercut() {
           idler_bearing();
         # translate([0,0,-debug_len/2]) cylinder(r=1,h=debug_len,center=true);
       }
+    */
 
     // return idler to y carriage rear
     hull() {
