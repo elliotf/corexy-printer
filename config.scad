@@ -211,7 +211,8 @@ pulley_idler_height = pulley_height;
 
 // heated bed / build plate
 heatbed_thickness = 1;
-heatbed_hole_spacing = 209;
+heatbed_hole_spacing_x = build_x+9;
+heatbed_hole_spacing_y = build_y+9;
 heatbed_hole_diam = 3;
-heatbed_width = 214;
-heatbed_depth = 214;
+heatbed_width = build_x+14;
+heatbed_depth = build_y+14;

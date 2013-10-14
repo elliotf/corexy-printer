@@ -785,12 +785,11 @@ module z_carriage() {
 }
 
 module heatbed() {
-  hole_spacing = 209;
   difference() {
     cube([heatbed_width,heatbed_depth,heatbed_thickness],center=true);
     for(side=[left,right]) {
       for(end=[front,rear]) {
-        translate([heatbed_hole_spacing/2*side,heatbed_hole_spacing/2*end,0])
+        translate([heatbed_hole_spacing_x/2*side,heatbed_hole_spacing_y/2*end,0])
           cylinder(r=heatbed_hole_diam/2,h=heatbed_thickness+1,center=true);
       }
     }

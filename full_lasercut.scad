@@ -88,6 +88,10 @@ module more_lasercut() {
     }
   }
 
+  // build volume
+  % translate([0,0,z_rod_z+sheet_thickness])
+    cube([build_x,build_y,build_z],center=true);
+
   module z_axis() {
     //z_threaded_rod_len = build_z+y_rod_z-motor_shaft_len-bearing_diam;
     sheet_to_threaded_rod_dist = (y_rod_z - bearing_diam/2 - spacer)*-1;
@@ -99,9 +103,13 @@ module more_lasercut() {
     carriage_width = (bearing_wrapper_thickness + bearing_diam/2 + smooth_threaded_dist_x/2)*2;
     carriage_width = (5/2+smooth_threaded_dist_x+bearing_diam/2+bearing_wrapper_thickness)*2;
     carriage_width = (smooth_threaded_dist_x+bearing_diam/2+bearing_wrapper_thickness)*2;
+    carriage_width = (smooth_threaded_dist_x+bearing_diam/2+bearing_wrapper_thickness)*2;
     carriage_depth = bearing_diam/2+min_material_thickness*2;
     carriage_depth = m5_nut_thickness+min_material_thickness*2;
     carriage_height = bearing_len*2+min_material_thickness*3;
+
+    bolt_area_depth = carriage_depth*2+bearing_diam;
+    bolt_area_thickness = m5_nut_thickness+min_material_thickness*2;
 
     z_threaded_rod_len = build_z+5+carriage_height;
     z_threaded_rod_z = -sheet_to_threaded_rod_dist - z_threaded_rod_len/2;
@@ -110,13 +118,12 @@ module more_lasercut() {
     z_rod_x = (top_sheet_width/2 - spacer*2 - zip_tie_thickness - bearing_diam/2);
     z_rod_x = y_rod_x+bearing_diam/2+rod_diam;
     z_rod_z = -z_rod_len/2+sheet_thickness;
+    z_motor_x = z_rod_x-smooth_threaded_dist_x;
 
     support_slot_height = carriage_height/4;
     support_slot_len = carriage_width/2+sheet_thickness;
+    support_slot_len = carriage_width/4+sheet_thickness;
     support_slots = [carriage_height/2-carriage_height/8,-carriage_height/4+carriage_height/8];
-
-    z_motor_x = z_rod_x-smooth_threaded_dist_x;
-    echo("z_threaded_rod_len: ", z_threaded_rod_len);
 
     // in relation to the motor plate
     carriage_x = -smooth_threaded_dist_x/2+(carriage_width-smooth_threaded_dist_x)/2-bearing_diam/2;
@@ -124,13 +131,23 @@ module more_lasercut() {
     carriage_x = 0;
     carriage_y = bearing_diam/2+carriage_depth/2;
 
-    bolt_area_depth = carriage_depth*2+bearing_diam;
-    bolt_area_thickness = m5_nut_thickness+min_material_thickness*2;
-
     // prusa i3 rip-off z axis
 
     captive_nut_body_height = m5_nut_thickness+min_material_thickness*2;
     captive_nut_body_diam = m5_nut_diam+min_material_thickness*2;
+
+    x_support_y = carriage_y+carriage_depth/2+sheet_thickness/2;
+    x_support_len = (z_rod_x-smooth_threaded_dist_x-carriage_width*.2)*2;
+    x_support_len = (z_rod_x-carriage_width+bolt_area_thickness+bearing_diam)*2;
+    x_support_len = (z_rod_x-carriage_width/2)*2;
+    x_support_len = z_motor_x*2-carriage_width+support_slot_len*2;
+    y_support_x = (x_support_len-support_slot_len*2)/2+sheet_thickness/2;
+    y_support_x = z_motor_x-carriage_width/2-sheet_thickness/2;
+    y_support_len = build_y;
+    top_support_width = y_support_x*2+sheet_thickness*2+3*2;
+    top_support_depth = heatbed_depth+3*3;
+
+    echo("z_threaded_rod_len: ", z_threaded_rod_len);
 
     module body() {
       // main body back
@@ -181,17 +198,28 @@ module more_lasercut() {
       cylinder(r=m5_nut_diam/2-.5,h=carriage_height+1,center=true,$fn=6);
 
       // x axis support bolts
-      translate([carriage_width/4,carriage_y,0]) {
+      translate([carriage_width/2-bolt_area_thickness-m5_nut_diam/2,carriage_y,0]) {
         for(z=support_slots) {
           translate([0,0,z*-1]) {
             rotate([90,0,0]) hole(5,carriage_depth+1,6);
 
             translate([0,-carriage_depth/2,0])
-              rotate([90,0,0]) hole(m5_nut_diam,m5_nut_thickness*2,6);
+              rotate([90,0,0]) hole(m5_nut_diam,m5_nut_thickness*1.5,6);
           }
         }
       }
+
       // y axis support bolts
+      translate([carriage_width/2-bolt_area_thickness/2,-bolt_area_depth/4,0]) {
+        for(z=support_slots) {
+          translate([0,0,z*-1]) {
+            rotate([0,90,0]) rotate([0,0,90]) hole(5,carriage_depth+1,6);
+
+            translate([-bolt_area_thickness/2,0,0])
+              rotate([0,90,0]) rotate([0,0,90]) hole(m5_nut_diam,m5_nut_thickness*1.5,6);
+          }
+        }
+      }
     }
 
     module plastic_carriage() {
@@ -201,27 +229,54 @@ module more_lasercut() {
       }
     }
 
-    y_support_y = carriage_y+carriage_depth/2+sheet_thickness/2;
-    y_support_len = (z_rod_x-motor_side/2+rod_diam/2)*2;
+    translate([0,0,-z_rod_len+carriage_height/2+sheet_thickness+spacer]) {
+      // x support
+      % translate([0,x_support_y,0]) {
+        difference() {
+          cube([x_support_len,sheet_thickness,carriage_height],center=true);
 
-    // supports
-    translate([0,y_support_y,-z_rod_len+carriage_height/2+sheet_thickness+spacer]) {
-      difference() {
-        cube([y_support_len,sheet_thickness,carriage_height],center=true);
+          for(side=[left,right]) {
+            for(z=support_slots) {
+              translate([x_support_len/2*side,0,z]) {
+                cube([support_slot_len*2,sheet_thickness+1,support_slot_height],center=true);
+              }
 
-        for(side=[left,right]) {
-          for(z=support_slots) {
-            translate([y_support_len/2*side,0,z]) {
-              cube([support_slot_len*2,sheet_thickness+1,support_slot_height],center=true);
-            }
-
-            translate([(y_support_len/2-carriage_width/4)*side,0,z*-1]) {
-              rotate([90,0,0]) hole(5,sheet_thickness+1,16);
+              translate([(y_support_x+sheet_thickness/2+bolt_area_thickness+m5_nut_diam/2)*side,0,z*-1]) {
+                rotate([90,0,0]) hole(5,sheet_thickness+1,16);
+              }
             }
           }
         }
       }
+
+      // y support
+      % for(side=[left,right]) {
+        translate([y_support_x*side,0,0]) {
+          difference() {
+            cube([sheet_thickness,y_support_len,carriage_height],center=true);
+
+            for(z=support_slots) {
+              translate([0,x_support_y,z*-1]) {
+                cube([sheet_thickness+1,sheet_thickness,support_slot_height],center=true);
+              }
+
+              translate([0,-bolt_area_depth/4,z*-1]) {
+                rotate([0,90,0]) hole(5,sheet_thickness+1,16);
+              }
+            }
+          }
+        }
+      }
+
+      // support plate
+      translate([0,0,carriage_height/2+sheet_thickness/2]) {
+        % cube([top_support_width,top_support_depth,sheet_thickness],center=true);
+
+        color("red") translate([0,0,sheet_thickness/2]) heatbed();
+      }
     }
+
+
 
     for(side=[left,right]) {
       translate([z_rod_x*side,0,z_rod_z])
