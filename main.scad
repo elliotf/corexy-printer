@@ -4,6 +4,11 @@ include <positions.scad>;
 echo("x rod len: ",x_rod_len);
 echo("y rod len: ",y_rod_len);
 
+module hole(diam,len,sides=8) {
+  da = 1 / cos(180 / sides) / 2;
+  cylinder(r=da*diam,h=len,center=true,$fn=sides);
+}
+
 module motor() {
   difference() {
     translate([0,0,-motor_side/2]) cube([motor_side,motor_side,motor_side],center=true);
