@@ -68,7 +68,7 @@ module bearing_cavity() {
             //translate([bearing_diam/2,0,0]) rotate([0,0])
             //  square([bearing_groove_depth*2,bearing_groove_width],center=true);
             translate([bearing_diam/2,0,0]) /* resize([1,1]) */ rotate([0,0,45])
-              square([.5,.5],center=true);
+              square([bearing_groove_width,bearing_groove_width],center=true);
       }
     }
 }

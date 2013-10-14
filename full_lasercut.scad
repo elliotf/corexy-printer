@@ -89,7 +89,133 @@ module more_lasercut() {
   }
 
   module z_axis() {
+    //z_threaded_rod_len = build_z+y_rod_z-motor_shaft_len-bearing_diam;
+    sheet_to_threaded_rod_dist = (y_rod_z - bearing_diam/2 - spacer)*-1;
+    smooth_threaded_dist_x = motor_side/2-rod_diam/2;
+
+    bearing_wrapper_thickness = min_material_thickness*1.5;
+
+    carriage_width = bearing_wrapper_thickness + bearing_diam/2 + smooth_threaded_dist_x + m3_nut_diam/2 + min_material_thickness*2;
+    carriage_width = (bearing_wrapper_thickness + bearing_diam/2 + smooth_threaded_dist_x/2)*2;
+    carriage_depth = bearing_diam/2+min_material_thickness*2;
+    carriage_height = bearing_len*2+min_material_thickness*3;
+
+    z_threaded_rod_len = build_z+5+carriage_height;
+    z_threaded_rod_z = -sheet_to_threaded_rod_dist - z_threaded_rod_len/2;
+    z_rod_len = z_threaded_rod_len + sheet_thickness + spacer + motor_shaft_len + sheet_to_threaded_rod_dist;
+
     z_rod_x = (top_sheet_width/2 - spacer*2 - zip_tie_thickness - bearing_diam/2);
+    z_rod_z = -z_rod_len/2+sheet_thickness;
+
+    z_motor_x = z_rod_x-smooth_threaded_dist_x;
+    echo("z_threaded_rod_len: ", z_threaded_rod_len);
+
+    // in relation to the motor plate
+    carriage_x = -smooth_threaded_dist_x/2+(carriage_width-smooth_threaded_dist_x)/2-bearing_diam/2;
+    carriage_x = -smooth_threaded_dist_x/2;
+    carriage_y = carriage_depth;
+
+    // prusa i3 rip-off z axis
+
+    captive_nut_body_height = m5_nut_thickness+min_material_thickness*2;
+    captive_nut_body_diam = m5_nut_diam+min_material_thickness*2;
+
+    module body() {
+      translate([carriage_x,bearing_diam/2+carriage_depth/2,0])
+        cube([carriage_width,carriage_depth,carriage_height],center=true);
+
+      // prusa-style bearing holder
+      translate([-smooth_threaded_dist_x,bearing_diam/2,0])
+        cube([bearing_diam+bearing_wrapper_thickness*2,bearing_diam,carriage_height],center=true);
+      translate([-smooth_threaded_dist_x,0,0])
+        hole(bearing_diam+bearing_wrapper_thickness*2,carriage_height,36);
+
+      // captive nut
+      translate([0,0,carriage_height/2-captive_nut_body_height/2]) {
+        //cube([captive_nut_body_diam,captive_nut_body_diam,captive_nut_body_height],center=true);
+        hull() {
+          rotate([0,0,90])
+            cylinder(r=captive_nut_body_diam/2,h=captive_nut_body_height,center=true,$fn=6);
+          translate([carriage_x,carriage_y,0])
+            cube([carriage_width,carriage_depth,captive_nut_body_height],center=true);
+        }
+      }
+    }
+
+    module holes() {
+      // prusa-style bearing holder
+      translate([-smooth_threaded_dist_x,0,0]) {
+        hole(bearing_diam,carriage_height+1,36);
+
+        rotate([0,0,60])
+          translate([0,-bearing_diam/2-bearing_wrapper_thickness/2,0])
+            cube([spacer,bearing_wrapper_thickness+0.2,carriage_height+1],center=true);
+      }
+
+      // captive nut
+      translate([0,0,carriage_height/2-captive_nut_body_height])
+        rotate([0,0,90])
+          hole(m5_nut_diam,m5_nut_thickness*2,6);
+
+      // threaded rod
+      cylinder(r=m5_nut_diam/2-.5,h=carriage_height+1,center=true,$fn=6);
+    }
+
+    module plastic_carriage() {
+      difference() {
+        body();
+        holes();
+      }
+    }
+
+    for(side=[left,right]) {
+      translate([z_rod_x*side,0,z_rod_z])
+        % cylinder(r=rod_diam/2,h=z_rod_len,center=true);
+
+      translate([z_motor_x*side,0,z_threaded_rod_z]) {
+        % cylinder(r=5/2,h=z_threaded_rod_len,center=true);
+
+        translate([0,0,-z_threaded_rod_len/2-spacer-motor_shaft_len]) {
+          % color("blue", .5) motor();
+
+          mirror([side+1,0,0]) {
+            translate([0,0,carriage_height/2+spacer]) {
+              plastic_carriage();
+
+              /*
+              //translate([carriage_x,carriage_y,0]) cube([carriage_width,carriage_depth,carriage_height],center=true);
+
+              for(z=[-1,1]) {
+                % translate([-smooth_threaded_dist_x,0,(bearing_len/2+min_material_thickness/2)*z])
+                  rotate([90,0,0]) bearing_with_zip_tie();
+              }
+              */
+            }
+          }
+        }
+      }
+
+        /*
+        translate([0,0,-build_z/2]) {
+          for(side=[left,right]) {
+            translate([z_rod_x*side,0,0]) {
+              cylinder(r=rod_diam/2,h=build_z,center=true);
+              rotate([90,0,0]) bearing();
+            }
+          }
+        }
+
+        for(side=[left,right]) {
+          translate([z_rod_x*side,0,0]) {
+            cylinder(r=rod_diam/2,h=build_z,center=true);
+            rotate([90,0,0]) bearing();
+          }
+        }
+      }
+        */
+    }
+
+    /*
     translate([0,0,-build_z/2+sheet_thickness]) {
       for(side=[left,right]) {
         translate([z_rod_x*side,0,0]) {
@@ -98,12 +224,16 @@ module more_lasercut() {
         }
         translate([(z_rod_x-motor_side/2)*side,0,-build_z/2]) {
           motor();
+
+          translate([0,0,motor_shaft_len+1+z_threaded_rod_len/2])
+            cylinder(r=5/2,h=z_threaded_rod_len,center=true);
         }
       }
     }
+    */
   }
 
-  color("blue", 0.4) z_axis();
+  z_axis();
 
   module line() {
     x_carriage = x_carriage_width/2;
@@ -226,6 +356,22 @@ module more_lasercut() {
   color("red", 0.6) mirror([1,0,0]) line(1);
 
   color("grey", .3) {
+
+    // top sheet
+    translate([0,0,sheet_thickness/2]) difference() {
+      translate([0,side_sheet_y,0]) {
+        union() {
+          box_side([front_sheet_width,side_sheet_depth],[2,2,1,2]);
+          // avoid too-thin top sheet
+          translate([0,side_sheet_depth/2+sheet_thickness+3+belt_bearing_diam/2,0])
+            cube([top_sheet_width+sheet_thickness*2+3*2,belt_bearing_diam,sheet_thickness],center=true);
+        }
+      }
+      //cube([top_sheet_width,top_sheet_depth,sheet_thickness],center=true);
+      cube([top_sheet_opening_width,top_sheet_opening_depth,sheet_thickness+1],center=true);
+    }
+
+  /*
     // front sheet
     translate([0,front_sheet_y,front_sheet_z]) rotate([90,0,0]) difference() {
       box_side([front_sheet_width,front_sheet_height],[2,2,0,2]);
@@ -267,20 +413,6 @@ module more_lasercut() {
       }
     }
 
-    // top sheet
-    translate([0,0,sheet_thickness/2]) difference() {
-      translate([0,side_sheet_y,0]) {
-        union() {
-          box_side([front_sheet_width,side_sheet_depth],[2,2,1,2]);
-          // avoid too-thin top sheet
-          translate([0,side_sheet_depth/2+sheet_thickness+3+belt_bearing_diam/2,0])
-            cube([top_sheet_width+sheet_thickness*2+3*2,belt_bearing_diam,sheet_thickness],center=true);
-        }
-      }
-      //cube([top_sheet_width,top_sheet_depth,sheet_thickness],center=true);
-      cube([top_sheet_opening_width,top_sheet_opening_depth,sheet_thickness+1],center=true);
-    }
-
     // side sheets
     for(side=[left,right]) {
       translate([side_sheet_x*side,side_sheet_y,side_sheet_z]) rotate([90,0,90]) {
@@ -288,6 +420,7 @@ module more_lasercut() {
         box_side([side_sheet_depth,side_sheet_height],[1,1,0,1]);
       }
     }
+  */
   }
 }
 

@@ -31,11 +31,9 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
-/*
-build_x = 50;
-build_y = 50;
-build_z = 50;
-*/
+build_x = 100;
+build_y = 100;
+build_z = 100;
 
 hotend_len = 51;
 hotend_diam = 16;
