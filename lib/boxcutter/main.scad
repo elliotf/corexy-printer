@@ -26,7 +26,7 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
   std_nut_height = 2.5;
   nut_height = nyloc_nut_height;
 
-  tab_slot_pair_space = tab_len * 1.0;
+  tab_slot_pair_space = tab_len * 2.0;
   tab_slot_pair_len = tab_len*2 + tab_slot_pair_space;
   space_between_tab_slot_pairs = 35;
   space_between_tab_slot_pairs = tab_slot_pair_len*2;

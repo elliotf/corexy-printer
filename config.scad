@@ -206,6 +206,7 @@ psu_height = 50;
 pulley_diam = 20;
 pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
 pulley_height = belt_bearing_diam;
+pulley_height = 13;
 
 pulley_idler_diam = pulley_idler_bearing_diam + min_material_thickness*2;
 pulley_idler_height = pulley_height;

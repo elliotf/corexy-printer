@@ -18,6 +18,7 @@ module more_lasercut() {
   top_sheet_width = top_sheet_opening_width+motor_side*2+sheet_thickness*2+sheet_shoulder_width*2;
   top_sheet_width = (xy_motor_x+motor_side/2+spacer+sheet_thickness+sheet_shoulder_width)*2;
   top_sheet_width = (xy_motor_x+motor_side/2+spacer)*2;
+  top_sheet_width = (y_rod_x+motor_side)*2;
   top_sheet_depth = top_sheet_opening_depth+motor_side+sheet_thickness*2+sheet_shoulder_width*2;
 
   rod_z = -belt_bearing_diam/2-belt_bearing_thickness/2-belt_bearing_nut_thickness-spacer;
@@ -26,8 +27,6 @@ module more_lasercut() {
 
   rear_sheet_y = top_sheet_opening_depth/2+sheet_shoulder_width+sheet_thickness/2;
 
-  pulley_height = belt_bearing_diam;
-
   xy_idler_z = rod_z+belt_bearing_diam/2;
 
   front_idler_x = xy_idler_x+belt_bearing_diam/2;
@@ -35,7 +34,7 @@ module more_lasercut() {
   front_idler_z = y_rod_z;
 
   to_motor_idler_x = xy_motor_x-pulley_diam/2;
-  to_motor_idler_y = rear_sheet_y-sheet_thickness/2;
+  to_motor_idler_y = rear_sheet_y-belt_bearing_diam/2+sheet_thickness/2+spacer;
   to_motor_idler_z = front_idler_z-belt_bearing_diam*1.25;
 
   return_idler_x = front_idler_x;
@@ -43,6 +42,7 @@ module more_lasercut() {
   return_idler_z = xy_idler_z;
 
   xy_motor_y = top_sheet_opening_depth/2+sheet_shoulder_width;
+  xy_motor_y = top_sheet_opening_depth/2+sheet_shoulder_width+sheet_thickness+motor_side/2;
   xy_motor_z = to_motor_idler_z-belt_bearing_diam/2-spacer*2-motor_side/2;
 
   rear_sheet_width = top_sheet_width;
@@ -57,19 +57,23 @@ module more_lasercut() {
 
   side_sheet_depth = -front_sheet_y+rear_sheet_y-sheet_thickness;
   side_sheet_height = rear_sheet_height;
-  side_sheet_x = xy_motor_x+motor_side/2+sheet_thickness/2+spacer;
+  side_sheet_x = y_rod_x+motor_side+sheet_thickness/2;
   side_sheet_y = (rear_sheet_y+front_sheet_y)/2;
   side_sheet_z = -side_sheet_height/2;
 
   y_rod_len = rear_sheet_y+(-1*front_sheet_y)+sheet_thickness;
   y_rod_y = side_sheet_y;
 
+  //pulley_height = belt_bearing_diam;
+  //pulley_height = 10;
+
   motor_idler_dist = abs(xy_motor_z) - abs(xy_idler_z) - pulley_diam/3;
   short = motor_idler_dist;
+  short = (belt_bearing_diam+pulley_height);
   long  = (xy_motor_x)*2;
+  long  = front_idler_x*2;
   echo("SHORT (ADJACENT): ", short);
   echo("LONG (OPPOSITE): ", long);
-  return_idler_angle = atan((abs(xy_motor_z)-abs(xy_idler_z))/front_idler_x*2);
   return_idler_angle = atan(long/short);
   echo("ANGLE: ", return_idler_angle);
 
@@ -83,6 +87,23 @@ module more_lasercut() {
       mirror([side+1,0,0]) y_carriage();
     }
   }
+
+  module z_axis() {
+    z_rod_x = (top_sheet_width/2 - spacer*2 - zip_tie_thickness - bearing_diam/2);
+    translate([0,0,-build_z/2+sheet_thickness]) {
+      for(side=[left,right]) {
+        translate([z_rod_x*side,0,0]) {
+          cylinder(r=rod_diam/2,h=build_z,center=true);
+          rotate([90,0,0]) bearing();
+        }
+        translate([(z_rod_x-motor_side/2)*side,0,-build_z/2]) {
+          motor();
+        }
+      }
+    }
+  }
+
+  color("blue", 0.4) z_axis();
 
   module line() {
     x_carriage = x_carriage_width/2;
@@ -109,6 +130,7 @@ module more_lasercut() {
 
     translate([front_idler_x*left,front_idler_y,front_idler_z]) rotate([0,90,0]) idler_bearing();
 
+    /*
     // front to motor idler
     hull() {
       translate([front_idler_x*left,front_idler_y,xy_idler_z-belt_bearing_diam]) dot();
@@ -120,17 +142,38 @@ module more_lasercut() {
     // motor idler to pulley
     hull() {
       translate([to_motor_idler_x*left,to_motor_idler_y+belt_bearing_diam/2,to_motor_idler_z]) dot();
-      translate([(xy_motor_x-pulley_diam/2)*left,xy_motor_y+pulley_height/2,xy_motor_z]) dot();
+      //translate([(xy_motor_x-pulley_diam/2)*left,xy_motor_y+pulley_height/2,xy_motor_z]) dot();
+      translate([(xy_motor_x-pulley_diam/2)*left,to_motor_idler_y+belt_bearing_diam/2,xy_motor_z]) dot();
     }
+    */
 
+    /*
     translate([xy_motor_x*left,xy_motor_y,xy_motor_z]) {
       rotate([-90,0,0])
         motor_with_pulley();
     }
+    */
+
+    // front to motor
+    hull() {
+      translate([front_idler_x*left,front_idler_y,xy_idler_z-belt_bearing_diam]) dot();
+      translate([front_idler_x*left,xy_motor_y,front_idler_z-belt_bearing_diam/2]) dot();
+    }
+
+    //translate([-front_idler_x,rear_sheet_y+sheet_thickness/2+motor_side/2,front_idler_z-belt_bearing_diam/2]) {
+    translate([-front_idler_x,rear_sheet_y+sheet_thickness/2+motor_side/2,front_idler_z-belt_bearing_diam/2]) {
+      rotate([0,return_idler_angle-90,0]) {
+        # cube([1,10,1],center=true);
+        translate([-pulley_diam/2,0,-xy_pulley_above_motor_plate-pulley_height/2])
+          motor_with_pulley();
+      }
+    }
 
     // pulley to return idler
     hull() {
-      translate([xy_motor_x*left,xy_motor_y+pulley_height*1.5,xy_motor_z+pulley_diam/2]) dot();
+      //translate([xy_motor_x*left,xy_motor_y+pulley_height*1.5,xy_motor_z+pulley_diam/2]) dot();
+      translate([front_idler_x*left,xy_motor_y-pulley_diam/2,front_idler_z-belt_bearing_diam/2-pulley_height]) dot();
+      //translate([xy_motor_x*left,to_motor_idler_y+belt_bearing_diam/2+pulley_height,xy_motor_z+pulley_diam/2]) dot();
       translate([(return_idler_x-belt_bearing_diam/2)*right,return_idler_y+belt_bearing_diam/2,return_idler_z-belt_bearing_thickness/3]) dot();
     }
 
@@ -157,7 +200,7 @@ module more_lasercut() {
   }
 
   color("green", 0.6) line();
-  color("red", 0.6) mirror([1,0,0]) line();
+  color("red", 0.6) mirror([1,0,0]) line(1);
 
   color("grey", .3) {
     // front sheet
@@ -181,8 +224,14 @@ module more_lasercut() {
       translate([0,-rear_sheet_z,0]) {
         for(side=[left,right]) {
           // holes for "to motor" idler
-          translate([to_motor_idler_x*side,to_motor_idler_z,0])
-            cube([belt_bearing_thickness*2+min_material_thickness*2,belt_bearing_diam+min_material_thickness*2,sheet_thickness+1],center=true);
+          translate([front_idler_x*side,front_idler_z-belt_bearing_diam,0]) {
+            hull() {
+              for(offset=[-1,1]) {
+                translate([0,belt_bearing_diam/2*offset,0])
+                  cylinder(r=3,h=sheet_thickness+1,center=true,$fn=16);
+              }
+            }
+          }
 
           // line hole for "return" idler
           translate([front_idler_x*side,xy_idler_z,0])
@@ -191,29 +240,6 @@ module more_lasercut() {
           // y rods
           translate([y_rod_x*side,y_rod_z,0])
             hole(rod_diam,sheet_thickness+1,32);
-
-          // motor holes
-          translate([xy_motor_x*side,xy_motor_z,0]) {
-            // main hole
-            hole(motor_hole_spacing*.8,sheet_thickness+1,32);
-
-            // screw holes
-            for(motor_side=[left,right]) {
-              for(motor_end=[front,rear]) {
-                translate([motor_hole_spacing/2*motor_side,motor_hole_spacing/2*motor_end,0])
-                  hole(motor_screw_diam,sheet_thickness+1,16);
-              }
-            }
-
-            // motor wire hole
-            translate([(-motor_side/2-motor_wire_hole_height)*side,-motor_side/4,0]) {
-              hull() {
-                for(offset=[-1,1]) {
-                  translate([0,motor_wire_hole_height*offset,0]) cylinder(r=motor_wire_hole_height/2,h=sheet_thickness+1,center=true,$fn=16);
-                }
-              }
-            }
-          }
         }
       }
     }
