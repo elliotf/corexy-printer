@@ -97,7 +97,10 @@ module more_lasercut() {
 
     carriage_width = bearing_wrapper_thickness + bearing_diam/2 + smooth_threaded_dist_x + m3_nut_diam/2 + min_material_thickness*2;
     carriage_width = (bearing_wrapper_thickness + bearing_diam/2 + smooth_threaded_dist_x/2)*2;
+    carriage_width = (5/2+smooth_threaded_dist_x+bearing_diam/2+bearing_wrapper_thickness)*2;
+    carriage_width = (smooth_threaded_dist_x+bearing_diam/2+bearing_wrapper_thickness)*2;
     carriage_depth = bearing_diam/2+min_material_thickness*2;
+    carriage_depth = m5_nut_thickness+min_material_thickness*2;
     carriage_height = bearing_len*2+min_material_thickness*3;
 
     z_threaded_rod_len = build_z+5+carriage_height;
@@ -105,7 +108,12 @@ module more_lasercut() {
     z_rod_len = z_threaded_rod_len + sheet_thickness + spacer + motor_shaft_len + sheet_to_threaded_rod_dist;
 
     z_rod_x = (top_sheet_width/2 - spacer*2 - zip_tie_thickness - bearing_diam/2);
+    z_rod_x = y_rod_x+bearing_diam/2+rod_diam;
     z_rod_z = -z_rod_len/2+sheet_thickness;
+
+    support_slot_height = carriage_height/4;
+    support_slot_len = carriage_width/2+sheet_thickness;
+    support_slots = [carriage_height/2-carriage_height/8,-carriage_height/4+carriage_height/8];
 
     z_motor_x = z_rod_x-smooth_threaded_dist_x;
     echo("z_threaded_rod_len: ", z_threaded_rod_len);
@@ -113,7 +121,11 @@ module more_lasercut() {
     // in relation to the motor plate
     carriage_x = -smooth_threaded_dist_x/2+(carriage_width-smooth_threaded_dist_x)/2-bearing_diam/2;
     carriage_x = -smooth_threaded_dist_x/2;
-    carriage_y = carriage_depth;
+    carriage_x = 0;
+    carriage_y = bearing_diam/2+carriage_depth/2;
+
+    bolt_area_depth = carriage_depth*2+bearing_diam;
+    bolt_area_thickness = m5_nut_thickness+min_material_thickness*2;
 
     // prusa i3 rip-off z axis
 
@@ -121,8 +133,13 @@ module more_lasercut() {
     captive_nut_body_diam = m5_nut_diam+min_material_thickness*2;
 
     module body() {
-      translate([carriage_x,bearing_diam/2+carriage_depth/2,0])
+      // main body back
+      translate([carriage_x,carriage_y,0])
         cube([carriage_width,carriage_depth,carriage_height],center=true);
+
+      // bolt area
+      translate([carriage_width/2-bolt_area_thickness/2,0,0])
+        cube([bolt_area_thickness,bolt_area_depth,carriage_height],center=true);
 
       // prusa-style bearing holder
       translate([-smooth_threaded_dist_x,bearing_diam/2,0])
@@ -132,39 +149,77 @@ module more_lasercut() {
 
       // captive nut
       translate([0,0,carriage_height/2-captive_nut_body_height/2]) {
-        //cube([captive_nut_body_diam,captive_nut_body_diam,captive_nut_body_height],center=true);
         hull() {
-          rotate([0,0,90])
-            cylinder(r=captive_nut_body_diam/2,h=captive_nut_body_height,center=true,$fn=6);
-          translate([carriage_x,carriage_y,0])
-            cube([carriage_width,carriage_depth,captive_nut_body_height],center=true);
+          translate([carriage_width/2-bolt_area_thickness/2,0,0])
+            cube([bolt_area_thickness,bolt_area_depth,captive_nut_body_height],center=true);
+          translate([-smooth_threaded_dist_x,bolt_area_depth/4,0])
+            cube([1,bolt_area_depth/2,captive_nut_body_height],center=true);
         }
       }
     }
 
     module holes() {
+      long = carriage_width-bearing_wrapper_thickness-bearing_diam/2-bolt_area_thickness;
+      short = bolt_area_depth/2;
+      bearing_holder_gap_angle = atan(short/long);
+
       // prusa-style bearing holder
       translate([-smooth_threaded_dist_x,0,0]) {
         hole(bearing_diam,carriage_height+1,36);
 
-        rotate([0,0,60])
-          translate([0,-bearing_diam/2-bearing_wrapper_thickness/2,0])
-            cube([spacer,bearing_wrapper_thickness+0.2,carriage_height+1],center=true);
+        rotate([0,0,-bearing_holder_gap_angle])
+          translate([carriage_width/2,0,0])
+            cube([carriage_width,spacer,carriage_height+1],center=true);
       }
 
-      // captive nut
+      // z rod captive nut
       translate([0,0,carriage_height/2-captive_nut_body_height])
         rotate([0,0,90])
           hole(m5_nut_diam,m5_nut_thickness*2,6);
 
-      // threaded rod
+      // z threaded rod
       cylinder(r=m5_nut_diam/2-.5,h=carriage_height+1,center=true,$fn=6);
+
+      // x axis support bolts
+      translate([carriage_width/4,carriage_y,0]) {
+        for(z=support_slots) {
+          translate([0,0,z*-1]) {
+            rotate([90,0,0]) hole(5,carriage_depth+1,6);
+
+            translate([0,-carriage_depth/2,0])
+              rotate([90,0,0]) hole(m5_nut_diam,m5_nut_thickness*2,6);
+          }
+        }
+      }
+      // y axis support bolts
     }
 
     module plastic_carriage() {
       difference() {
         body();
         holes();
+      }
+    }
+
+    y_support_y = carriage_y+carriage_depth/2+sheet_thickness/2;
+    y_support_len = (z_rod_x-motor_side/2+rod_diam/2)*2;
+
+    // supports
+    translate([0,y_support_y,-z_rod_len+carriage_height/2+sheet_thickness+spacer]) {
+      difference() {
+        cube([y_support_len,sheet_thickness,carriage_height],center=true);
+
+        for(side=[left,right]) {
+          for(z=support_slots) {
+            translate([y_support_len/2*side,0,z]) {
+              cube([support_slot_len*2,sheet_thickness+1,support_slot_height],center=true);
+            }
+
+            translate([(y_support_len/2-carriage_width/4)*side,0,z*-1]) {
+              rotate([90,0,0]) hole(5,sheet_thickness+1,16);
+            }
+          }
+        }
       }
     }
 
