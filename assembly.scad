@@ -4,11 +4,12 @@
 
 include <main.scad>;
 include <sheet_plates.scad>;
+include <scad/z_axis.scad>;
 use <inc/jhead.scad>;
 
 translate([0,0,0]) y_end_front_screw_holes();
 
-module z_carriage() {
+module old_z_carriage() {
   carriage_height = bearing_len*2+min_material_thickness*3;
   carriage_height = lm10uu_bearing_len*2+min_material_thickness*3;
   carriage_width  = bearing_diam*2;

@@ -44,16 +44,16 @@ xy_pulley_idler_y = xy_motor_y+motor_hole_spacing/2;
 bed_zero = x_rod_z - (hotend_len - 10 - bearing_diam/2) - build_z;
 side_panel_height = -1*bed_zero + motor_len + sheet_min_width;
 
-z_motor_x  = y_rod_x-sheet_thickness/2-z_motor_side/2;
-z_motor_y  = z_motor_side/2+z_carriage_width/2+sheet_thickness+spacer;
-z_motor_z  = -build_z;
-z_motor_z  = bed_zero - z_motor_len;
+//z_motor_x  = y_rod_x-sheet_thickness/2-z_motor_side/2;
+//z_motor_y  = z_motor_side/2+z_carriage_width/2+sheet_thickness+spacer;
+//z_motor_z  = -build_z;
+//z_motor_z  = bed_zero - z_motor_len;
 
-z_rod_x = z_motor_x;
-z_rod_y = 0;
-z_rod_z = -z_rod_len/2;
+//z_rod_x = z_motor_x;
+//z_rod_y = 0;
+//z_rod_z = -z_rod_len/2;
 
-z_carriage_z = bed_zero-heatbed_thickness-sheet_thickness/2;
+//z_carriage_z = bed_zero-heatbed_thickness-sheet_thickness/2;
 
 // sheets
 top_sheet_width = xy_motor_x*-2+motor_side+spacer*2;
