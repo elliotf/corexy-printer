@@ -1,10 +1,11 @@
+// bearing groove spacing for LM6UU
 // 13.25 outer
 // 12.25 mid
 // 11.25 inner
 
 include <main.scad>;
-include <sheet_plates.scad>;
-include <scad/z_axis.scad>;
+include <sheets.scad>;
+include <z_axis.scad>;
 use <inc/jhead.scad>;
 
 translate([0,0,0]) y_end_front_screw_holes();
