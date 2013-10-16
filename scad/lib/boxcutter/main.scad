@@ -74,9 +74,11 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0],tab_len=10,screw_diam=3,nut_dia
 
     raw_num_fit = floor(space_avail/pair_and_spacing_len);
 
+    //echo("raw_num_fit: ", raw_num_fit);
+
     function adjust_num_fit()
-      = (num_fit > 2)
-      ? num_fit
+      = (raw_num_fit > 2)
+      ? raw_num_fit
       : (tab_slot_pair_len*2+tab_len < to_fill)
         ? 2
         : 1;
