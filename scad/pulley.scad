@@ -3,18 +3,15 @@ use <util.scad>;
 
 motor_shaft_diam = 5;
 cylinder_resolution = 90;
-cylinder_resolution = 18;
+cylinder_resolution = 12;
 
-groove_first_to_last_dist = belt_bearing_diam;
+groove_first_to_last_dist = belt_bearing_diam - 3;
 groove_diam = .8;
-groove_spacing = groove_diam*2;
-groove_spacing = 1.5;
+groove_spacing = 1.6;
 turns = floor(groove_first_to_last_dist/groove_spacing);
 add_shaft_len  = 8;
 add_shaft_diam = 20;
-total_height = groove_first_to_last_dist + groove_diam*3 + add_shaft_len;
-
-//xy_pulley_above_motor_plate;
+total_height = groove_first_to_last_dist + groove_spacing*2 + add_shaft_len;
 
 echo("groove first to last: ", groove_first_to_last_dist);
 echo("groove spacing: ", groove_spacing);
@@ -23,12 +20,14 @@ echo("loops: ",turns+1);
 module pulley_groove(pulley_diam,groove_diam) {
   rotate_extrude($fn=cylinder_resolution)
     translate([pulley_diam/2+groove_diam/2,0,0])
-      rotate(90) circle(accurate_diam(groove_diam,6),$fn=6);
+      scale([1*groove_diam,1.2,1])
+        rotate(90)
+          circle(accurate_diam(1,6),$fn=6);
 }
 
 module xy_motor_pulley(pulley_diam,first_to_last_groove_dist,num_turns,groove_diam) {
   groove_spacing = first_to_last_groove_dist / num_turns;
-  pulley_height = first_to_last_groove_dist + groove_diam*3;
+  pulley_height = first_to_last_groove_dist + groove_spacing*2;
   echo("Pulley groove spacing: ", groove_spacing);
 
   module pulley_body() {
