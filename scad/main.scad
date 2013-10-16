@@ -608,12 +608,14 @@ module idlers() {
   // carriage anchor rear
   translate([xy_idler_x*right,xy_idler_y*rear,xy_idler_z]) idler_bearing();
 
+  /*
   // motor
   translate([xy_motor_x*right,xy_motor_y,xy_motor_z]) motor_with_pulley();
 
   // pulley idler
   translate([xy_pulley_idler_x*right,xy_pulley_idler_y,front_idler_z])
     cylinder(r=pulley_idler_diam/2,h=pulley_idler_height,center=true);
+    */
 }
 
 module line() {

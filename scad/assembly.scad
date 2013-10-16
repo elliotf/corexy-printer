@@ -44,62 +44,15 @@ color("red",0.5) line();
 color("green",0.5) mirror([1,0,0]) idlers();
 color("green",0.5) mirror([1,0,0]) line();
 
-// top plate
-module plates() {
-  top_plate_width = y_rod_x*2+sheet_min_width;
-  top_plate_depth = y_rod_len+sheet_min_width+motor_side;
+module box_sides() {
+  translate([top_sheet_x,top_sheet_y,top_sheet_z]) top_sheet();
 
-  echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
-
-  build_top = x_rod_z-(hotend_len-10);
-  echo("BUILD TOP: ", build_top);
-
-  side_depth = top_plate_depth;
-  side_height = build_z+sheet_min_width*2;
-  side_height = side_panel_height;
-  front_back_width = y_rod_x*2-sheet_thickness;
-
-  side_z = -side_height/2-sheet_thickness;
-
-  top_plate();
-
-  // front plate
-  front_opening_width  = x_rod_len-x_carriage_width;
-  front_opening_width  = build_x+x_carriage_width/2;
-  front_opening_height = build_z+motor_len/2;
-  translate([0,(y_rod_len/2-y_end_screw_hole_y)*front,side_z]) {
-    difference() {
-      cube([front_back_width,sheet_thickness,side_height],center=true);
-      //cube([front_back_width-sheet_min_width*2,sheet_thickness+1,side_height-sheet_min_width*2],center=true);
-      //translate([0,0,-side_z]) cube([front_opening_width,sheet_thickness+1,front_opening_height*2],center=true);
-      hull() {
-        translate([0,0,side_height/2])
-          cube([front_opening_width,sheet_thickness+1,1],center=true);
-        translate([0,0,-front_opening_height/4])
-          cube([build_x*.8,sheet_thickness+1,1],center=true);
-      }
-    }
-  }
-
-  // rear plate
-  translate([0,(y_rod_len/2-y_end_screw_hole_y)*rear,side_z]) {
-    cube([front_back_width,sheet_thickness,side_height],center=true);
-  }
-
-  // side plates
-  for(side=[left,right]) {
-    translate([side_sheet_x*side,top_sheet_y,side_z]) {
-      difference() {
-        cube([sheet_thickness,side_depth,side_height],center=true);
-
-        translate([0,-motor_side/4,0])
-          cube([sheet_thickness+1,y_rod_len-y_end_screw_hole_y*2-sheet_min_width,build_z],center=true);
-      }
-    }
-  }
+  translate([front_sheet_x,front_sheet_y,front_sheet_z])
+    rotate([90,0,0])
+      front_sheet();
 }
 
-color("Khaki", 0.5) plates();
+color("Khaki", 0.5) box_sides();
 
 //# translate([0,0,x_rod_z-build_z/2-40])
 % translate([0,0,bed_zero+build_z/2]) cube([build_x,build_y,build_z],center=true);
