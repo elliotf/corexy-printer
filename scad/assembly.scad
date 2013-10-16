@@ -8,8 +8,6 @@ include <sheets.scad>;
 include <z_axis.scad>;
 use <inc/jhead.scad>;
 
-translate([0,0,0]) y_end_front_screw_holes();
-
 // xy gantry
 translate([0,build_y*.0,0]) {
   // x carriage
