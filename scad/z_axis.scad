@@ -1,5 +1,5 @@
-include <../main.scad>;
-use <../lib/boxcutter/main.scad>;
+include <main.scad>;
+use <lib/boxcutter/main.scad>;
 
 z_axis_smooth_threaded_dist_x = motor_side/2-rod_diam/2;
 z_bearing_wrapper_thickness = min_material_thickness*1.5;
