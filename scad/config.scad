@@ -165,6 +165,7 @@ z_motor_hole_spacing = nema17_hole_spacing;
 z_motor_screw_diam = nema17_screw_diam;
 z_motor_shaft_diam = nema17_shaft_diam;
 z_motor_shaft_len = nema17_shaft_len;
+
 // Frame sheet
 sheet_thickness = 6;
 sheet_min_width = 30;
@@ -197,13 +198,8 @@ x_carriage_depth = x_rod_spacing + bearing_diam;
 // calculated rod lengths
 x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
 y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2 + spacer*2;
-//z_rod_len = build_z + motor_len*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
-z_leadscrew_clamp_len = 10;
-
-// z carriage
-//z_carriage_width = bearing_diam+min_material_thickness*2;
 
 // tuner dimensions (pull out into a different file)
 tuner_shoulder_width = 10;

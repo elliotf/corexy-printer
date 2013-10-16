@@ -1,10 +1,6 @@
 include <main.scad>;
 use <lib/boxcutter/main.scad>;
 
-x = 0;
-y = 1;
-z = 2;
-
 module more_lasercut() {
   motor_wire_hole_height = 6;
 

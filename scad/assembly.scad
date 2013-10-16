@@ -10,134 +10,11 @@ use <inc/jhead.scad>;
 
 translate([0,0,0]) y_end_front_screw_holes();
 
-module old_z_carriage() {
-  carriage_height = bearing_len*2+min_material_thickness*3;
-  carriage_height = lm10uu_bearing_len*2+min_material_thickness*3;
-  carriage_width  = bearing_diam*2;
-  carriage_depth  = bearing_diam+min_material_thickness*2;
-
-  x_support_len = build_x + carriage_width*2;
-  x_support_len = z_motor_x*2-bearing_diam;
-  x_support_y = carriage_depth/2+sheet_thickness/2;
-
-  y_support_x = z_rod_x - carriage_width - sheet_thickness/2;
-  y_support_len = heatbed_depth + sheet_min_width;
-
-  xy_support_height = 50;
-  xy_support_z = -sheet_thickness/2-xy_support_height/2;
-
-  support_slot_height = xy_support_height/4;
-  support_slots = [xy_support_height/2-xy_support_height/8,-xy_support_height/4+xy_support_height/8];
-
-  module z_carriage_bearing_holder() {
-    module body() {
-      translate([carriage_width/2,0,0])
-        cube([carriage_width,carriage_depth,carriage_height],center=true);
-    }
-
-    module holes() {
-      // zip ties
-      bearing_offset_z = carriage_height/2-bearing_len/2-min_material_thickness;
-      for(side=[-1,1]) {
-        translate([0,0,bearing_offset_z*side]) rotate([90,0,0]) {
-          bearing_zip_tie();
-        }
-      }
-
-      // bearing shaft
-      cylinder(r=bearing_diam/2,h=carriage_height+1,center=true);
-    }
-
-    module bearing_supports() {
-      for(side=[top,bottom]) {
-        for(z=[carriage_height/2-min_material_thickness/2,carriage_height/2-min_material_thickness*1.5-bearing_len]) {
-          translate([bearing_diam/2,0,z*side]) cube([min_material_thickness,bearing_diam,min_material_thickness],center=true);
-        }
-      }
-    }
-
-    translate([0,0,-carriage_height/2]) {
-      difference() {
-        body();
-        holes();
-      }
-      bearing_supports();
-    }
-  }
-
-  for(side=[left,right]) {
-    // x support
-    % translate([0,x_support_y*side,xy_support_z]) {
-      difference() {
-        cube([x_support_len,sheet_thickness,xy_support_height],center=true);
-
-        for(side=[left,right]) {
-          for(z=support_slots) {
-            translate([(x_support_len/2+bearing_diam/2)*side,0,z]) {
-              cube([(carriage_width+sheet_thickness+0.05)*2,sheet_thickness+1,support_slot_height+0.05],center=true);
-            }
-          }
-        }
-      }
-    }
-
-    // y support
-    % translate([y_support_x*side,0,xy_support_z]) {
-      difference() {
-        cube([sheet_thickness,y_support_len,xy_support_height],center=true);
-
-        for(side=[left,right]) {
-          for(z=support_slots) {
-            translate([0,x_support_y*side,z*-1]) {
-              cube([sheet_thickness+1,sheet_thickness+0.05,support_slot_height+0.05],center=true);
-            }
-          }
-        }
-      }
-    }
-
-    // main sheet
-    % cube([heatbed_width+5,y_support_len,sheet_thickness],center=true);
-
-    // motor
-    //color("blue",.5) translate([z_motor_x*side,(carriage_depth/2+sheet_thickness+z_motor_side/2)*side,0]) nema14();
-
-    translate([0,0,0]) {
-    }
-
-    /*
-    */
-
-    translate([z_motor_x*side,0,-sheet_thickness/2]) mirror([side+1,0,0]) {
-      z_carriage_bearing_holder();
-    }
-  }
-}
-
-/*
-for(side=[left,right]) {
-  //color("blue", .5) translate([z_motor_x*side,z_motor_y*side,z_motor_z]) motor();
-  color("blue",.6) translate([z_motor_x*side,0,0]) {
-    translate([0,z_motor_y*side,z_motor_z]) motor();
-    //translate([0,z_motor_y*side,z_motor_z]) motor();
-    translate([0,0,z_rod_z])
-      cylinder(r=rod_diam/2,h=z_rod_len,center=true);
-  }
-}
-*/
-
-//color("Turquoise") translate([0,0,z_carriage_z]) z_carriage();
-
+// xy gantry
 translate([0,build_y*.0,0]) {
   // x carriage
   translate([build_x*-.0,0,x_rod_z]) {
     x_carriage();
-    //translate([0,0,-x_rod_z+hotend_len/2]) {
-    //translate([0,0,-x_rod_z+hotend_len/2]) {
-    translate([0,0,-x_rod_z+hotend_len/2+4.6+4.7]) {
-      //cylinder(r=hotend_diam/2,h=hotend_len,center=true);
-      //rotate([180,0,0]) hotend_jhead();
-    }
   }
 
   // X rods
@@ -157,7 +34,7 @@ translate([0,build_y*.0,0]) {
   }
 }
 
-// y end front
+// y ends
 for(side=[left,right]) {
   translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front(1-side);
   translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(1-side);
@@ -171,9 +48,8 @@ color("green",0.5) mirror([1,0,0]) line();
 
 // top plate
 module plates() {
-
-top_plate_width = y_rod_x*2+sheet_min_width;
-top_plate_depth = y_rod_len+sheet_min_width+motor_side;
+  top_plate_width = y_rod_x*2+sheet_min_width;
+  top_plate_depth = y_rod_len+sheet_min_width+motor_side;
 
   echo("top plate width/depth: ", top_plate_width, "/", top_plate_depth);
 
