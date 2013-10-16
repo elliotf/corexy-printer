@@ -207,7 +207,7 @@ module z_axis() {
 
         mirror([side+1,0,0]) {
           translate([0,0,z_carriage_height/2+spacer]) {
-            color("lightblue") z_carriage();
+            z_carriage();
           }
         }
       }
