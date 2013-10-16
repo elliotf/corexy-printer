@@ -50,9 +50,23 @@ module box_sides() {
   translate([front_sheet_x,front_sheet_y,front_sheet_z])
     rotate([90,0,0])
       front_sheet();
+
+  for(side=[left,right]) {
+    translate([side_sheet_x*side,side_sheet_y,side_sheet_z])
+      rotate([0,0,90]) rotate([90,0,0])
+        side_sheet();
+  }
+
+  translate([rear_sheet_x,rear_sheet_y,rear_sheet_z])
+    rotate([90,0,0])
+      rear_sheet();
+
+  translate([bottom_sheet_x,bottom_sheet_y,bottom_sheet_z])
+    bottom_sheet();
 }
 
 color("Khaki", 0.5) box_sides();
+//color("Khaki") box_sides();
 
 //# translate([0,0,x_rod_z-build_z/2-40])
 % translate([0,0,bed_zero+build_z/2]) cube([build_x,build_y,build_z],center=true);

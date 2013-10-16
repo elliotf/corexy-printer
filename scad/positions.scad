@@ -107,6 +107,15 @@ top_sheet_depth = box_depth;
 front_sheet_width  = box_width;
 front_sheet_height = box_height;
 
+side_sheet_depth  = box_depth;
+side_sheet_height = box_height;
+
+rear_sheet_width  = box_width;
+rear_sheet_height = box_height;
+
+bottom_sheet_width  = box_width;
+bottom_sheet_depth = box_depth;
+
 top_sheet_x = 0;
 top_sheet_y = box_y;
 top_sheet_z = -sheet_thickness/2;
@@ -114,5 +123,17 @@ top_sheet_z = -sheet_thickness/2;
 front_sheet_x = 0;
 front_sheet_y = box_y-box_depth/2-sheet_thickness/2;
 front_sheet_z = -front_sheet_height/2-sheet_thickness;
+
+side_sheet_x = box_width/2+sheet_thickness/2;
+side_sheet_y = box_y;
+side_sheet_z = -side_sheet_height/2-sheet_thickness;
+
+rear_sheet_x = 0;
+rear_sheet_y = box_y+box_depth/2+sheet_thickness/2;
+rear_sheet_z = -rear_sheet_height/2-sheet_thickness;
+
+bottom_sheet_x = 0;
+bottom_sheet_y = box_y;
+bottom_sheet_z = -box_height-sheet_thickness*1.5;
 
 side_sheet_x = top_sheet_width/2+sheet_thickness/2;
