@@ -76,8 +76,9 @@ module bearing_with_zip_tie() {
 
 module idler_bearing() {
   difference() {
-    cylinder(r=belt_bearing_diam/2+belt_bearing_groove_depth,h=belt_bearing_thickness,center=true);
-    rotate([0,0,22.5]) cylinder(r=belt_bearing_inner/2,h=belt_bearing_thickness+1,center=true);
+    cylinder(r=belt_bearing_diam/2+belt_bearing_groove_depth,h=belt_bearing_thickness,center=true,$fn=12);
+    rotate([0,0,22.5])
+      cylinder(r=belt_bearing_inner/2,h=belt_bearing_thickness+1,center=true,$fn=8);
   }
 }
 

@@ -149,6 +149,8 @@ motor_hole_spacing = nema17_hole_spacing;
 motor_screw_diam = nema17_screw_diam;
 motor_shaft_diam = nema17_shaft_diam;
 motor_shaft_len = nema17_shaft_len;
+motor_wire_hole_width = 9;
+motor_wire_hole_height = 6;
 
 z_motor_side = nema14_side;
 z_motor_len = z_motor_side;

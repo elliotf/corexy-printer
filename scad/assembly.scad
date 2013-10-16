@@ -132,9 +132,12 @@ translate([0,build_y*.0,0]) {
   // x carriage
   translate([build_x*-.0,0,x_rod_z]) {
     x_carriage();
-    //% translate([0,0,-x_rod_z+hotend_len/2]) cylinder(r=hotend_diam/2,h=hotend_len,center=true);
-    //% translate([0,0,-x_rod_z+hotend_len/2]) rotate([180,0,0]) hotend_jhead();
-    translate([0,0,-x_rod_z+hotend_len/2+4.6+4.7]) rotate([180,0,0]) hotend_jhead();
+    //translate([0,0,-x_rod_z+hotend_len/2]) {
+    //translate([0,0,-x_rod_z+hotend_len/2]) {
+    translate([0,0,-x_rod_z+hotend_len/2+4.6+4.7]) {
+      //cylinder(r=hotend_diam/2,h=hotend_len,center=true);
+      //rotate([180,0,0]) hotend_jhead();
+    }
   }
 
   // X rods
