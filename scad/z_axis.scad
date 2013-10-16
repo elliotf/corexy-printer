@@ -32,19 +32,17 @@ z_carriage_x = -z_axis_smooth_threaded_dist_x/2;
 z_carriage_x = 0;
 z_carriage_y = z_bearing_diam/2+z_carriage_depth/2;
 
-// prusa i3 rip-off z axis
-
 z_leadscrew_nut_body_height = m5_nut_thickness+min_material_thickness*2;
 z_leadscrew_nut_body_diam = m5_nut_diam+min_material_thickness*2;
 
-x_z_support_y = z_carriage_y+z_carriage_depth/2+sheet_thickness/2;
-x_z_support_len = z_motor_x*2-z_carriage_width+z_support_slot_len*2;
-y_z_support_x = (x_z_support_len-z_support_slot_len*2)/2+sheet_thickness/2;
-y_z_support_x = z_motor_x-z_carriage_width/2-sheet_thickness/2;
-y_z_support_len = build_y;
+z_x_support_y = z_carriage_y+z_carriage_depth/2+sheet_thickness/2;
+z_x_support_len = z_motor_x*2-z_carriage_width+z_support_slot_len*2;
+z_y_support_x = (z_x_support_len-z_support_slot_len*2)/2+sheet_thickness/2;
+z_y_support_x = z_motor_x-z_carriage_width/2-sheet_thickness/2;
+z_y_support_len = build_y;
 
-top_z_support_width = y_z_support_x*2+sheet_thickness*2+3*2;
-top_z_support_depth = heatbed_depth+3*3;
+z_bed_support_width = z_y_support_x*2+sheet_thickness*2+3*2;
+z_bed_support_depth = heatbed_depth+3*3;
 
 echo("z_threaded_rod_len: ", z_threaded_rod_len);
 
@@ -130,15 +128,15 @@ module z_carriage() {
 
 module x_support_for_z_axis() {
   difference() {
-    cube([x_z_support_len,sheet_thickness,z_carriage_height],center=true);
+    cube([z_x_support_len,sheet_thickness,z_carriage_height],center=true);
 
     for(side=[left,right]) {
       for(z=z_support_slots) {
-        translate([x_z_support_len/2*side,0,z]) {
+        translate([z_x_support_len/2*side,0,z]) {
           cube([z_support_slot_len*2,sheet_thickness+1,z_support_slot_height],center=true);
         }
 
-        translate([(y_z_support_x+sheet_thickness/2+z_carriage_bolt_area_thickness+m5_nut_diam/2)*side,0,z*-1]) {
+        translate([(z_y_support_x+sheet_thickness/2+z_carriage_bolt_area_thickness+m5_nut_diam/2)*side,0,z*-1]) {
           rotate([90,0,0]) hole(5,sheet_thickness+1,16);
         }
       }
@@ -148,10 +146,10 @@ module x_support_for_z_axis() {
 
 module y_support_for_z_axis() {
   difference() {
-    cube([sheet_thickness,y_z_support_len,z_carriage_height],center=true);
+    cube([sheet_thickness,z_y_support_len,z_carriage_height],center=true);
 
     for(z=z_support_slots) {
-      translate([0,x_z_support_y,z*-1]) {
+      translate([0,z_x_support_y,z*-1]) {
         cube([sheet_thickness+1,sheet_thickness,z_support_slot_height],center=true);
       }
 
@@ -163,7 +161,7 @@ module y_support_for_z_axis() {
 }
 
 module bed_support_for_z_axis() {
-  cube([top_z_support_width,top_z_support_depth,sheet_thickness],center=true);
+  cube([z_bed_support_width,z_bed_support_depth,sheet_thickness],center=true);
 }
 
 z_axis_z = -z_rod_len+z_carriage_height/2+sheet_thickness+spacer;
@@ -173,13 +171,13 @@ module z_axis() {
 
     color("khaki") {
       // x support
-      translate([0,x_z_support_y,0]) {
+      translate([0,z_x_support_y,0]) {
         x_support_for_z_axis();
       }
 
       // y support
       for(side=[left,right]) {
-        translate([y_z_support_x*side,0,0]) {
+        translate([z_y_support_x*side,0,0]) {
           y_support_for_z_axis();
         }
       }
