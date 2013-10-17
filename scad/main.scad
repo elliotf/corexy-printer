@@ -2,8 +2,8 @@ include <config.scad>;
 include <positions.scad>;
 use <util.scad>;
 
-echo("x rod len: ",x_rod_len);
-echo("y rod len: ",y_rod_len);
+//echo("x rod len: ",x_rod_len);
+//echo("y rod len: ",y_rod_len);
 
 module motor() {
   difference() {
@@ -34,7 +34,6 @@ module nema14() {
 module motor_with_pulley() {
   motor();
   pulley_z_above_motor_base = xy_pulley_above_motor_plate;
-  echo("PULLEY CENTER ABOVE MOTOR_PLATE: ", pulley_z_above_motor_base);
   translate([0,0,pulley_z_above_motor_base])
     cylinder(r=pulley_diam/2,h=pulley_height,center=true);
 }
@@ -166,7 +165,6 @@ module y_carriage(endstop=1) {
   x_clamp_z = -rod_diam/2-clamp_screw_diam/2-spacer;
 
   idler_screw_len = idler_z-belt_bearing_thickness/2 + x_clamp_thickness/2;
-  echo("IDLER SCREW LEN: ", idler_screw_len);
 
   if(endstop) {
     % translate([y_rod_to_x_clamp_end-endstop_height/2,0,-x_clamp_thickness/2-endstop_width/2]) rotate([0,90,0]) rotate([0,0,90]) endstop();
@@ -608,10 +606,13 @@ module idlers() {
   // carriage anchor rear
   translate([xy_idler_x*right,xy_idler_y*rear,xy_idler_z]) idler_bearing();
 
-  /*
   // motor
-  translate([xy_motor_x*right,xy_motor_y,xy_motor_z]) motor_with_pulley();
+  translate([xy_motor_x*right,xy_motor_y,xy_motor_z]) {
+    rotate([-90,0,0])
+      motor_with_pulley();
+  }
 
+  /*
   // pulley idler
   translate([xy_pulley_idler_x*right,xy_pulley_idler_y,front_idler_z])
     cylinder(r=pulley_idler_diam/2,h=pulley_idler_height,center=true);

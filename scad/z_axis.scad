@@ -1,8 +1,6 @@
 include <main.scad>;
 use <lib/boxcutter/main.scad>;
 
-echo("z_threaded_rod_len: ", z_threaded_rod_len);
-
 module z_carriage() {
   module body() {
     // main body back
@@ -148,13 +146,13 @@ module z_axis() {
 
   for(side=[left,right]) {
     translate([z_rod_x*side,0,z_rod_z])
-      % cylinder(r=rod_diam/2,h=z_rod_len,center=true);
+      color("grey", 0.5) cylinder(r=rod_diam/2,h=z_rod_len,center=true);
 
     translate([z_motor_x*side,0,z_threaded_rod_z]) {
-      % cylinder(r=5/2,h=z_threaded_rod_len,center=true);
+      color("grey", 0.5) cylinder(r=5/2,h=z_threaded_rod_len,center=true);
 
       translate([0,0,z_motor_z]) {
-        % motor();
+        color("grey", 0.5) motor();
 
         mirror([side+1,0,0]) {
           translate([0,0,z_carriage_height/2+spacer]) {

@@ -3,7 +3,7 @@ use <lib/boxcutter/main.scad>;
 
 module top_sheet() {
   module body() {
-    box_side([top_sheet_width,top_sheet_depth],[2,2,2,2]);
+    box_side([top_sheet_width,top_sheet_depth],[1,2,2,2]);
   }
 
   module holes() {
@@ -72,10 +72,25 @@ module side_sheet() {
 
 module rear_sheet() {
   module body() {
-    box_side([rear_sheet_width,rear_sheet_height],[1,2,2,2]);
+    box_side([rear_sheet_width,rear_sheet_height],[2,2,2,2]);
   }
 
   module holes() {
+    translate([0,rear_sheet_height/2+sheet_thickness,0]) {
+      for(side=[left,right]) {
+        // motor
+        translate([xy_motor_x*side,xy_motor_z,0]) {
+          for(x=[-1,1]) {
+            for(y=[-1,1]) {
+              translate([motor_hole_spacing/2*x,motor_hole_spacing/2*y,0]) 
+                cylinder(r=motor_screw_diam/2,h=sheet_thickness+1,center=true);
+            }
+          }
+
+          cylinder(r=motor_hole_spacing*.4,h=sheet_thickness+1,center=true);
+        }
+      }
+    }
   }
 
   difference() {
