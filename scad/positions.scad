@@ -88,7 +88,7 @@ z_axis_z = -z_rod_len+z_carriage_height/2+sheet_thickness+spacer;
 z_motor_z = -z_threaded_rod_len/2-spacer-motor_shaft_len;
 
 // sheets
-top_sheet_opening_width = build_x + x_carriage_width*.7;
+top_sheet_opening_width = build_x + x_carriage_width;
 top_sheet_opening_depth = build_y + x_carriage_depth*.7;
 top_sheet_opening_depth = (y_rod_len/2-y_clamp_len-bearing_diam*1.5)*2;
 
