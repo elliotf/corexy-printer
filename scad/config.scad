@@ -203,7 +203,7 @@ x_carriage_depth = x_rod_spacing + bearing_diam;
 
 // calculated rod lengths
 x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
-y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2 + spacer*2;
+y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
 

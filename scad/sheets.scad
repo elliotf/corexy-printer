@@ -14,6 +14,14 @@ module top_sheet() {
         cube([top_sheet_opening_width,top_sheet_depth,sheet_thickness+1],center=true);
 
       for(side=[left,right]) {
+        for(end=[front,rear]) {
+          translate([y_rod_x*side,(y_rod_len/2-y_clamp_len/2)*end,0]) {
+            for(side=[left,right]) {
+              translate([screw_pad_hole_spacing/2*side,0,0]) hole(sheet_screw_diam,sheet_thickness+1,12);
+            }
+          }
+        }
+        /*
         // y ends
         translate([y_rod_x*side,y_rod_len/2*front,-sheet_thickness/2])
           mirror([side+1,0,0])
@@ -22,6 +30,7 @@ module top_sheet() {
         translate([y_rod_x*side,y_rod_len/2*rear,-sheet_thickness/2])
           mirror([side+1,0,0])
             y_end_rear_screw_holes();
+        */
       }
     }
   }
