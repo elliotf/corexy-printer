@@ -65,15 +65,6 @@ module motor_pulley(num_grooves) {
       translate([0,2.65,0]) cube([motor_shaft_diam,1,height*2],center=true);
     }
 
-    /*
-    // attempt to make pulley printable upside down
-    translate([0,0,-height/2+collar_height-1.5])
-      rotate_extrude($fn=cylinder_resolution)
-        translate([collar_diam/2,0,0])
-          rotate(45)
-            square([2.5,2.5]);
-    */
-
     captive_nut_hole_len = 2.15+m3_nut_thickness;
     translate([0,0,-height/2+collar_height/2]) {
       translate([0,pulley_diam/2,0]) rotate([90,0,0]) hole(m3_diam,pulley_diam,6);
@@ -85,39 +76,37 @@ module motor_pulley(num_grooves) {
     }
   }
 
-  difference() {
-    body();
-    holes();
-  }
+  translate([0,0,height/2]) {
+    difference() {
+      body();
+      holes();
+    }
 
-  translate([0,0,add_shaft_len/2])
-    grooves(pulley_diam,num_grooves);
+    translate([0,0,add_shaft_len/2])
+      grooves(pulley_diam,num_grooves);
+  }
 }
 
 module idler_pulley(num_grooves) {
   height = get_grooved_height(num_grooves) + 1;
 
-  difference() {
-    cylinder(r=idler_diam/2,h=height,center=true,$fn=cylinder_resolution);
-    for(end=[top,bottom]) {
-      translate([0,0,height/2*end])
-        hole(idler_bearing_diam,idler_bearing_thickness*2,24);
+  translate([0,0,height/2]) {
+    difference() {
+      cylinder(r=idler_diam/2,h=height,center=true,$fn=cylinder_resolution);
+      for(end=[top,bottom]) {
+        translate([0,0,height/2*end])
+          hole(idler_bearing_diam,idler_bearing_thickness*2,24);
+      }
+
+      // shaft hole
+      hole(idler_bearing_diam-2,height+1,6);
     }
-    // for 623zz bearings
-    //hole(idler_bearing_diam-.55,height+1,8);
-    //hole(idler_bearing_diam-1,height+1,6);
 
-    // for 625zz bearings
-    //hole(idler_bearing_diam-1.65,height+1,6); // vs 12-sided
-    //hole(idler_bearing_diam-1.9,height+1,6); // vs 18-sided
-    hole(idler_bearing_diam-2,height+1,6); // vs 24-sided
+    grooves(idler_diam,num_grooves);
   }
-
-  grooves(idler_diam,num_grooves);
 }
 
 spacer = motor_side/2 + m5_nut_diam/2 + min_material_thickness;
-//translate([-pulley_diam/2-1,0,0]) rotate([0,0,90]) motor_pulley(num_pulley_grooves);
-//translate([idler_diam/2+1,0,5.5/2]) idler_pulley(num_pulley_grooves-1);
 translate([-spacer/2,0,0]) rotate([0,0,90]) motor_pulley(num_pulley_grooves);
-translate([spacer/2,0,5.5/2]) idler_pulley(num_pulley_grooves-1);
+//translate([spacer/2,0,5.75]) idler_pulley(num_pulley_grooves-1);
+translate([spacer/2,0,0]) idler_pulley(num_pulley_grooves-1);
