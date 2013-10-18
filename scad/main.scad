@@ -417,18 +417,6 @@ module y_end_rear(side=-1) {
   }
 }
 
-module y_end_rear_screw_holes() {
-  for(side=[left,right]) {
-    translate([screw_pad_hole_spacing/2*side,y_clamp_len/2,0]) hole(sheet_screw_diam,sheet_thickness+1,16);
-  }
-}
-
-module y_end_front_screw_holes() {
-  for(side=[left,right]) {
-    translate([screw_pad_hole_spacing/2*side,y_clamp_len/2,0]) hole(sheet_screw_diam,sheet_thickness+1,16);
-  }
-}
-
 module y_end_base() {
   front_sheet_clearance_height = sheet_shoulder_width;
 

@@ -23,16 +23,6 @@ module top_sheet() {
             }
           }
         }
-        /*
-        // y ends
-        translate([y_rod_x*side,y_rod_len/2*front,-sheet_thickness/2])
-          mirror([side+1,0,0])
-            y_end_front_screw_holes();
-
-        translate([y_rod_x*side,y_rod_len/2*rear,-sheet_thickness/2])
-          mirror([side+1,0,0])
-            y_end_rear_screw_holes();
-        */
       }
     }
   }
