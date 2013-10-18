@@ -91,6 +91,8 @@ bearing_groove_spacing = lm6uu_bearing_groove_spacing;
 bearing_groove_width   = lm6uu_bearing_groove_width;
 bearing_groove_depth   = lm6uu_bearing_groove_depth;
 rod_diam               = lm6uu_rod_diam;
+/*
+*/
 
 // if you'd like the z axis to use different rods/bearings
 z_bearing_diam           = bearing_diam;
@@ -171,6 +173,8 @@ sheet_thickness = 6;
 sheet_min_width = 30;
 sheet_shoulder_width = 3; // material to have on the far side of a slot
 sheet_screw_diam = m3_diam;
+sheet_screw_nut_diam = m3_nut_diam;
+sheet_screw_nut_thickness = m3_nut_thickness;
 
 top_plate_screw_diam = sheet_screw_diam;
 
@@ -179,7 +183,9 @@ min_material_thickness = 2;
 spacer = 1;
 clamp_gap_width = spacer;
 screw_pad_height = min_material_thickness*2;
-screw_pad_outer_diam = top_plate_screw_diam+min_material_thickness*2; // FIXME: make parts fatter to make printing easier
+screw_pad_outer_diam = top_plate_screw_diam+min_material_thickness*3;
+screw_pad_hole_spacing = (rod_diam/2 + min_material_thickness*3 + top_plate_screw_diam/2) * 2;
+screw_pad_width = screw_pad_hole_spacing + (top_plate_screw_diam/2 + min_material_thickness*2) * 2;
 
 // Screws
 clamp_screw_diam = m3_diam;

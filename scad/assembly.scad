@@ -39,15 +39,15 @@ translate([0,build_y*.0,0]) {
 
 // y ends
 for(side=[left,right]) {
-  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) y_end_front(1-side);
-  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(1-side);
+  translate([y_rod_x*side,(y_rod_len/2)*front,y_rod_z]) mirror([side+1,0,0]) rotate([90,0,0]) y_end_front(1-side);
+  //translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(1-side);
 }
 
 // shift one line's bearings up or down to avoid rubbing?
 color("red",0.5) idlers();
-//color("red",0.5) line();
+color("green",0.5) line();
 color("green",0.5) mirror([1,0,0]) idlers();
-//color("green",0.5) mirror([1,0,0]) line();
+color("red",0.5) mirror([1,0,0]) line();
 
 module box_sides() {
   translate([top_sheet_x,top_sheet_y,top_sheet_z]) top_sheet();
@@ -56,15 +56,15 @@ module box_sides() {
     rotate([90,0,0])
       front_sheet();
 
+  translate([rear_sheet_x,rear_sheet_y,rear_sheet_z])
+    rotate([90,0,0])
+      rear_sheet();
+
   for(side=[left,right]) {
     translate([side_sheet_x*side,side_sheet_y,side_sheet_z])
       rotate([0,0,90]) rotate([90,0,0])
         side_sheet();
   }
-
-  translate([rear_sheet_x,rear_sheet_y,rear_sheet_z])
-    rotate([90,0,0])
-      rear_sheet();
 
   translate([bottom_sheet_x,bottom_sheet_y,bottom_sheet_z])
     bottom_sheet();

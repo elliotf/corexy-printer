@@ -12,11 +12,13 @@ y_end_rear_rod_end_screw_y = y_clamp_len+screw_pad_outer_diam/2;
 // idlers
 xy_idler_x = y_rod_x - bearing_diam/2 - belt_bearing_diam/2 - min_material_thickness;
 xy_idler_y = x_rod_spacing/2 - rod_diam/2 - belt_bearing_diam/2 - min_material_thickness/2;
-xy_idler_z = x_rod_z + belt_bearing_diam*.5;
+xy_idler_z = x_rod_z + rod_diam/2 + min_material_thickness + belt_bearing_thickness/2 + spacer;
 
 front_idler_x = xy_idler_x + belt_bearing_diam/2;
+front_idler_x = xy_idler_x + belt_bearing_diam;
 front_idler_y = -y_rod_len/2 - belt_bearing_inner/2 - min_material_thickness/2;
 front_idler_z = xy_idler_z - belt_bearing_diam/2;
+front_idler_z = xy_idler_z;
 
 lower_rear_idler_x = front_idler_x - belt_bearing_diam/2;
 lower_rear_idler_y = y_rod_len/2 - y_clamp_len + belt_bearing_diam/2;
@@ -25,6 +27,15 @@ lower_rear_idler_z = front_idler_z - belt_bearing_diam/2;
 upper_rear_idler_x = lower_rear_idler_x;
 upper_rear_idler_y = lower_rear_idler_y;
 upper_rear_idler_z = xy_idler_z;
+
+inner_rear_idler_x = xy_idler_x+belt_bearing_diam/2;
+inner_rear_idler_y = y_rod_len/2+belt_bearing_diam/2;
+inner_rear_idler_z = xy_idler_z;
+
+outer_rear_idler_x = front_idler_x+belt_bearing_diam/2;
+outer_rear_idler_x = front_idler_x+belt_bearing_diam*1.5;
+outer_rear_idler_y = y_rod_len/2;
+outer_rear_idler_z = xy_idler_z;
 
 bed_zero = x_rod_z - (hotend_len - 10 - bearing_diam/2) - build_z;
 side_panel_height = -1*bed_zero + motor_len + sheet_min_width;
@@ -82,9 +93,11 @@ top_sheet_opening_depth = build_y + x_carriage_depth*.7;
 top_sheet_opening_depth = (y_rod_len/2-y_clamp_len-bearing_diam)*2;
 
 box_width = (z_motor_x+z_carriage_width/2+spacer)*2;
+box_depth = y_rod_len-sheet_thickness*1-y_clamp_len;
 box_depth = y_rod_len;
 box_height = -z_axis_z+z_carriage_height/2+motor_side+sheet_thickness;
-box_y     = min_material_thickness*2;
+box_y     = sheet_thickness/2+y_clamp_len/2;
+box_y     = 0;
 
 top_sheet_width = box_width;
 top_sheet_depth = box_depth;
@@ -129,6 +142,14 @@ xy_motor_y = rear_sheet_y-sheet_thickness/2;
 xy_motor_z = -sheet_thickness-motor_side/2-spacer;
 xy_pulley_above_motor_plate = (xy_idler_z-belt_bearing_diam/2)-xy_motor_z;
 xy_pulley_above_motor_plate = spacer*2+pulley_height/2;
+xy_pulley_above_motor_plate = sheet_thickness+pulley_height/2;
+xy_pulley_above_motor_plate = sheet_thickness+1;
 
 xy_pulley_idler_x = xy_motor_x-motor_hole_spacing/2;
 xy_pulley_idler_y = xy_motor_y+motor_hole_spacing/2;
+
+function get_inner_rear_idler_angle(short,long) = atan(short/long);
+inner_rear_idler_angle = get_inner_rear_idler_angle(inner_rear_idler_z-xy_motor_z-pulley_diam/2,inner_rear_idler_x+xy_motor_x);
+
+function get_outer_rear_idler_angle(short,long) = atan(short/long);
+outer_rear_idler_angle = get_outer_rear_idler_angle(outer_rear_idler_x-xy_motor_x+pulley_diam/2,outer_rear_idler_z-xy_motor_z);
