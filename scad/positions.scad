@@ -148,8 +148,8 @@ xy_pulley_above_motor_plate = sheet_thickness+1;
 xy_pulley_idler_x = xy_motor_x-motor_hole_spacing/2;
 xy_pulley_idler_y = xy_motor_y+motor_hole_spacing/2;
 
-function get_inner_rear_idler_angle(short,long) = atan(short/long);
-inner_rear_idler_angle = get_inner_rear_idler_angle(inner_rear_idler_z-xy_motor_z-pulley_diam/2,inner_rear_idler_x+xy_motor_x);
+function get_inner_rear_idler_angle_y(short,long) = atan(short/long);
+inner_rear_idler_angle_y = get_inner_rear_idler_angle_y(inner_rear_idler_z-xy_motor_z-pulley_diam/2,inner_rear_idler_x+xy_motor_x);
 
 outer_rear_idler_angle_x = 3; // TODO: use trig to get angle?
 outer_rear_idler_angle_x = 0; // TODO: use trig to get angle?

@@ -293,9 +293,26 @@ module y_end_rear(side=-1) {
   front_sheet_clearance_height = sheet_shoulder_width;
 
   outer_idler_x = -1*(outer_rear_idler_x-y_rod_x);
-  echo(outer_idler_x);
   outer_idler_y = outer_rear_idler_y-y_rod_len/2;
   outer_idler_z = outer_rear_idler_z-y_rod_z;
+
+  inner_idler_x = -1*(inner_rear_idler_x-y_rod_x);
+  inner_idler_y = inner_rear_idler_y-y_rod_len/2;
+  inner_idler_z = inner_rear_idler_z-y_rod_z;
+
+  module position_inner_support() {
+    difference() {
+      translate([inner_idler_x,inner_idler_y,inner_idler_z]) {
+        rotate([0,inner_rear_idler_angle_y,0]) {
+          translate([belt_bearing_diam/2,0,-belt_bearing_thickness/2-support_thickness/2-spacer]) {
+            for(i=[0:$children-1]) {
+              child(i);
+            }
+          }
+        }
+      }
+    }
+  }
 
   module position_outer_support() {
     difference() {
@@ -312,20 +329,44 @@ module y_end_rear(side=-1) {
   }
 
   module body() {
-    translate([0,-y_clamp_len+y_end_body_depth/2,-y_rod_z+y_end_body_height/2])
-      cube([y_end_body_width,y_end_body_depth,y_end_body_height],center=true);
+    translate([0,-y_clamp_len+y_end_body_depth/2,-y_rod_z+y_end_body_height/2]) {
+      difference() {
+        cube([y_end_body_width,y_end_body_depth,y_end_body_height],center=true);
+
+        translate([y_end_body_width/2,y_end_body_depth/2,y_end_body_height/2])
+          rotate([-10,10,0])
+            cube([y_end_body_depth*2,y_end_body_depth*2,5],center=true);
+
+        translate([-y_end_body_width/2-rod_diam*.75,0,y_end_body_height/2])
+          rotate([0,-10,0])
+            cube([y_end_body_depth*2,y_end_body_depth*2,5],center=true);
+      }
+    }
 
     hull() {
-      //translate([-y_end_body_width/2,-y_clamp_len+y_end_body_depth/2,-y_rod_z+y_end_body_height*.75]) cube([0.05,y_end_body_depth,y_end_body_height*.5],center=true);
-
       // outer idler support arm
       position_outer_support() {
-        translate([belt_bearing_diam/2,-outer_idler_y+belt_bearing_diam/2-y_clamp_len+y_end_body_depth/2,spacer])
-          cube([5,y_end_body_depth,support_thickness],center=true);
+        translate([belt_bearing_diam*.3,-outer_idler_y+belt_bearing_diam/2-y_clamp_len+y_end_body_depth/2,spacer])
+          cube([belt_bearing_diam*.6,y_end_body_depth,support_thickness],center=true);
 
-        translate([0,0,spacer]) cylinder(r=belt_bearing_diam/2,h=support_thickness,center=true,$fn=8);
+        translate([0,0,spacer]) rotate([0,0,22.5])
+          cylinder(r=belt_bearing_diam/2,h=support_thickness,center=true,$fn=8);
 
         translate([0,0,-spacer]) rotate([0,0,22.5])
+          cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=support_thickness,center=true,$fn=8);
+      }
+    }
+
+    hull() {
+      translate([y_end_body_width/2,-y_clamp_len+y_end_body_depth/2,-y_rod_z+y_end_body_height*.6])
+        cube([0.05,y_end_body_depth,y_end_body_height*.3],center=true);
+
+      // inner idler support arm
+      position_inner_support() {
+        translate([0,0,-spacer]) rotate([0,0,22.5])
+          cylinder(r=belt_bearing_diam/2,h=support_thickness,center=true,$fn=8);
+
+        translate([0,0,spacer]) rotate([0,0,22.5])
           cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=support_thickness,center=true,$fn=8);
       }
     }
@@ -341,8 +382,15 @@ module y_end_rear(side=-1) {
 
     // outer support shaft hole
     position_outer_support() {
-      translate([0,0,support_thickness-belt_bearing_nut_thickness+0.05])
+      translate([0,0,support_thickness-belt_bearing_nut_thickness/3])
         rotate([0,0,0]) hole(belt_bearing_nut_diam,belt_bearing_nut_thickness*1.5,6);
+      rotate([0,0,22.5]) hole(belt_bearing_inner,50,8);
+    }
+
+    // inner support shaft hole
+    position_inner_support() {
+      translate([0,0,-support_thickness-belt_bearing_nut_thickness/2])
+        rotate([0,0,0]) hole(belt_bearing_nut_diam,belt_bearing_nut_thickness*3,6);
       rotate([0,0,22.5]) hole(belt_bearing_inner,50,8);
     }
 
@@ -475,7 +523,7 @@ module idlers() {
 
   // inner rear idler
   translate([inner_rear_idler_x*left,inner_rear_idler_y,inner_rear_idler_z]) {
-    rotate([0,inner_rear_idler_angle,0])
+    rotate([0,inner_rear_idler_angle_y,0])
       translate([belt_bearing_diam/2,0,0]) {
         idler_bearing();
         translate([debug_len/2,0,0]) cube([debug_len,1,1],center=true);
