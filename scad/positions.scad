@@ -153,3 +153,7 @@ inner_rear_idler_angle = get_inner_rear_idler_angle(inner_rear_idler_z-xy_motor_
 
 function get_outer_rear_idler_angle(short,long) = atan(short/long);
 outer_rear_idler_angle = get_outer_rear_idler_angle(outer_rear_idler_x-xy_motor_x+pulley_diam/2,outer_rear_idler_z-xy_motor_z);
+
+y_end_body_width = screw_pad_width;
+y_end_body_depth = y_clamp_len + min_material_thickness + belt_bearing_inner + min_material_thickness*2;
+y_end_body_height = y_rod_z + rod_diam/2 + min_material_thickness; //idler_clearance + rod_diam/2 + y_rod_z;

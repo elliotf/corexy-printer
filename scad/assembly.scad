@@ -39,8 +39,10 @@ translate([0,build_y*.0,0]) {
 
 // y ends
 for(side=[left,right]) {
-  translate([y_rod_x*side,(y_rod_len/2)*front,y_rod_z]) mirror([side+1,0,0]) rotate([90,0,0]) y_end_front(1-side);
-  //translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(1-side);
+  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0])
+    rotate([90,0,0]) y_end_front(1-side);
+  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0])
+    rotate([0,0,180]) rotate([90,0,0]) y_end_rear(1-side);
 }
 
 // shift one line's bearings up or down to avoid rubbing?

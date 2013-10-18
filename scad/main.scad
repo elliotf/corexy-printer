@@ -288,122 +288,12 @@ module y_carriage(endstop=1) {
 }
 
 module y_end_rear() {
-  clamp_width = rod_diam+min_material_thickness*2;
-  clamp_len = y_clamp_len;
-  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness*2;
+  y_end_base();
+}
 
-  rod_end_dist_to_lower_idler_x = y_rod_x - lower_rear_idler_x;
-  rod_end_dist_to_lower_idler_y = lower_rear_idler_y - rear*y_rod_len/2;
-  rod_end_dist_to_lower_idler_z = lower_rear_idler_z - y_rod_z;
-  rod_end_dist_to_idler_z = front_idler_z - y_rod_z;
-
-  idler_support_thickness = belt_bearing_diam-belt_bearing_thickness-spacer*2;
-
-  bearing_screw_pos = [rod_end_dist_to_lower_idler_x,rod_end_dist_to_lower_idler_y,0];
-  inside_screw_pos = [rod_end_dist_to_lower_idler_x+belt_bearing_diam/2+screw_pad_outer_diam/2+spacer,-clamp_len+screw_pad_outer_diam/2,0];
-  outside_screw_pos = [-clamp_width,-clamp_len+screw_pad_outer_diam/2,0];
-  rod_end_screw_pos = [0,y_end_rear_rod_end_screw_y,0];
-
-  module y_end_rear_body() {
-    // rod hole body
-    hull() {
-      // main tower
-      translate([0,0,-y_rod_z+screw_pad_height/2])
-        cube([clamp_width,clamp_len*2,screw_pad_height],center=true);
-
-      // clamp body
-      translate([0,-clamp_len/2,clamp_screw_body_height/2+rod_diam/2])
-        cube([clamp_width,clamp_len,clamp_screw_body_height],center=true);
-
-      translate([0,bearing_screw_pos[1],0])
-        cube([clamp_width,bearing_support_diam,idler_support_thickness],center=true);
-    }
-
-    // screw pad
-    hull() {
-      translate([0,0,-y_rod_z+screw_pad_height/2]) {
-        for(vector=[outside_screw_pos,rod_end_screw_pos]) {
-          translate(vector)
-            cube([clamp_width,screw_pad_outer_diam,screw_pad_height],center=true);
-        }
-        translate([0,-clamp_len/2,0])
-          cube([clamp_width,clamp_len,screw_pad_height],center=true);
-      }
-    }
-
-    // inside support post
-    translate([0,0,-y_rod_z/2+idler_support_thickness/4]) {
-      translate(inside_screw_pos)
-        cube([screw_pad_outer_diam,screw_pad_outer_diam,y_rod_z+idler_support_thickness/2],center=true);
-    }
-    bearing_support_diam = belt_bearing_inner+min_material_thickness*4;
-
-    // idler support
-    hull() {
-      // anchor to support post
-      translate(inside_screw_pos)
-        cube([screw_pad_outer_diam,screw_pad_outer_diam,idler_support_thickness],center=true);
-
-      // anchor to main post front
-      translate([0,-clamp_len+1,0])
-        cube([1,2,idler_support_thickness],center=true);
-
-      // anchor to main post rear
-      translate([0,bearing_screw_pos[1],0])
-        cube([clamp_width,bearing_support_diam,idler_support_thickness],center=true);
-
-      translate([0,0,rod_end_dist_to_idler_z]) {
-        // main bearing support
-        translate(bearing_screw_pos) {
-          cylinder(r=bearing_support_diam/2,h=idler_support_thickness,center=true);
-        }
-      }
-    }
-
-    translate([0,0,rod_end_dist_to_idler_z]) {
-      // main bearing support
-      translate(bearing_screw_pos) {
-        hull() {
-          cylinder(r=belt_bearing_inner/2+min_material_thickness/2,h=idler_support_thickness+spacer*2,center=true);
-          cylinder(r=belt_bearing_inner/2+min_material_thickness*2,h=idler_support_thickness,center=true);
-        }
-      }
-    }
-  }
-
-  module y_end_rear_holes() {
-    translate([0,-clamp_len/2,0]) {
-      // y rod hole
-      rotate([90,0,0]) rotate([0,0,22.5])
-        cylinder(r=da8*rod_diam,h=50,center=true,$fn=8);
-
-      translate([0,0,clamp_screw_body_height/2+rod_diam/2]) {
-        // clamp slot
-        cube([clamp_gap_width,clamp_len*2,clamp_screw_body_height+1],center=true);
-
-        // clamp screw
-        rotate([0,90,0]) rotate([0,0,22.5])
-          cylinder(r=clamp_screw_diam*da6,h=clamp_width+3,center=true,$fn=8);
-
-        // clamp screw captive nut
-        translate([clamp_gap_width/2+min_material_thickness+clamp_screw_nut_thickness,0,0]) rotate([0,90,0])
-          cylinder(r=clamp_screw_nut_diam*da6,h=5,center=true,$fn=6);
-      }
-    }
-
-    // idler bolt
-    translate(bearing_screw_pos) rotate([0,0,22.5])
-      cylinder(r=belt_bearing_inner*da8,h=y_rod_z*2,center=true,$fn=8);
-
-    for(vector=[inside_screw_pos,outside_screw_pos,rod_end_screw_pos]) {
-      translate(vector) rotate([0,0,22.5])
-        cylinder(r=da8*top_plate_screw_diam,h=y_rod_z*2+1,center=true,$fn=8);
-    }
-  }
-
-  difference() {
-    y_end_rear_body();
-    y_end_rear_holes();
+module y_end_rear_screw_holes() {
+  for(side=[left,right]) {
+    translate([screw_pad_hole_spacing/2*side,y_clamp_len/2,0]) hole(sheet_screw_diam,sheet_thickness+1,16);
   }
 }
 
@@ -413,37 +303,18 @@ module y_end_front_screw_holes() {
   }
 }
 
-module y_end_front(endstop=0) {
-  debug = 1;
-  debug = 0;
-  idler_clearance = (front_idler_z-belt_bearing_thickness/2)-(y_rod_z+rod_diam/2);
+module y_end_base() {
+  front_sheet_clearance_height = sheet_shoulder_width;
 
-  clamp_width = screw_pad_width;
-  clamp_depth = y_clamp_len + min_material_thickness + belt_bearing_inner + min_material_thickness*2;
-  clamp_height = y_rod_z + rod_diam/2 + min_material_thickness; //idler_clearance + rod_diam/2 + y_rod_z;
-  echo("CLEARANCE: ", idler_clearance);
-
-  idler_x = y_rod_x-front_idler_x;
-  idler_y = front_idler_z-y_rod_z;
-  idler_z = -1*(y_rod_len/2+front_idler_y)+y_clamp_len;
+  y_end_body_width = screw_pad_width;
+  y_end_body_depth = y_clamp_len + min_material_thickness + belt_bearing_inner + min_material_thickness*2;
+  y_end_body_height = y_rod_z + rod_diam/2 + min_material_thickness; //idler_clearance + rod_diam/2 + y_rod_z;
 
   module body() {
-    translate([0,-y_rod_z+clamp_height/2,clamp_depth/2])
-      cube([screw_pad_width,clamp_height,clamp_depth],center=true);
-
-    // idler crest
-    hull() {
-      translate([idler_x,idler_y-belt_bearing_thickness,idler_z]) {
-        rotate([-90,0,0]) rotate([0,0,22.5]) {
-          cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=belt_bearing_thickness,center=true,$fn=8);
-          translate([0,0,-spacer*1.25]) cylinder(r=belt_bearing_diam/2,h=belt_bearing_thickness,center=true,$fn=8);
-        }
-      }
-    }
+    translate([0,-y_rod_z+y_end_body_height/2,y_end_body_depth/2])
+      cube([screw_pad_width,y_end_body_height,y_end_body_depth],center=true);
   }
 
-  front_sheet_clearance_height = screw_pad_height;
-  front_sheet_clearance_height = sheet_shoulder_width;
   module holes() {
     // make screw plate sheet printable
     side = sqrt(pow(front_sheet_clearance_height,2)*2);
@@ -454,70 +325,66 @@ module y_end_front(endstop=0) {
 
     // screw pad holes
     for(side=[left,right]) {
-      translate([screw_pad_hole_spacing/2*side,-y_rod_z+clamp_height/2,y_clamp_len/2])
+      translate([screw_pad_hole_spacing/2*side,-y_rod_z+y_end_body_height/2,y_clamp_len/2])
         rotate([90,0,0]) {
           rotate([0,0,22.5])
-            hole(sheet_screw_diam,clamp_height+1,8);
-          translate([0,0,-clamp_height/2]) hole(sheet_screw_nut_diam,sheet_screw_nut_thickness*2,6);
+            hole(sheet_screw_diam,y_end_body_height+1,8);
+          translate([0,0,-y_end_body_height/2]) hole(sheet_screw_nut_diam,sheet_screw_nut_thickness*2,6);
         }
     }
+  }
 
-    // idler bolt hole
-    translate([idler_x,idler_y,idler_z])
-      rotate([90,0,0]) rotate([0,0,22.5])
-        hole(belt_bearing_inner,clamp_height*3,8);
-
-    // y rod hole
-    translate([0,0,y_clamp_len/2-0.05]) hole(rod_diam,y_clamp_len+0.1,12);
-
-    // captive head of bolt, threads sticking up through idler
-    translate([idler_x,-y_rod_z+front_sheet_clearance_height,idler_z]) {
-      rotate([90,0,0])
-        hole(belt_bearing_nut_diam,belt_bearing_nut_thickness*2,6);
+  translate([0,0,-y_clamp_len]) {
+    difference() {
+      body();
+      holes();
     }
+  }
+}
+
+module y_end_front(endstop=0) {
+  idler_x = y_rod_x-front_idler_x;
+  idler_y = front_idler_z-y_rod_z;
+  idler_z = -1*(y_rod_len/2+front_idler_y)+y_clamp_len;
+
+  module body() {
+    // idler crest
+    hull() {
+      translate([idler_x,idler_y-belt_bearing_thickness,idler_z]) {
+        rotate([-90,0,0]) rotate([0,0,22.5]) {
+          cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=belt_bearing_thickness,center=true,$fn=8);
+
+          translate([0,0,-spacer*1.25])
+            cylinder(r=belt_bearing_diam/2,h=belt_bearing_thickness,center=true,$fn=8);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    // idler bolt hole
+    translate([idler_x,idler_y,idler_z]) rotate([90,0,0]) rotate([0,0,22.5])
+      hole(belt_bearing_inner,y_end_body_height*3,8);
+
+    // captive bolt head, threads sticking up through idler
+    translate([idler_x,-y_rod_z+sheet_shoulder_width,idler_z]) rotate([90,0,0])
+      hole(belt_bearing_nut_diam,belt_bearing_nut_thickness*2,6);
 
     // material saving
     for(side=[left,right]) {
-      translate([clamp_width/2*side,-y_rod_z+clamp_height,clamp_depth])
+      translate([y_end_body_width/2*side,-y_rod_z+y_end_body_height,y_end_body_depth])
         rotate([20,0,0]) rotate([0,10*-side,0]) rotate([0,0,45*side]) {
           cube([13,20,60],center=true);
         }
     }
   }
 
-  if(debug) debug_axes();
-
-  translate([0,0,-y_clamp_len]) {
-    difference() {
-      color("gold", (debug ? .4 : 1)) body();
-      holes();
+  difference() {
+    union() {
+      y_end_base();
+      translate([0,0,-y_clamp_len]) body();
     }
-  }
-}
-
-module y_end_rear_screw_holes() {
-  clamp_width = rod_diam+min_material_thickness*2;
-  clamp_len = y_clamp_len;
-  clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness;
-
-  rod_end_dist_to_lower_idler_x = y_rod_x - lower_rear_idler_x;
-  rod_end_dist_to_lower_idler_y = lower_rear_idler_y - rear*y_rod_len/2;
-  rod_end_dist_to_lower_idler_z = lower_rear_idler_z - y_rod_z;
-  rod_end_dist_to_idler_z = front_idler_z - y_rod_z;
-
-  idler_support_thickness = belt_bearing_diam-belt_bearing_thickness-spacer*2;
-
-  bearing_screw_pos = [rod_end_dist_to_lower_idler_x,rod_end_dist_to_lower_idler_y,0];
-  inside_screw_pos = [rod_end_dist_to_lower_idler_x+belt_bearing_diam/2+screw_pad_outer_diam/2+spacer,-clamp_len+screw_pad_outer_diam/2,0];
-  outside_screw_pos = [-clamp_width,-clamp_len+screw_pad_outer_diam/2,0];
-  rod_end_screw_pos = [0,clamp_len+screw_pad_outer_diam/2,0];
-
-  for(vector=[inside_screw_pos,outside_screw_pos,rod_end_screw_pos]) {
-    translate(vector) {
-      rotate([0,0,22.5]) {
-        cylinder(r=da8*top_plate_screw_diam,h=sheet_thickness*3,center=true,$fn=8);
-      }
-    }
+    translate([0,0,-y_clamp_len]) holes();
   }
 }
 
