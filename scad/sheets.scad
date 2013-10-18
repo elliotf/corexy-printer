@@ -10,8 +10,10 @@ module top_sheet() {
     translate([-top_sheet_x,-top_sheet_y]) {
       cube([top_sheet_opening_width,top_sheet_opening_depth,sheet_thickness+1],center=true);
 
+      /*
       translate([0,-top_sheet_depth/2,0])
         cube([top_sheet_opening_width,top_sheet_depth,sheet_thickness+1],center=true);
+      */
 
       for(side=[left,right]) {
         for(end=[front,rear]) {
@@ -47,6 +49,10 @@ module front_sheet() {
   }
 
   module holes() {
+    translate([0,motor_side/4,0])
+      cube([top_sheet_opening_width,front_sheet_height-motor_side*2,sheet_thickness+1],center=true);
+
+    /*
     opening_width_bottom = top_sheet_opening_width-motor_side;
     bottom_height = front_sheet_height+z_axis_z;
 
@@ -58,6 +64,7 @@ module front_sheet() {
         cube([opening_width_bottom,sheet_thickness,sheet_thickness+1],center=true);
       //cube([top_sheet_opening_width,front_sheet_height-motor_side*1.5,sheet_thickness+1],center=true);
     }
+    */
   }
 
   difference() {
