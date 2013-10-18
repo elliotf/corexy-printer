@@ -21,7 +21,7 @@ translate([0,build_y*.0,0]) {
       cylinder(r=da8*rod_diam+0.05,h=x_rod_len,center=true,$fn=8);
 
     // y rods
-    translate([side*y_rod_x,0,y_rod_z]) rotate([90,0,0]) rotate([0,0,22.5])
+    % translate([side*y_rod_x,0,y_rod_z]) rotate([90,0,0]) rotate([0,0,22.5])
       cylinder(r=da8*rod_diam,h=y_rod_len,center=true,$fn=8);
   }
 
@@ -39,17 +39,15 @@ translate([0,build_y*.0,0]) {
 
 // y ends
 for(side=[left,right]) {
-  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0])
-    rotate([90,0,0]) y_end_front(1-side);
-  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0])
-    rotate([0,0,180]) rotate([90,0,0]) y_end_rear(1-side);
+  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) rotate([90,0,0]) y_end_front(1-side);
+  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(side);
 }
 
 // shift one line's bearings up or down to avoid rubbing?
 color("red",0.5) idlers();
-color("green",0.5) line();
-color("green",0.5) mirror([1,0,0]) idlers();
 color("red",0.5) mirror([1,0,0]) line();
+color("green",0.5) mirror([1,0,0]) idlers();
+color("green",0.5) line();
 
 module box_sides() {
   translate([top_sheet_x,top_sheet_y,top_sheet_z]) top_sheet();

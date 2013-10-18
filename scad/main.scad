@@ -287,8 +287,84 @@ module y_carriage(endstop=1) {
   }
 }
 
-module y_end_rear() {
-  y_end_base();
+
+module y_end_rear(side=-1) {
+  support_thickness = belt_bearing_thickness+min_material_thickness;
+  front_sheet_clearance_height = sheet_shoulder_width;
+
+  outer_idler_x = -1*(outer_rear_idler_x-y_rod_x);
+  echo(outer_idler_x);
+  outer_idler_y = outer_rear_idler_y-y_rod_len/2;
+  outer_idler_z = outer_rear_idler_z-y_rod_z;
+
+  module position_outer_support() {
+    difference() {
+      translate([outer_idler_x,outer_idler_y,outer_idler_z]) {
+        rotate([outer_rear_idler_angle_x*side,90-outer_rear_idler_angle_y,0]) {
+          translate([belt_bearing_diam/2,-belt_bearing_diam/2,belt_bearing_thickness/2+support_thickness/2+spacer]) {
+            for(i=[0:$children-1]) {
+              child(i);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module body() {
+    translate([0,-y_clamp_len+y_end_body_depth/2,-y_rod_z+y_end_body_height/2])
+      cube([y_end_body_width,y_end_body_depth,y_end_body_height],center=true);
+
+    hull() {
+      //translate([-y_end_body_width/2,-y_clamp_len+y_end_body_depth/2,-y_rod_z+y_end_body_height*.75]) cube([0.05,y_end_body_depth,y_end_body_height*.5],center=true);
+
+      // outer idler support arm
+      position_outer_support() {
+        translate([belt_bearing_diam/2,-outer_idler_y+belt_bearing_diam/2-y_clamp_len+y_end_body_depth/2,spacer])
+          cube([5,y_end_body_depth,support_thickness],center=true);
+
+        translate([0,0,spacer]) cylinder(r=belt_bearing_diam/2,h=support_thickness,center=true,$fn=8);
+
+        translate([0,0,-spacer]) rotate([0,0,22.5])
+          cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=support_thickness,center=true,$fn=8);
+      }
+    }
+  }
+
+  module holes() {
+    // fully through rod hole
+    rotate([90,0,0]) rotate([0,0,22.5]) hole(rod_diam+0.05,y_end_body_depth*2,8);
+
+    // make screw plate sheet printable by using a removable support
+    translate([0,sheet_thickness/2,-y_rod_z+front_sheet_clearance_height/2+0.2])
+      cube([screw_pad_width+1,sheet_thickness,front_sheet_clearance_height-0.4],center=true);
+
+    // outer support shaft hole
+    position_outer_support() {
+      translate([0,0,support_thickness-belt_bearing_nut_thickness+0.05])
+        rotate([0,0,0]) hole(belt_bearing_nut_diam,belt_bearing_nut_thickness*1.5,6);
+      rotate([0,0,22.5]) hole(belt_bearing_inner,50,8);
+    }
+
+    // screw pad holes
+    for(side=[left,right]) {
+      translate([screw_pad_hole_spacing/2*side,-y_clamp_len/2,-y_rod_z+y_end_body_height/2]) {
+        rotate([0,0,22.5])
+          hole(sheet_screw_diam,y_end_body_height+1,8);
+        translate([0,0,y_end_body_height/2]) hole(sheet_screw_nut_diam,sheet_screw_nut_thickness*2,6);
+      }
+    }
+
+    // clear way for outer idler line
+    position_outer_support()
+      translate([0,0,-support_thickness/2-belt_bearing_thickness/2-spacer])
+        cube([y_end_body_width*2,y_end_body_depth*2,belt_bearing_thickness],center=true);
+  }
+
+  difference() {
+    body();
+    holes();
+  }
 }
 
 module y_end_rear_screw_holes() {
@@ -316,12 +392,9 @@ module y_end_base() {
   }
 
   module holes() {
-    // make screw plate sheet printable
-    side = sqrt(pow(front_sheet_clearance_height,2)*2);
-    translate([0,-y_rod_z,y_clamp_len])
-      rotate([45,0,0])
-        cube([screw_pad_width+1,side,side],center=true);
-    translate([0,-y_rod_z,y_clamp_len+sheet_thickness/2]) cube([screw_pad_width+1,front_sheet_clearance_height*2,sheet_thickness],center=true);
+    // make screw plate sheet printable by using a removable support
+    translate([0,-y_rod_z+front_sheet_clearance_height/2+0.2,y_clamp_len+sheet_thickness/2])
+      cube([screw_pad_width+1,front_sheet_clearance_height-0.4,sheet_thickness],center=true);
 
     // screw pad holes
     for(side=[left,right]) {
@@ -349,7 +422,7 @@ module y_end_front(endstop=0) {
 
   module body() {
     // idler crest
-    hull() {
+    translate([0,0,-y_clamp_len]) hull() {
       translate([idler_x,idler_y-belt_bearing_thickness,idler_z]) {
         rotate([-90,0,0]) rotate([0,0,22.5]) {
           cylinder(r=(belt_bearing_inner+min_material_thickness)/2,h=belt_bearing_thickness,center=true,$fn=8);
@@ -359,6 +432,8 @@ module y_end_front(endstop=0) {
         }
       }
     }
+
+    y_end_base();
   }
 
   module holes() {
@@ -380,10 +455,7 @@ module y_end_front(endstop=0) {
   }
 
   difference() {
-    union() {
-      y_end_base();
-      translate([0,0,-y_clamp_len]) body();
-    }
+    body();
     translate([0,0,-y_clamp_len]) holes();
   }
 }
@@ -412,8 +484,8 @@ module idlers() {
 
   // outer rear idler
   translate([outer_rear_idler_x*right,outer_rear_idler_y,outer_rear_idler_z]) {
-    rotate([0,90+outer_rear_idler_angle,0])
-      translate([belt_bearing_diam/2,0,0]) {
+    rotate([outer_rear_idler_angle_x,90+outer_rear_idler_angle_y,])
+      translate([belt_bearing_diam/2,-belt_bearing_diam/2,0]) {
         idler_bearing();
         translate([debug_len/2,0,0]) cube([debug_len,1,1],center=true);
       }
@@ -461,7 +533,7 @@ module line() {
 
   // outer idler to pulley
   hull() {
-    translate([outer_rear_idler_x*left,outer_rear_idler_y+belt_bearing_diam/2,outer_rear_idler_z]) cube(line_cube,center=true);
+    translate([outer_rear_idler_x*left,outer_rear_idler_y,outer_rear_idler_z]) cube(line_cube,center=true);
     translate([(xy_motor_x-pulley_diam/2)*left,xy_motor_y+xy_pulley_above_motor_plate,xy_motor_z]) cube(line_cube,center=true);
   }
 

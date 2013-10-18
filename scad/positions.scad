@@ -29,13 +29,13 @@ upper_rear_idler_y = lower_rear_idler_y;
 upper_rear_idler_z = xy_idler_z;
 
 inner_rear_idler_x = xy_idler_x+belt_bearing_diam/2;
-inner_rear_idler_y = y_rod_len/2+belt_bearing_diam/2;
+inner_rear_idler_y = y_rod_len/2+sheet_thickness+pulley_height/2;
 inner_rear_idler_z = xy_idler_z;
 
 outer_rear_idler_x = front_idler_x+belt_bearing_diam/2;
-outer_rear_idler_x = front_idler_x+belt_bearing_diam*1.5;
-outer_rear_idler_y = y_rod_len/2;
-outer_rear_idler_z = xy_idler_z;
+outer_rear_idler_x = front_idler_x+belt_bearing_diam*2;
+outer_rear_idler_y = y_rod_len/2+belt_bearing_diam/2;
+outer_rear_idler_z = xy_idler_z-5;
 
 bed_zero = x_rod_z - (hotend_len - 10 - bearing_diam/2) - build_z;
 side_panel_height = -1*bed_zero + motor_len + sheet_min_width;
@@ -151,8 +151,10 @@ xy_pulley_idler_y = xy_motor_y+motor_hole_spacing/2;
 function get_inner_rear_idler_angle(short,long) = atan(short/long);
 inner_rear_idler_angle = get_inner_rear_idler_angle(inner_rear_idler_z-xy_motor_z-pulley_diam/2,inner_rear_idler_x+xy_motor_x);
 
-function get_outer_rear_idler_angle(short,long) = atan(short/long);
-outer_rear_idler_angle = get_outer_rear_idler_angle(outer_rear_idler_x-xy_motor_x+pulley_diam/2,outer_rear_idler_z-xy_motor_z);
+outer_rear_idler_angle_x = 3; // TODO: use trig to get angle?
+outer_rear_idler_angle_x = 0; // TODO: use trig to get angle?
+function get_outer_rear_idler_angle_y(short,long) = atan(short/long);
+outer_rear_idler_angle_y = get_outer_rear_idler_angle_y(outer_rear_idler_x-xy_motor_x+pulley_diam/2,outer_rear_idler_z-xy_motor_z);
 
 y_end_body_width = screw_pad_width;
 y_end_body_depth = y_clamp_len + min_material_thickness + belt_bearing_inner + min_material_thickness*2;
