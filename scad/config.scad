@@ -126,9 +126,9 @@ belt_bearing_thickness = 5;
 belt_bearing_nut_diam = m5_nut_diam;
 belt_bearing_nut_thickness = m5_nut_thickness;
 
-pulley_idler_bearing_diam = 10;
-pulley_idler_bearing_inner = 3;
-pulley_idler_bearing_thickness = 6;
+pulley_idler_bearing_diam = 16;
+pulley_idler_bearing_inner = 5;
+pulley_idler_bearing_thickness = 5;
 
 // Motor
 nema17_side = 43;

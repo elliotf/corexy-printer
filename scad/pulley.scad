@@ -3,11 +3,7 @@ use <util.scad>;
 
 cylinder_resolution = 18;
 cylinder_resolution = 90;
-motor_shaft_diam = 5;
-idler_bearing_diam = 16;
-idler_diam = idler_bearing_diam + min_material_thickness*2;
-idler_bearing_thickness = 4;
-idler_bearing_thickness = 5;
+
 add_shaft_len = m3_nut_diam;
 groove_height = 0.5;
 groove_spacing = 1;
@@ -92,17 +88,17 @@ module idler_pulley(num_grooves) {
 
   translate([0,0,height/2]) {
     difference() {
-      cylinder(r=idler_diam/2,h=height,center=true,$fn=cylinder_resolution);
+      cylinder(r=pulley_idler_diam/2,h=height,center=true,$fn=cylinder_resolution);
       for(end=[top,bottom]) {
         translate([0,0,height/2*end])
-          hole(idler_bearing_diam,idler_bearing_thickness*2,24);
+          hole(pulley_idler_bearing_diam,pulley_idler_bearing_thickness*2,24);
       }
 
       // shaft hole
-      hole(idler_bearing_diam-2,height+1,6);
+      hole(pulley_idler_bearing_diam-2,height+1,6);
     }
 
-    grooves(idler_diam,num_grooves);
+    grooves(pulley_idler_diam,num_grooves);
   }
 }
 
