@@ -90,12 +90,22 @@ module rear_sheet() {
         translate([xy_motor_x*side,xy_motor_z,0]) {
           for(x=[-1,1]) {
             for(y=[-1,1]) {
-              translate([motor_hole_spacing/2*x,motor_hole_spacing/2*y,0]) 
-                cylinder(r=motor_screw_diam/2,h=sheet_thickness+1,center=true);
+              translate([motor_hole_spacing/2*x,motor_hole_spacing/2*y,0])
+                cylinder(r=motor_screw_diam/2,h=sheet_thickness+1,center=true,$fn=16);
             }
           }
 
           cylinder(r=motor_hole_spacing*.4,h=sheet_thickness+1,center=true);
+        }
+
+        // pulley idler
+        translate([xy_pulley_idler_x*side,xy_pulley_idler_z,0]) {
+          cylinder(r=xy_pulley_idler_hole/2,h=sheet_thickness+1,center=true,$fn=16);
+
+          for(x=[-1,1]) {
+            translate([screw_pad_hole_spacing/2*x,-motor_hole_spacing/2,0])
+              cylinder(r=sheet_screw_diam/2,h=sheet_thickness+1,center=true,$fn=16);
+          }
         }
       }
     }

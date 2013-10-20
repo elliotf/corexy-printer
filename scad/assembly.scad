@@ -41,6 +41,12 @@ for(side=[left,right]) {
   // y rods
   % translate([side*y_rod_x,0,y_rod_z]) rotate([90,0,0]) rotate([0,0,22.5])
     cylinder(r=da8*rod_diam,h=y_rod_len,center=true,$fn=8);
+
+  // motor pulley idler
+  translate([xy_pulley_idler_x*side,xy_pulley_idler_y,xy_pulley_idler_z]) {
+    rotate([90,0,0])
+      xy_pulley_idler_shaft_support();
+  }
 }
 
 // shift one line's bearings up or down to avoid rubbing?

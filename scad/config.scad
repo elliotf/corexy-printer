@@ -225,8 +225,12 @@ pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
 pulley_height = belt_bearing_diam;
 pulley_height = 13;
 
-pulley_idler_diam = pulley_idler_bearing_diam + min_material_thickness*2;
 pulley_idler_height = pulley_height;
+pulley_idler_diam = pulley_idler_bearing_diam + min_material_thickness*2;
+pulley_idler_shaft_diam = m5_diam;
+pulley_idler_shaft_nut_diam = m5_nut_diam;
+pulley_idler_shaft_nut_thickness = m5_nut_thickness;
+pulley_idler_shaft_support_len = pulley_height;
 
 // heated bed / build plate
 heatbed_thickness = 1;

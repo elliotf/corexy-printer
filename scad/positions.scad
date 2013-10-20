@@ -145,8 +145,10 @@ xy_pulley_above_motor_plate = spacer*2+pulley_height/2;
 xy_pulley_above_motor_plate = sheet_thickness+pulley_height/2;
 xy_pulley_above_motor_plate = sheet_thickness+1;
 
-xy_pulley_idler_x = xy_motor_x-motor_hole_spacing/2;
-xy_pulley_idler_y = xy_motor_y+motor_hole_spacing/2;
+xy_pulley_idler_x = xy_motor_x;
+xy_pulley_idler_y = xy_motor_y;
+xy_pulley_idler_z = xy_motor_z-motor_side;
+xy_pulley_idler_hole = m5_diam;
 
 function get_inner_rear_idler_angle_y(short,long) = atan(short/long);
 inner_rear_idler_angle_y = get_inner_rear_idler_angle_y(inner_rear_idler_z-xy_motor_z-pulley_diam/2,inner_rear_idler_x+xy_motor_x);

@@ -537,12 +537,60 @@ module idlers(side=-1) {
     rotate([-90,0,0])
       motor_with_pulley();
   }
+}
 
-  /*
+module xy_pulley_idler_shaft_support() {
+  height = pulley_idler_shaft_support_len;
   // pulley idler
-  translate([xy_pulley_idler_x*right,xy_pulley_idler_y,front_idler_z])
-    cylinder(r=pulley_idler_diam/2,h=pulley_idler_height,center=true);
-    */
+  /*
+  % translate([xy_pulley_idler_x*right,xy_pulley_idler_y,xy_pulley_idler_z])
+    rotate([-90,0,0])
+      cylinder(r=xy_pulley_idler_diam/2,h=pulley_idler_height,center=true);
+  */
+  module body() {
+    hull() {
+      // sheet screws
+      for(side=[left,right]) {
+        translate([screw_pad_hole_spacing/2*side,-motor_hole_spacing/2,screw_pad_height/2])
+            cylinder(r=screw_pad_outer_diam,h=screw_pad_height+1,center=true,$fn=6);
+      }
+
+      // main shaft support
+      translate([0,0,height/2])
+        cylinder(r=screw_pad_outer_diam,h=height,center=true,$fn=6);
+    }
+  }
+
+  module holes() {
+    // sheet screws
+    for(side=[left,right]) {
+      translate([screw_pad_hole_spacing/2*side,-motor_hole_spacing/2,0]) {
+        translate([0,0,height/2])
+          hole(sheet_screw_diam,height+2,16);
+
+        translate([0,0,screw_pad_height+sheet_screw_nut_thickness])
+          hole(sheet_screw_nut_diam,sheet_screw_nut_thickness*3,6);
+      }
+    }
+
+    // main shaft support
+    translate([0,0,height/2])
+      hole(pulley_idler_bearing_inner,height+2,16);
+
+    // main shaft captive nut
+    hole(pulley_idler_shaft_nut_diam,pulley_idler_shaft_nut_thickness*2+1,6);
+  }
+
+  module bridges() {
+    translate([0,0,pulley_idler_shaft_nut_thickness+0.5]) cube([8,8,.2],center=true);
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+
+  bridges();
 }
 
 module line(side=-1) {
