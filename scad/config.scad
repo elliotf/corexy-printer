@@ -41,6 +41,8 @@ build_y = 100;
 build_z = 100;
 */
 
+//build_z = -40; // minimal box size for testing
+
 hotend_len = 51;
 hotend_diam = 16;
 
@@ -206,6 +208,8 @@ x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thic
 y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2 + y_clamp_len*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
+
+echo("X/Y rod len: ", x_rod_len, y_rod_len);
 
 // tuner dimensions (pull out into a different file)
 tuner_shoulder_width = 10;
