@@ -82,7 +82,5 @@ color("Khaki") box_sides();
 % translate([0,0,bed_zero+build_z/2]) cube([build_x,build_y,build_z],center=true);
 
 // power supply
-/*
-translate([0,xy_motor_y,-sheet_thickness-spacer-psu_length/2]) rotate([90,0,0])
+translate([0,xy_motor_y+sheet_thickness+psu_height/2+0.05,-box_height+psu_width/2]) rotate([90,0,0]) rotate([0,0,90])
   % cube([psu_width,psu_length,psu_height],center=true);
-  */
