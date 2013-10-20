@@ -177,6 +177,8 @@ sheet_shoulder_width = 3; // material to have on the far side of a slot
 sheet_screw_diam = m3_diam;
 sheet_screw_nut_diam = m3_nut_diam;
 sheet_screw_nut_thickness = m3_nut_thickness;
+sheet_hole_resolution = 36;
+sheet_hole_resolution = 8;
 
 top_plate_screw_diam = sheet_screw_diam;
 

@@ -4,7 +4,7 @@
 // 11.25 inner
 
 include <main.scad>;
-include <sheets.scad>;
+use <sheets.scad>;
 include <z_axis.scad>;
 use <inc/jhead.scad>;
 
@@ -54,27 +54,6 @@ color("red",0.5) idlers(-1);
 color("red",0.5) mirror([1,0,0]) line(-1);
 color("green",0.5) mirror([1,0,0]) idlers(1);
 color("green",0.5) line(1);
-
-module box_sides() {
-  translate([top_sheet_x,top_sheet_y,top_sheet_z]) top_sheet();
-
-  translate([front_sheet_x,front_sheet_y,front_sheet_z])
-    rotate([90,0,0])
-      front_sheet();
-
-  translate([rear_sheet_x,rear_sheet_y,rear_sheet_z])
-    rotate([90,0,0])
-      rear_sheet();
-
-  for(side=[left,right]) {
-    translate([side_sheet_x*side,side_sheet_y,side_sheet_z])
-      rotate([0,0,90]) rotate([90,0,0])
-        side_sheet();
-  }
-
-  translate([bottom_sheet_x,bottom_sheet_y,bottom_sheet_z])
-    bottom_sheet();
-}
 
 //color("Khaki", 0.5) box_sides();
 color("Khaki") box_sides();
