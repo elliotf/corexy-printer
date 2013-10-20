@@ -157,17 +157,20 @@ module y_carriage(endstop=1) {
   idler_x = y_rod_x - xy_idler_x;
   idler_z = xy_idler_z - y_rod_z;
 
-  x_clamp_thickness = idler_z*2-belt_bearing_thickness-min_material_thickness;
+  x_bridge_thickness = idler_z-belt_bearing_thickness/2-spacer+min_material_thickness;
+  x_bridge_z = idler_z-belt_bearing_thickness/2-spacer-x_bridge_thickness/2;
   clamp_screw_body_len = y_clamp_len;
   clamp_screw_body_height = clamp_screw_nut_diam+min_material_thickness*2;
   clamp_width = rod_diam+min_material_thickness*2;
   x_clamp_x = y_rod_to_x_clamp_end-clamp_screw_body_len/2;
   x_clamp_z = -rod_diam/2-clamp_screw_diam/2-spacer;
 
-  idler_screw_len = idler_z-belt_bearing_thickness/2 + x_clamp_thickness/2;
+  endstop_z = x_bridge_z - x_bridge_thickness/2 - endstop_width/2;
+
+  idler_screw_len = idler_z-belt_bearing_thickness/2 + x_bridge_thickness;
 
   if(endstop) {
-    % translate([y_rod_to_x_clamp_end-endstop_height/2,0,-x_clamp_thickness/2-endstop_width/2]) rotate([0,90,0]) rotate([0,0,90]) endstop();
+    % translate([y_rod_to_x_clamp_end-endstop_height/2,0,endstop_z]) rotate([0,90,0]) rotate([0,0,90]) endstop();
   }
 
   module body() {
@@ -176,9 +179,9 @@ module y_carriage(endstop=1) {
       rotate([90,0,0]) rotate([0,0,22.5])
         cylinder(r=da8*bearing_diam,h=y_carriage_len,center=true,$fn=8);
 
-    translate([y_rod_to_x_clamp_end/2,0,0]) {
+    translate([y_rod_to_x_clamp_end/2,0,x_bridge_z]) {
       // clamp space filler
-      cube([y_rod_to_x_clamp_end,x_rod_spacing,x_clamp_thickness],center=true);
+      cube([y_rod_to_x_clamp_end,x_rod_spacing,x_bridge_thickness],center=true);
     }
 
     for(side=[front,rear]) {
@@ -255,7 +258,7 @@ module y_carriage(endstop=1) {
         }
 
         // captive nut for idler
-        translate([0,0,idler_z-10-belt_bearing_nut_thickness/2])
+        translate([0,0,x_bridge_z-x_bridge_thickness*.65])
           cylinder(r=belt_bearing_nut_diam*da6,h=belt_bearing_nut_thickness,center=true,$fn=6);
       }
 

@@ -16,4 +16,5 @@ The printer at http://audiots.wordpress.com is beautiful, and has inspired me to
 * Design no longer works well with larger diameter rods/bearings: line runs into x rods/bearings
 * reduce tensioner to just one if the two lines were one with conditional anchor(s) on the x carriage
 * find a place for x,y endstops
+* bridges or steeper angles?  -- which way to orient hex nuts? -- how well does 30deg print at .2mm layer height?
 
