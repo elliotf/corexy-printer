@@ -82,20 +82,16 @@ module idler_bearing() {
 }
 
 // x carriage
-x_carriage_thickness = rod_diam;
 x_carriage_thickness = bearing_diam*0.7;
-x_carriage_thickness = xy_idler_z-x_rod_z;
 module x_carriage() {
+  x_carriage_width = bearing_len*2.5;
   line_y = xy_idler_y-belt_bearing_diam/2;
   line_z = xy_idler_z-x_rod_z;
 
-  bearing_x = x_carriage_width/2-bearing_len/2-min_material_thickness;
-  carriage_depth = x_rod_spacing-rod_diam-spacer*2;
-  carriage_depth = x_rod_spacing+bearing_diam + min_material_thickness;
+  bearing_x = x_carriage_width/2-bearing_len/2;
+  carriage_depth = x_rod_spacing;
   carriage_z = rod_diam/2+x_carriage_thickness/2;
   carriage_z = 0;
-  carriage_z = rod_diam*0.7;
-  carriage_z = line_z-x_carriage_thickness/2;
 
   hole_width = x_carriage_width - min_material_thickness*6;
   hole_depth = x_rod_spacing - bearing_diam - min_material_thickness*2;
@@ -107,10 +103,6 @@ module x_carriage() {
   module body() {
     translate([0,0,carriage_z]) cube([x_carriage_width,carriage_depth,x_carriage_thickness],center=true);
     //translate([0,0,0]) cube([x_carriage_width,x_rod_spacing-rod_diam-spacer*2,bearing_diam*.75],center=true);
-
-    // x endstop bumper
-    translate([-x_carriage_width/2+min_material_thickness,-xy_idler_y-1,-bearing_diam*0.3])
-      cube([min_material_thickness*2,8,bearing_diam],center=true);
   }
 
   module holes() {
@@ -120,7 +112,7 @@ module x_carriage() {
           bearing_cavity();
           bearing_zip_tie();
 
-          //% bearing();
+          % bearing();
         }
       }
 
@@ -131,13 +123,19 @@ module x_carriage() {
 
     // main hole
     translate([0,0,carriage_z])
-      cube([hole_width,hole_depth,x_carriage_thickness+1],center=true);
+      cylinder(r=belt_bearing_diam/2,h=x_carriage_thickness*2,center=true,$fn=8);
+      //cube([hole_width,hole_depth,x_carriage_thickness+1],center=true);
 
-    // tensioner
+    // x carriage bearings
     for(side=[left,right]) {
-      for(end=[front,rear]) {
-        translate([(x_carriage_width/2-min_material_thickness*1.5)*side,(line_y+tensioner_screw_diam/2)*end,line_z/2]) rotate([0,0,22.5])
+      translate([(x_carriage_width/2-belt_bearing_inner/2-min_material_thickness)*side,0,0]) {
+        rotate([0,0,22.5])
           cylinder(r=tensioner_screw_diam*da8,h=line_z*4,center=true,$fn=8);
+
+        for(z=[top,bottom]) {
+          translate([0,0,(x_carriage_thickness/2+belt_bearing_thickness/2 + spacer)*z])
+            % idler_bearing();
+        }
       }
     }
   }
@@ -169,10 +167,18 @@ module y_carriage(endstop=1) {
 
   idler_screw_len = idler_z-belt_bearing_thickness/2 + x_bridge_thickness;
 
-  if(endstop) {
-    % translate([y_rod_to_x_clamp_end-endstop_height/2,0,endstop_z]) rotate([0,90,0]) rotate([0,0,90]) endstop();
+  module body() {
+    idler_x = belt_bearing_diam/2+belt_bearing_inner/2+min_material_thickness;
+    translate([idler_x,belt_bearing_diam*front,x_carriage_thickness/2+spacer+belt_bearing_thickness/2])
+      % idler_bearing();
+    translate([idler_x,belt_bearing_diam*rear,-(x_carriage_thickness/2+spacer+belt_bearing_thickness/2)])
+      % idler_bearing();
   }
 
+  module holes() {
+  }
+
+  /*
   module body() {
     // bearing holder
     translate([min_material_thickness*1.6,0,0])
@@ -283,6 +289,7 @@ module y_carriage(endstop=1) {
     // y rod opening
     rotate([90,0,0]) cylinder(r=(bearing_diam-3)/2,h=y_carriage_len+1,center=true);
   }
+  */
 
   difference() {
     body();

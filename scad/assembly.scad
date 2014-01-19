@@ -23,8 +23,9 @@ translate([0,build_y*.0,0]) {
 
   // y carriage
   for(side=[left,right]) {
-    translate([y_rod_x*side,0,y_rod_z]) mirror([side+1,0,0]) {
-      y_carriage(1-side);
+    rotate([0,0,90+90*side])
+    translate([-y_rod_x,0,y_rod_z]) {
+      y_carriage();
 
       for(end=[front,rear]) {
         % translate([0,y_carriage_bearing_y*end,0]) bearing();
@@ -35,8 +36,8 @@ translate([0,build_y*.0,0]) {
 
 // y ends
 for(side=[left,right]) {
-  translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) rotate([90,0,0]) y_end_front(1-side);
-  translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(side);
+  //translate([y_rod_x*side,y_rod_len/2*front,y_rod_z]) mirror([side+1,0,0]) rotate([90,0,0]) y_end_front(1-side);
+  //translate([y_rod_x*side,y_rod_len/2*rear,y_rod_z]) mirror([side+1,0,0]) y_end_rear(side);
 
   // y rods
   % translate([side*y_rod_x,0,y_rod_z]) rotate([90,0,0]) rotate([0,0,22.5])
@@ -50,16 +51,18 @@ for(side=[left,right]) {
 }
 
 // shift one line's bearings up or down to avoid rubbing?
-color("red",0.5) idlers(-1);
-color("red",0.5) mirror([1,0,0]) line(-1);
-color("green",0.5) mirror([1,0,0]) idlers(1);
-color("green",0.5) line(1);
+//color("red",0.5) idlers(-1);
+//color("red",0.5) mirror([1,0,0]) line(-1);
+//color("green",0.5) mirror([1,0,0]) idlers(1);
+//color("green",0.5) line(1);
 
 //color("Khaki", 0.5) box_sides();
 color("Khaki") box_sides();
 
-% translate([0,0,bed_zero+build_z/2]) cube([build_x,build_y,build_z],center=true);
+//% translate([0,0,bed_zero+build_z/2]) cube([build_x,build_y,build_z],center=true);
 
 // power supply
+/*
 translate([0,xy_motor_y+sheet_thickness+psu_height/2+0.05,-box_height+psu_width/2]) rotate([90,0,0]) rotate([0,0,90])
   % cube([psu_width,psu_length,psu_height],center=true);
+  */

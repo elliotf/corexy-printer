@@ -143,6 +143,7 @@ module bottom_sheet() {
 module box_sides() {
   translate([top_sheet_x,top_sheet_y,top_sheet_z]) top_sheet();
 
+  /*
   translate([front_sheet_x,front_sheet_y,front_sheet_z])
     rotate([90,0,0])
       front_sheet();
@@ -159,6 +160,8 @@ module box_sides() {
 
   translate([bottom_sheet_x,bottom_sheet_y,bottom_sheet_z])
     bottom_sheet();
+
+  */
 }
 
 box_sides();
