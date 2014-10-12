@@ -18,6 +18,7 @@ module top_sheet() {
         cube([top_sheet_opening_width,top_sheet_depth,sheet_thickness+1],center=true);
       */
 
+      /*
       for(side=[left,right]) {
         for(end=[front,rear]) {
           translate([z_rod_x*side,0,0]) {
@@ -32,6 +33,7 @@ module top_sheet() {
           }
         }
       }
+      */
     }
   }
 
@@ -141,23 +143,23 @@ module bottom_sheet() {
 }
 
 module box_sides() {
-  translate([top_sheet_x,top_sheet_y,top_sheet_z]) top_sheet();
+  color("lightblue") translate([top_sheet_x,top_sheet_y,top_sheet_z]) top_sheet();
 
-  translate([front_sheet_x,front_sheet_y,front_sheet_z])
+  color("lightgreen") translate([front_sheet_x,front_sheet_y,front_sheet_z])
     rotate([90,0,0])
       front_sheet();
 
-  translate([rear_sheet_x,rear_sheet_y,rear_sheet_z])
+  color("orange") translate([rear_sheet_x,rear_sheet_y,rear_sheet_z])
     rotate([90,0,0])
       rear_sheet();
 
-  for(side=[left,right]) {
+  color("orangered") for(side=[left,right]) {
     translate([side_sheet_x*side,side_sheet_y,side_sheet_z])
       rotate([0,0,90]) rotate([90,0,0])
         side_sheet();
   }
 
-  translate([bottom_sheet_x,bottom_sheet_y,bottom_sheet_z])
+  color("cyan") translate([bottom_sheet_x,bottom_sheet_y,bottom_sheet_z])
     bottom_sheet();
 }
 

@@ -1,11 +1,11 @@
 include <config.scad>;
 
 // rods
-rod_z = belt_bearing_diam/2 + belt_bearing_groove_depth + screw_pad_height + spacer;
-x_rod_z = rod_z;
 y_rod_x = x_rod_len/2 + bearing_diam/2 + min_material_thickness;
+y_rod_x = (build_x + x_carriage_width + min_material_thickness) / 2;
 y_rod_z_distance_to_x = 0;
-y_rod_z = rod_z + y_rod_z_distance_to_x;
+y_rod_z = bearing_diam/2 + 2;
+x_rod_z = y_rod_z + bearing_diam/2 + 2;
 
 y_end_rear_rod_end_screw_y = y_clamp_len+screw_pad_outer_diam/2;
 
@@ -93,9 +93,8 @@ top_sheet_opening_depth = build_y + x_carriage_depth*.7;
 top_sheet_opening_depth = (y_rod_len/2-y_clamp_len-bearing_diam*1.5)*2;
 
 box_width = (z_motor_x+z_carriage_width/2+spacer)*2;
-box_depth = y_rod_len-sheet_thickness*1-y_clamp_len;
-box_depth = y_rod_len;
-box_height = -z_axis_z+z_carriage_height/2+motor_side+sheet_thickness;
+box_depth = y_rod_len-sheet_thickness*2-y_clamp_len*2;
+box_height = build_z+z_carriage_height/2+motor_side+sheet_thickness;
 box_y     = sheet_thickness/2+y_clamp_len/2;
 box_y     = 0;
 
