@@ -35,10 +35,10 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
-/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
+/*
 */
 
 //build_z = -40; // minimal box size for testing
@@ -87,13 +87,13 @@ bearing_groove_width   = lm8uu_bearing_groove_width;
 bearing_groove_depth   = lm8uu_bearing_groove_depth;
 rod_diam               = lm8uu_rod_diam;
 
+/*
 bearing_diam           = lm6uu_bearing_diam;
 bearing_len            = lm6uu_bearing_len;
 bearing_groove_spacing = lm6uu_bearing_groove_spacing;
 bearing_groove_width   = lm6uu_bearing_groove_width;
 bearing_groove_depth   = lm6uu_bearing_groove_depth;
 rod_diam               = lm6uu_rod_diam;
-/*
 */
 
 // if you'd like the z axis to use different rods/bearings
@@ -183,7 +183,7 @@ sheet_hole_resolution = 8;
 top_plate_screw_diam = sheet_screw_diam;
 
 // Misc settings
-min_material_thickness = 2;
+min_material_thickness = 1;
 spacer = 1;
 clamp_gap_width = spacer;
 screw_pad_height = min_material_thickness*2;
@@ -199,14 +199,13 @@ clamp_area_width = clamp_screw_diam+min_material_thickness*2;
 
 // Printer settings
 y_clamp_len = 10; // amount of bar to clamp onto
-x_rod_spacing = 40 + rod_diam;
-x_rod_spacing = bearing_len * 2 + min_material_thickness * 2;
+x_rod_spacing = bearing_diam + min_material_thickness * 2;
 x_carriage_width = bearing_len * 2 + 10 + min_material_thickness*4;
 x_carriage_width = bearing_len * 2 + min_material_thickness*3;
 x_carriage_depth = x_rod_spacing + bearing_diam;
 
 // calculated rod lengths
-x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
+//x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
 y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail

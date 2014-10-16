@@ -58,7 +58,7 @@ for(side=[left,right]) {
 //color("green",0.5) line(1);
 
 //color("Khaki", 0.5) box_sides();
-box_sides();
+//box_sides();
 
 % translate([0,0,bed_zero+build_z/2]) cube([build_x,build_y,build_z],center=true);
 
