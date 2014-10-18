@@ -69,6 +69,15 @@ lm8uu_bearing_groove_width = 0;
 lm8uu_bearing_groove_depth = 0;
 lm8uu_rod_diam = 8;
 
+// bronze bushings, M8 rods
+bronze_bearing_diam = 12;
+bronze_bearing_len  = 15;
+//bronze_bearing_len  = 30;
+bronze_bearing_groove_spacing = 0;
+bronze_bearing_groove_width = 0;
+bronze_bearing_groove_depth = 0;
+bronze_rod_diam = 8;
+
 // lm6uu, M6 rods
 lm6uu_bearing_diam = 12;
 lm6uu_bearing_len  = 19;
@@ -90,6 +99,13 @@ bearing_groove_spacing = lm8uu_bearing_groove_spacing;
 bearing_groove_width   = lm8uu_bearing_groove_width;
 bearing_groove_depth   = lm8uu_bearing_groove_depth;
 rod_diam               = lm8uu_rod_diam;
+
+bearing_diam           = bronze_bearing_diam;
+bearing_len            = bronze_bearing_len;
+bearing_groove_spacing = bronze_bearing_groove_spacing;
+bearing_groove_width   = bronze_bearing_groove_width;
+bearing_groove_depth   = bronze_bearing_groove_depth;
+rod_diam               = bronze_rod_diam;
 
 /*
 bearing_diam           = lm6uu_bearing_diam;
