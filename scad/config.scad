@@ -5,11 +5,11 @@ da8 = 1 / cos(180 / 8) / 2;
 approx_pi = 3.14159;
 
 // make coordinates more communicative
-left  = -1;
-right = 1;
-front = -1;
-rear  = 1;
-top = 1;
+left    = -1;
+right   = 1;
+front   = -1;
+rear    = 1;
+top     = 1;
 bottom  = -1;
 
 x = 0;
@@ -45,10 +45,16 @@ build_z = 50;
 /*
 */
 
-//build_z = -40; // minimal box size for testing
+x_pos = -build_x/2+0;
+y_pos = 2-build_y/2+build_y;
 
-hotend_len = 51;
-hotend_diam = 16;
+hotend_diam                = 16;
+hotend_groove_diam         = 12;
+hotend_groove_height       = 4.6;
+hotend_height_above_groove = 5;
+hotend_len                 = 63;
+hotend_clamped_height      = hotend_groove_height + hotend_height_above_groove;
+hotend_len_below_groove    = hotend_len - hotend_clamped_height;
 
 // Linear bearings and rods
 // should record bearing groove offset, depth, width
@@ -148,6 +154,15 @@ belt_bearing_thickness = 5;
 belt_bearing_nut_diam = m5_nut_diam;
 belt_bearing_nut_thickness = m5_nut_thickness;
 
+belt_bearing_diam = 12;
+belt_bearing_groove_depth = 1.7;
+belt_bearing_inner = m3_diam;
+belt_bearing_thickness = 4;
+belt_bearing_nut_diam = m3_nut_diam;
+belt_bearing_nut_thickness = m3_nut_thickness;
+
+belt_bearing_effective_diam = belt_bearing_diam - (belt_bearing_groove_depth*2);
+
 pulley_idler_bearing_diam = 16;
 pulley_idler_bearing_inner = 5;
 pulley_idler_bearing_thickness = 5;
@@ -226,7 +241,7 @@ x_carriage_depth = x_rod_spacing + bearing_diam;
 
 // calculated rod lengths
 //x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
-y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2;
+//y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
 
