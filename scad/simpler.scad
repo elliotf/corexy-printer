@@ -12,7 +12,8 @@ belt_bearing_inner = 3;
 belt_bearing_thickness = 8;
 */
 
-spool_height = 20;
+spool_diam = 18;
+spool_len  = 25.5;
 
 x_rod_spacing        = bearing_diam + min_material_thickness * 2 + rod_diam;
 x_carriage_width     = bearing_len + min_material_thickness * 2;
@@ -350,90 +351,107 @@ module top_sheet() {
   }
 }
 
-translate([0,0,top_sheet_pos_z]) {
-  color("lightblue") {
-    top_sheet();
-  }
-}
-
-translate([0,sheet_pos_y*front,sheet_pos_z]) {
-  rotate([90,0,0]) {
-    color("violet") {
-      front_sheet();
+module assembly() {
+  translate([0,0,top_sheet_pos_z]) {
+    color("lightblue") {
+      top_sheet();
     }
   }
-}
 
-translate([0,sheet_pos_y*rear,sheet_pos_z]) {
-  rotate([90,0,0]) {
-    cube([sheet_width,sheet_height,sheet_thickness],center=true);
+  translate([0,sheet_pos_y*front,sheet_pos_z]) {
+    rotate([90,0,0]) {
+      color("violet") {
+        front_sheet();
+      }
+    }
   }
-}
 
-for(side=[left,right]) {
-  translate([side_sheet_pos_x*side,0,sheet_pos_z]) {
-    rotate([0,90*side,0]) {
-      rotate([0,0,90*side]) {
-        color("lightgreen") {
-          cube([side_sheet_depth,sheet_height,sheet_thickness],center=true);
+  translate([0,sheet_pos_y*rear,sheet_pos_z]) {
+    rotate([90,0,0]) {
+      cube([sheet_width,sheet_height,sheet_thickness],center=true);
+    }
+  }
+
+  for(side=[left,right]) {
+    translate([side_sheet_pos_x*side,0,sheet_pos_z]) {
+      rotate([0,90*side,0]) {
+        rotate([0,0,90*side]) {
+          color("lightgreen") {
+            cube([side_sheet_depth,sheet_height,sheet_thickness],center=true);
+          }
         }
       }
     }
   }
-}
 
-// messing around with line return
-for(side=[left,right]) {
-  translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*front,y_carriage_belt_bearing_z-belt_bearing_effective_diam/2]) {
-    rotate([0,90,0]) {
-      belt_bearing();
-    }
-  }
-}
-for(side=[left,right]) {
-  translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*rear,y_carriage_belt_bearing_z]) {
-    rotate([0,-10*side,0]) {
-      translate([belt_bearing_effective_diam/2*-side,0,0]) {
+  // messing around with line return
+  for(side=[left,right]) {
+    translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*front,y_carriage_belt_bearing_z-belt_bearing_effective_diam/2]) {
+      rotate([0,90,0]) {
         belt_bearing();
       }
     }
   }
-}
-
-// xy motors
-/*
-// inside
-for(side=[left,right]) {
-  translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y-sheet_thickness/2,top_sheet_pos_z-sheet_thickness/2-motor_side/2-5]) {
-    rotate([-90,0,0]) {
-      % motor();
+  for(side=[left,right]) {
+    translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*rear,y_carriage_belt_bearing_z]) {
+      rotate([0,-10*side,0]) {
+        translate([belt_bearing_effective_diam/2*-side,0,0]) {
+          belt_bearing();
+        }
+      }
     }
   }
-}
-*/
-// on the back
-for(side=[left,right]) {
-  translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
-    rotate([0,90*side,0]) {
-      % motor();
+
+  // xy motors
+  /*
+  // inside
+  for(side=[left,right]) {
+    translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y-sheet_thickness/2,top_sheet_pos_z-sheet_thickness/2-motor_side/2-5]) {
+      rotate([-90,0,0]) {
+        % motor();
+      }
     }
   }
-}
+  */
+  // on the back
+  for(side=[left,right]) {
+    translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
+      rotate([0,90*side,0]) {
+        % motor();
 
-// z motor(s)
-/*
-// single
-translate([0,sheet_pos_y+sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
-  rotate([90,0,0]) {
+        translate([0,0,0]) {
+        }
+      }
+    }
+  }
+
+  // z motor(s)
+  // single
+  /*
+  translate([y_rod_x-motor_side/2,sheet_pos_y+sheet_thickness/2,0]) {
+    // spool
+    translate([0,-sheet_thickness-spool_len/2,0]) {
+      rotate([90,0,0]) {
+        hole(spool_diam,spool_len,16);
+      }
+    }
     % motor();
   }
-}
-// double
-for(side=[left,right]) {
-  translate([(side_sheet_pos_x-sheet_thickness/2-spool_height)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,30]) {
-    rotate([0,90*side,0]) {
-      % motor();
+  translate([0,sheet_pos_y+sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
+    rotate([90,0,0]) {
     }
   }
+  */
+  /*
+  // double
+  for(side=[left,right]) {
+    translate([(side_sheet_pos_x-sheet_thickness/2-spool_height)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,30]) {
+      rotate([0,90*side,0]) {
+        % motor();
+      }
+    }
+  }
+  */
 }
-*/
+
+assembly();
