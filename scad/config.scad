@@ -39,10 +39,10 @@ build_x = 100;
 build_y = 100;
 build_z = 100;
 
+/*
 build_x = 50;
 build_y = 50;
 build_z = 50;
-/*
 */
 
 x_pos = -build_x/2+0;
