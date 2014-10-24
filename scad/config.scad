@@ -45,9 +45,6 @@ build_y = 50;
 build_z = 50;
 */
 
-x_pos = -build_x/2+0;
-y_pos = 2-build_y/2+build_y;
-
 hotend_diam                = 16;
 hotend_groove_diam         = 12;
 hotend_groove_height       = 4.6;
