@@ -95,7 +95,9 @@ x_pos = -build_x/2+0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y;
 
 z_rod_x         = max(build_x*0.25);
+z_rod_x         = side_sheet_pos_x - sheet_thickness/2 - 5 - z_rod_diam/2;
 z_rod_y         = front*sheet_pos_y + main_opening_depth + 8 + z_rod_diam/2;
+z_rod_y         = build_pos_y;
 z_rod_z         = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
 
 echo("X/Y ROD LEN: ", x_rod_len, y_rod_len);
