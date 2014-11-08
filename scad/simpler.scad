@@ -5,6 +5,7 @@ use <util.scad>;
 
 min_material_thickness = 1;
 sheet_opacity          = 0.7;
+sheet_opacity          = 1;
 
 /*
 // stacked 623 bearings
@@ -35,9 +36,10 @@ hotend_y    = (bearing_diam/2 + spacer + hotend_diam/2)*front;
 hotend_z    = x_carriage_height/2 + -hotend_len/2 + hotend_clamped_height;
 
 y_rod_clamp_len = 8;
+top_rear_brace_depth = 8 + z_rod_diam/2 + z_bearing_diam/2 + sheet_thickness + 2 + belt_bearing_thickness;
 min_top_rear_brace_depth = 30;
 //y_rod_len       = build_y + y_carriage_space/2 + abs(hotend_y) + 2 + sheet_thickness*2 + y_rod_clamp_len*2 + 7;
-y_rod_len       = build_y + hotend_diam/2 + abs(hotend_y) + min_top_rear_brace_depth + sheet_thickness*2 + y_rod_clamp_len*2;
+y_rod_len       = build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2 + y_rod_clamp_len*2;
 //y_rod_len       = 265;
 y_rod_x         = x_rod_len/2 - bearing_diam/2 - min_material_thickness*2;
 
@@ -65,12 +67,17 @@ rear_sheet_width  = front_sheet_width;
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
 //top_sheet_pos_z    = y_carriage_height/2+5+sheet_thickness/2; // above gantry
 bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2;
+z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 
-sheet_height = top_of_sheet - bottom_sheet_pos_z + sheet_thickness/2 + min_sheet_material; // below gantry
+sheet_height       = top_of_sheet - bottom_sheet_pos_z + sheet_thickness/2 + min_sheet_material; // below gantry
+side_sheet_height  = (top_sheet_pos_z - bottom_sheet_pos_z) + min_sheet_material;
+side_sheet_height  = sheet_height;
 //sheet_height = top_sheet_pos_z - bottom_sheet_pos_z + sheet_thickness + min_sheet_material*2; // above gantry
 
 sheet_pos_y = y_rod_len/2-y_rod_clamp_len-sheet_thickness/2;
 sheet_pos_z = top_of_sheet-sheet_height/2; // below gantry
+side_sheet_pos_z   = top_sheet_pos_z - sheet_thickness/2 - side_sheet_height/2;
+side_sheet_pos_z   = sheet_pos_z;
 //sheet_pos_z = top_sheet_pos_z+sheet_thickness/2+min_sheet_material-sheet_height/2; // above gantry
 
 build_pos_y = front*sheet_pos_y + sheet_thickness/2 + hotend_diam/2 + build_y/2;
@@ -86,6 +93,10 @@ main_opening_depth  = build_y+hotend_diam + spacer*2; // below gantry
 
 x_pos = -build_x/2+0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y;
+
+z_rod_x         = max(build_x*0.25);
+z_rod_y         = front*sheet_pos_y + main_opening_depth + 8 + z_rod_diam/2;
+z_rod_z         = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
 
 echo("X/Y ROD LEN: ", x_rod_len, y_rod_len);
 echo("W/D/H: ", side_sheet_pos_x*2 - sheet_thickness, side_sheet_depth, sheet_height);
@@ -309,7 +320,7 @@ module front_sheet() {
     hull() {
       translate([0,sheet_height/2,0]) {
         cube([build_x,opening_height*2,sheet_thickness+1],center=true);
-        cube([main_opening_width,hotend_sheet_clearance*2,sheet_thickness+1],center=true);
+        cube([main_opening_width-0.05,hotend_sheet_clearance*2,sheet_thickness+1],center=true);
       }
     }
   }
@@ -339,11 +350,12 @@ module side_sheet() {
   hotend_clearance = -1*(hotend_z-hotend_len/2-top_of_sheet);
 
   opening_height = min((sheet_height - bottom_material),(sheet_height*.66));
+  //height = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness/2 + min_sheet_material;
 
   echo("height? ", hotend_z-hotend_len/2-top_of_sheet);
 
   module body() {
-    cube([side_sheet_depth,sheet_height,sheet_thickness],center=true);
+    cube([side_sheet_depth,side_sheet_height,sheet_thickness],center=true);
   }
 
   module holes() {
@@ -357,6 +369,7 @@ module side_sheet() {
 }
 
 module top_sheet() {
+  width = side_sheet_pos_x*2 + sheet_thickness + min_sheet_material*2;
   width = side_sheet_pos_x*2 - sheet_thickness;
 
   module body() {
@@ -432,7 +445,7 @@ module assembly() {
 
   translate([0,0,top_sheet_pos_z]) {
     color("lightblue", sheet_opacity) {
-      //top_sheet();
+      top_sheet();
     }
   }
 
@@ -451,7 +464,7 @@ module assembly() {
   }
 
   for(side=[left,right]) {
-    translate([side_sheet_pos_x*side,side_sheet_pos_y,sheet_pos_z]) {
+    translate([side_sheet_pos_x*side,side_sheet_pos_y,side_sheet_pos_z]) {
       rotate([0,90*side,0]) {
         rotate([0,0,90*side]) {
           color("lightgreen", sheet_opacity) {
@@ -525,7 +538,8 @@ module z_axis() {
   }
 
 
-  color("cyan") translate([0,sheet_pos_y-sheet_thickness/2-belt_bearing_thickness/2-sheet_thickness,0]) {
+  //color("cyan") translate([0,sheet_pos_y-sheet_thickness/2-belt_bearing_thickness/2-sheet_thickness,0]) {
+  color("cyan") translate([0,z_rod_y+z_bearing_diam/2+sheet_thickness+1,0]) {
     // carriage bearings
     for (i=[-1,1]) {
       for (side=[top,bottom]) {
@@ -548,13 +562,17 @@ module z_axis() {
       }
     }
   }
-  // bottom carriage bearings
 
-  // bottom anchor bearings
+  // z rods
+  for (side=[left,right]) {
+    translate([z_rod_x*side,z_rod_y,z_rod_z]) {
+      % cylinder(r=z_rod_diam/2,h=z_rod_len+0.1,center=true);
+    }
+  }
 
   // z motor(s)
   // single
-  translate([y_rod_x-motor_side/2,sheet_pos_y+sheet_thickness/2,build_pos_z-build_z/2-motor_side/2]) {
+  translate([side_sheet_pos_x-sheet_thickness/2-motor_side/2-5,sheet_pos_y+sheet_thickness/2,build_pos_z-build_z/2-motor_side/2]) {
     rotate([90,0,0]) {
       % motor();
     }

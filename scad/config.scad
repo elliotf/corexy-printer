@@ -27,23 +27,9 @@ build_x = 600;
 build_y = 600;
 build_z = 600;
 
-build_x = 200;
-build_y = 200;
-build_z = 200;
-
-build_x = 150;
-build_y = 150;
-build_z = 150;
-
 build_x = 100;
 build_y = 100;
 build_z = 100;
-
-/*
-build_x = 50;
-build_y = 50;
-build_z = 50;
-*/
 
 hotend_diam                = 16;
 hotend_groove_diam         = 12;
@@ -153,6 +139,7 @@ m5_nut_diam = 8;
 m5_nut_thickness = 5;
 
 // Groove bearings
+// 625s
 belt_bearing_diam = 15;
 belt_bearing_groove_depth = .5;
 belt_bearing_inner = m5_diam;
@@ -160,12 +147,15 @@ belt_bearing_thickness = 5;
 belt_bearing_nut_diam = m5_nut_diam;
 belt_bearing_nut_thickness = m5_nut_thickness;
 
+// 623vv
+/*
 belt_bearing_diam = 12;
 belt_bearing_groove_depth = 1.7;
 belt_bearing_inner = m3_diam;
 belt_bearing_thickness = 4;
 belt_bearing_nut_diam = m3_nut_diam;
 belt_bearing_nut_thickness = m3_nut_thickness;
+*/
 
 belt_bearing_effective_diam = belt_bearing_diam - (belt_bearing_groove_depth*2);
 
