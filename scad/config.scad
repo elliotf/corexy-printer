@@ -3,6 +3,7 @@ da6 = 1 / cos(180 / 6) / 2;
 da8 = 1 / cos(180 / 8) / 2;
 
 approx_pi = 3.14159;
+approx_pi = 3.14159265359;
 
 // make coordinates more communicative
 left  = -1;
@@ -142,7 +143,7 @@ nema17_len = nema17_side;
 nema17_hole_spacing = 31;
 nema17_screw_diam = m3_diam;
 nema17_shaft_diam = 5;
-nema17_shaft_len = 16.5;
+nema17_shaft_len = 22;
 
 nema14_side = 35.3;
 nema14_len = nema14_side;
@@ -231,12 +232,12 @@ psu_height = 50;
 
 // Pulley
 pulley_diam = 20;
-pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
+pulley_diam = 64/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
 pulley_height = belt_bearing_diam;
 pulley_height = 13;
 
 pulley_idler_height = pulley_height;
-pulley_idler_diam = pulley_idler_bearing_diam + min_material_thickness*2;
+pulley_idler_diam = pulley_idler_bearing_diam + min_material_thickness*4;
 pulley_idler_shaft_diam = m5_diam;
 pulley_idler_shaft_nut_diam = m5_nut_diam;
 pulley_idler_shaft_nut_thickness = m5_nut_thickness;

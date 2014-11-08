@@ -3,21 +3,25 @@ use <util.scad>;
 
 cylinder_resolution = 18;
 cylinder_resolution = 90;
+cylinder_resolution = 225;
+cylinder_resolution = 360;
 
-add_shaft_len = m3_nut_diam;
-groove_height = 0.5;
-groove_spacing = 1;
-num_pulley_grooves = 7;
+add_shaft_len      = m3_nut_diam;
+groove_height      = 0.7;
+groove_spacing     = 1;
+num_pulley_grooves = 9;
 
-function get_grooved_height(num_grooves) = groove_spacing*(num_grooves+1)+groove_height*num_grooves;
+echo("PULLEY DIAM: ", pulley_diam);
+
+function get_ridge_height(num_grooves) = groove_spacing*(num_grooves+1)+groove_height*num_grooves;
 
 module grooves(diam,num_grooves) {
   //height = groove_spacing*(num_grooves+1)+groove_height*num_grooves;
-  height = get_grooved_height(num_grooves);
+  height = get_ridge_height(num_grooves);
 
   % cube([diam*2,groove_height,groove_height],center=true);
   first_to_last_groove_dist = (num_grooves-1)*(groove_spacing+groove_height);
-  echo("MOTOR PULLEY FIRST TO LAST GROOVE DIST: ", first_to_last_groove_dist);
+  echo("FIRST TO LAST GROOVE DIST: ", first_to_last_groove_dist);
   % translate([pulley_diam/2+2,0,0]) cube([1,1,first_to_last_groove_dist],center=true);
 
   module pulley_ridge() {
@@ -37,7 +41,7 @@ module grooves(diam,num_grooves) {
 }
 
 module motor_pulley(num_grooves) {
-  grooved_height = get_grooved_height(num_grooves);
+  grooved_height = get_ridge_height(num_grooves);
   add_shaft_len = m3_nut_diam;
   height = grooved_height + add_shaft_len;
 
@@ -47,7 +51,10 @@ module motor_pulley(num_grooves) {
   collar_height = add_shaft_len + groove_spacing/2;
   collar_diam = pulley_diam+min_material_thickness*2;
   echo("COLLAR HEIGHT: ", collar_height);
-  translate([0,0,collar_height/2]) cube([0,0,0],center=true);
+
+  translate([0,0,motor_shaft_len/2]) {
+    % cylinder(r=2,h=motor_shaft_len,center=true,$fn=8);
+  }
 
   module body() {
     cylinder(r=pulley_diam/2,h=height,center=true,$fn=cylinder_resolution);
@@ -84,7 +91,7 @@ module motor_pulley(num_grooves) {
 }
 
 module idler_pulley(num_grooves) {
-  height = get_grooved_height(num_grooves) + 1;
+  height = get_ridge_height(num_grooves) + 1;
 
   translate([0,0,height/2]) {
     difference() {
