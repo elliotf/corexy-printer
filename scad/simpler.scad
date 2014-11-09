@@ -1,18 +1,9 @@
 include <config.scad>;
-//include <positions.scad>;
-
 use <util.scad>;
 
 min_material_thickness = 1;
-sheet_opacity          = 0.7;
 sheet_opacity          = 1;
-
-/*
-// stacked 623 bearings
-belt_bearing_diam  = 10;
-belt_bearing_inner = 3;
-belt_bearing_thickness = 8;
-*/
+sheet_opacity          = 0.4;
 
 spool_diam = 18;
 spool_len  = 25.5;
@@ -22,6 +13,7 @@ x_carriage_width     = bearing_len + min_material_thickness * 2;
 
 y_carriage_belt_bearing_y = rod_diam/2+belt_bearing_inner/2 + min_material_thickness;
 y_carriage_belt_bearing_z = -rod_diam/2-belt_bearing_inner/2+belt_bearing_effective_diam/2;
+y_belt_bearing_from_rod   = 3;
 y_carriage_width          = min_material_thickness*2 + bearing_diam + min_material_thickness + spacer + belt_bearing_diam;
 y_carriage_depth          = (y_carriage_belt_bearing_y + belt_bearing_nut_diam/2 + min_material_thickness*2)*2;
 y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
@@ -37,6 +29,7 @@ hotend_z    = x_carriage_height/2 + -hotend_len/2 + hotend_clamped_height;
 
 y_rod_clamp_len = 8;
 top_rear_brace_depth = 8 + z_rod_diam/2 + z_bearing_diam/2 + sheet_thickness + 2 + belt_bearing_thickness;
+top_rear_brace_depth = 8 + z_rod_diam/2 + z_bearing_diam/2 + sheet_thickness;
 min_top_rear_brace_depth = 30;
 //y_rod_len       = build_y + y_carriage_space/2 + abs(hotend_y) + 2 + sheet_thickness*2 + y_rod_clamp_len*2 + 7;
 y_rod_len       = build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2 + y_rod_clamp_len*2;
@@ -96,6 +89,7 @@ y_pos = (build_pos_y-build_y/2-hotend_y)+build_y;
 
 z_rod_x         = max(build_x*0.25);
 z_rod_x         = side_sheet_pos_x - sheet_thickness/2 - 5 - z_rod_diam/2;
+z_rod_x         = main_opening_width/2 + 5 + z_rod_diam/2;
 z_rod_y         = front*sheet_pos_y + main_opening_depth + 8 + z_rod_diam/2;
 z_rod_y         = build_pos_y;
 z_rod_z         = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
@@ -200,8 +194,7 @@ module x_carriage() {
 module y_carriage() {
   res = 24;
 
-  rod_bearing_x = min_material_thickness*2 + bearing_diam/2;
-  //belt_bearing_x = rod_bearing_x + bearing_diam/2 + min_material_thickness + spacer + belt_bearing_diam/2;
+  rod_bearing_x  = min_material_thickness*2 + bearing_diam/2;
   belt_bearing_x = rod_bearing_x + (y_rod_x - y_carriage_belt_bearing_x);
 
   x_rod_clamp_len = belt_bearing_x + belt_bearing_nut_diam/2 + min_material_thickness*2;
@@ -310,7 +303,7 @@ module y_carriage() {
 
 module front_sheet() {
   bottom_material  = 30;
-  opening_height   = min((sheet_height - bottom_material),(sheet_height*.66));
+  opening_height   = min((sheet_height - bottom_material),(sheet_height*.50));
 
   echo("height? ", hotend_z-hotend_len/2-top_of_sheet);
 
@@ -408,10 +401,6 @@ module bottom_sheet() {
 }
 
 module assembly() {
-  translate([0,build_pos_y,build_pos_z]) {
-    % cube([build_x,build_y,build_z],center=true);
-  }
-
   translate([0,y_pos,0]) {
     for(side=[left,right]) {
       mirror([1+side,0,0]) {
@@ -439,20 +428,20 @@ module assembly() {
 
   translate([0,sheet_pos_y*front,sheet_pos_z]) {
     rotate([90,0,0]) {
-      color("violet", sheet_opacity) {
-        front_sheet();
+      color("lightblue", sheet_opacity) {
+        //front_sheet();
       }
     }
   }
 
   translate([0,0,top_sheet_pos_z]) {
-    color("lightblue", sheet_opacity) {
-      top_sheet();
+    color("violet", sheet_opacity) {
+      //top_sheet();
     }
   }
 
   translate([0,0,bottom_sheet_pos_z]) {
-    color("lightblue", sheet_opacity) {
+    color("violet", sheet_opacity) {
       bottom_sheet();
     }
   }
@@ -523,13 +512,25 @@ module assembly() {
 
 module z_axis() {
   build_base_z = build_pos_z-build_z/2-heatbed_and_glass_thickness-sheet_thickness/2;
+  //build_base_z = z_rod_z;
+  z_bearing_bed_offset = z_bearing_len/2*bottom + sheet_thickness + 2;
 
   module z_build_plate() {
     cube([build_x+14,build_y+14,2],center=true);
+
+  }
+
+  for(side=[left,right]) {
+    translate([z_rod_x*side,z_rod_y,build_base_z+z_bearing_bed_offset]) {
+      % hole(z_bearing_diam,z_bearing_len,16);
+    }
+  }
+
+  translate([0,build_pos_y,build_base_z+sheet_thickness/2 + 3 + build_z/2]) {
+    //% cube([build_x,build_y,build_z],center=true);
   }
 
   translate([build_pos_x,build_pos_y,build_base_z]) {
-
     translate([0,0,sheet_thickness/2+1]) {
       color("red") {
         z_build_plate();
@@ -539,26 +540,38 @@ module z_axis() {
     cube([build_x+14,build_y+14,sheet_thickness],center=true);
   }
 
+  bearing_x       = side_sheet_pos_x-sheet_thickness/2-belt_bearing_thickness;
+  bearing_x       = z_rod_x + z_bearing_diam/2 + 2 + belt_bearing_thickness/2;
+  anchor_offset_z = z_rod_len/2-sheet_thickness-spacer-belt_bearing_diam/2;
+  bed_bearing_z   = build_base_z - sheet_thickness/2 - belt_bearing_inner/2 - min_material_thickness*2;
 
-  //color("cyan") translate([0,sheet_pos_y-sheet_thickness/2-belt_bearing_thickness/2-sheet_thickness,0]) {
   color("cyan") translate([0,z_rod_y+z_bearing_diam/2+sheet_thickness+1,0]) {
-    // carriage bearings
-    for (i=[-1,1]) {
-      for (side=[top,bottom]) {
-        translate([belt_bearing_effective_diam*i,0,build_base_z-belt_bearing_diam+(belt_bearing_diam/2+.5)*side]) {
-          rotate([90,0,0]) {
+    # for (side=[left,right]) {
+      // carriage bearings
+      for (i=[-1,1]) {
+        translate([side*bearing_x,-belt_bearing_effective_diam+belt_bearing_effective_diam*i,bed_bearing_z]) {
+          rotate([0,90,0]) {
             belt_bearing();
           }
         }
       }
-    }
 
-    // anchor bearings
-    for (z=[top_sheet_pos_z+sheet_thickness/2+1+belt_bearing_diam/2,bottom_sheet_pos_z+sheet_thickness/2+1+belt_bearing_diam/2]) {
+      // anchor bearings
       for (i=[-1,1]) {
-        translate([belt_bearing_effective_diam+belt_bearing_effective_diam*i,0,z]) {
-          rotate([90,0,0]) {
+        translate([side*bearing_x,belt_bearing_effective_diam*i,z_rod_z+side*(anchor_offset_z)]) {
+          rotate([0,90,0]) {
             belt_bearing();
+          }
+        }
+      }
+
+      // moving knot carriage bearings
+      translate([0,z_rod_y,0]) {
+        rotate([0,0,-12]) {
+          translate([z_rod_x*side,0,bed_bearing_z]) {
+            rotate([90,0,0]) {
+              belt_bearing();
+            }
           }
         }
       }

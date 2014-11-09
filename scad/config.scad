@@ -27,9 +27,9 @@ build_x = 600;
 build_y = 600;
 build_z = 600;
 
-build_x = 100;
-build_y = 100;
-build_z = 100;
+build_x = 150;
+build_y = 150;
+build_z = 150;
 
 hotend_diam                = 16;
 hotend_groove_diam         = 12;
@@ -57,6 +57,14 @@ lm8uu_bearing_groove_spacing = 0;
 lm8uu_bearing_groove_width = 0;
 lm8uu_bearing_groove_depth = 0;
 lm8uu_rod_diam = 8;
+
+// lm8luu, M8 rods
+lm8luu_bearing_diam = 15;
+lm8luu_bearing_len  = 45;
+lm8luu_bearing_groove_spacing = 0;
+lm8luu_bearing_groove_width = 0;
+lm8luu_bearing_groove_depth = 0;
+lm8luu_rod_diam = 8;
 
 // bronze bushings, M8 rods
 bronze_bearing_diam = 12;
@@ -112,6 +120,13 @@ z_bearing_groove_spacing = lm8uu_bearing_groove_spacing;
 z_bearing_groove_width   = lm8uu_bearing_groove_width;
 z_bearing_groove_depth   = lm8uu_bearing_groove_depth;
 z_rod_diam               = lm8uu_rod_diam;
+
+z_bearing_diam           = lm8luu_bearing_diam;
+z_bearing_len            = lm8luu_bearing_len;
+z_bearing_groove_spacing = lm8luu_bearing_groove_spacing;
+z_bearing_groove_width   = lm8luu_bearing_groove_width;
+z_bearing_groove_depth   = lm8luu_bearing_groove_depth;
+z_rod_diam               = lm8luu_rod_diam;
 
 /*
 z_bearing_diam           = bearing_diam;
