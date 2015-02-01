@@ -34,7 +34,7 @@ top_rear_brace_depth = 8 + z_rod_diam/2 + z_bearing_diam/2 + sheet_thickness + 2
 top_rear_brace_depth = 8 + z_rod_diam/2 + z_bearing_diam/2 + sheet_thickness;
 min_top_rear_brace_depth = 30;
 //y_rod_len       = build_y + y_carriage_space/2 + abs(hotend_y) + 2 + sheet_thickness*2 + y_rod_clamp_len*2 + 7;
-y_rod_len       = build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2 + y_rod_clamp_len*2;
+y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2 + y_rod_clamp_len*2;
 //y_rod_len       = 265;
 y_rod_x         = x_rod_len/2 - bearing_diam/2 - min_material_thickness*2;
 
@@ -43,7 +43,7 @@ y_carriage_belt_bearing_x = y_rod_x - bearing_diam/2 - min_material_thickness - 
 min_sheet_material = 3;
 
 top_of_sheet = x_rod_spacing/2;
-hotend_sheet_clearance = (hotend_z-hotend_len/2-top_of_sheet)*bottom;
+hotend_sheet_clearance = (hotend_z-hotend_len/2-top_of_sheet-sheet_thickness*2)*bottom;
 
 build_pos_x = 0;
 build_pos_z = hotend_z-hotend_len/2-build_z/2-1;
@@ -75,25 +75,13 @@ side_sheet_pos_z   = top_sheet_pos_z - sheet_thickness/2 - side_sheet_height/2;
 side_sheet_pos_z   = sheet_pos_z;
 //sheet_pos_z = top_sheet_pos_z+sheet_thickness/2+min_sheet_material-sheet_height/2; // above gantry
 
-build_pos_y = front*sheet_pos_y + sheet_thickness/2 + hotend_diam/2 + build_y/2;
-
 top_sheet_depth = sheet_pos_y*2-sheet_thickness;
 
 side_sheet_depth = sheet_pos_y*2 - sheet_thickness;
 
-main_opening_width  = (y_rod_x - bearing_diam/2 - belt_bearing_diam)*2;
-//main_opening_depth  = top_sheet_depth-(y_carriage_depth/2-hotend_y-hotend_diam/2);
-main_opening_depth  = build_y+hotend_diam + spacer*2; // below gantry
-//main_opening_depth  = side_sheet_depth - min_top_rear_brace_depth; // above gantry
-
-x_pos = -build_x/2+0;
-y_pos = (build_pos_y-build_y/2-hotend_y)+build_y;
-
 z_rod_pos_x  = max(build_x*0.33);
-//z_rod_pos_x  = side_sheet_pos_x - sheet_thickness/2 - 5 - z_rod_diam/2;
-//z_rod_pos_x  = main_opening_width/2 + 5 + z_rod_diam/2;
-z_rod_pos_y    = rear*sheet_pos_y + sheet_thickness/2 - z_motor_shaft_len + belt_width/2;
-z_rod_pos_z    = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
+z_rod_pos_y  = rear*sheet_pos_y + sheet_thickness/2 - z_motor_shaft_len + belt_width/2;
+z_rod_pos_z  = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
 
 z_belt_bearing_diam      = 10;
 z_belt_bearing_inner     = 3;
@@ -103,6 +91,14 @@ z_motor_pos_x  = z_belt_bearing_diam/2 + belt_thickness + z_pulley_diam/2;
 z_motor_pos_y  = rear*sheet_pos_y + sheet_thickness/2;
 z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2 - (z_motor_side-z_motor_hole_spacing)/2 + z_motor_screw_diam/2 + 2;
 z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
+
+main_opening_width  = (y_rod_x - bearing_diam/2 - belt_bearing_diam)*2;
+main_opening_depth  = top_sheet_depth/2 + z_rod_pos_y - z_bearing_diam/2 - sheet_thickness;
+
+build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
+
+x_pos = -build_x/2+0;
+y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1;
 
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);
@@ -694,19 +690,20 @@ module z_axis_stationary() {
 module z_axis() {
   build_base_z = build_pos_z-build_z/2-heatbed_and_glass_thickness-sheet_thickness/2;
   //build_base_z = z_rod_pos_z;
-  z_bearing_bed_offset = z_bearing_len/2*bottom + sheet_thickness + 2;
+  z_bearing_bed_offset = z_bearing_len/2*bottom + sheet_thickness*0;
 
   module z_build_plate() {
     cube([build_x+14,build_y+14,2],center=true);
-
   }
 
+  // z bearings
   for(side=[left,right]) {
     translate([z_rod_pos_x*side,z_rod_pos_y,build_base_z+z_bearing_bed_offset]) {
       % hole(z_bearing_diam,z_bearing_len,16);
     }
   }
 
+  // z belt bearings
   for(side=[top,bottom]) {
     translate([0,z_rod_pos_y,build_base_z+z_bearing_bed_offset+(z_belt_bearing_diam/2+belt_thickness*2+1)*side]) {
       rotate([90,0,0]) {
@@ -738,8 +735,7 @@ module z_axis() {
   motor_pos_z         = bottom_sheet_pos_z+sheet_thickness/2+motor_side/2;
 }
 
-//translate([0,0,build_z]) {
-translate([0,0,0]) {
+translate([0,0,build_z*1]) {
   z_axis();
 }
 
