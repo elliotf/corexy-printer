@@ -197,7 +197,7 @@ nema17_hole_spacing = 31;
 nema17_shoulder_diam = 22;
 nema17_screw_diam = m3_diam;
 nema17_shaft_diam = 5;
-nema17_shaft_len = 24.5;
+nema17_shaft_len = 24;
 
 nema14_side = 35.3;
 nema14_len = nema14_side;
