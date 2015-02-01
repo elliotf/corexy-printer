@@ -112,7 +112,37 @@ module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
   }
 }
 
+function offset_for_side(side,dimensions)       = dimensions[1-side%2]/2 + bc_thickness/2;
+function bc_tab_space_for_side(side,dimensions) = dimensions[side%2]-bc_tab_from_end_dist*2;
+function bc_tab_space_for_len(len)              = len-bc_tab_from_end_dist*2;
+
+module holes_for_side(len,type) {
+  tab_space = bc_tab_space_for_len(len);
+  if(type == BC_ZIP_TAB) {
+    bc_position_along_line(tab_space) bc_offset_ziptie_hole();
+  }
+
+  if(type == BC_SCREW_TAB) {
+    bc_position_along_line(tab_space) bc_offset_screw_hole();
+  }
+
+  // slots
+  if(type == BC_ZIP_SLOT || type == BC_SCREW_SLOT) {
+    scale([1,1,1.05])
+      bc_position_along_line(tab_space) bc_offset_tab_pair(type/2);
+  }
+}
+
 module box_holes(dimensions=[0,0],sides=[0,0,0,0]) {
+  for(side=[0,1,2,3]) {
+    color(colors[side]) {
+      rotate([0,0,90*side]) {
+        translate([0,offset_for_side(side,dimensions),0]) {
+          holes_for_side(dimensions[side],sides[side]);
+        }
+      }
+    }
+  }
 }
 
 module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
@@ -130,7 +160,6 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
 
   colors = ["red","green","blue","yellow"];
 
-  function offset_for_side(side) = dimensions[1-side%2]/2 + bc_thickness/2;
   function len_for_side(side) = dimensions[side%2];
 
   module add_material_for_slot_side(side) {
@@ -148,8 +177,6 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
       cube([len,bc_thickness+bc_shoulder_width,bc_thickness],center=true);
   }
 
-  function bc_tab_space_for_side(side) = dimensions[side%2]-bc_tab_from_end_dist*2;
-
   difference() {
     union() {
       cube([dimensions[0],dimensions[1],bc_thickness],center=true);
@@ -158,10 +185,10 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
       for(side=[0,1,2,3]) {
         color(colors[side])
           rotate([0,0,90*side])
-            translate([0,offset_for_side(side),0]) {
+            translate([0,offset_for_side(side,dimensions),0]) {
               // tabs
               if(sides[side] == BC_ZIP_TAB || sides[side] == BC_SCREW_TAB) {
-                bc_position_along_line(bc_tab_space_for_side(side)) bc_offset_tab_pair();
+                bc_position_along_line(bc_tab_space_for_side(side,dimensions)) bc_offset_tab_pair();
               }
 
               // slots
@@ -172,26 +199,7 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
       }
     }
 
-    for(side=[0,1,2,3]) {
-      color(colors[side])
-        rotate([0,0,90*side])
-          translate([0,offset_for_side(side),0]) {
-            // tabs
-            if(sides[side] == BC_ZIP_TAB) {
-              bc_position_along_line(bc_tab_space_for_side(side)) bc_offset_ziptie_hole();
-            }
-
-            if(sides[side] == BC_SCREW_TAB) {
-              bc_position_along_line(bc_tab_space_for_side(side)) bc_offset_screw_hole();
-            }
-
-            // slots
-            if(sides[side] == BC_ZIP_SLOT || sides[side] == BC_SCREW_SLOT) {
-              scale([1,1,1.05])
-                bc_position_along_line(bc_tab_space_for_side(side)) bc_offset_tab_pair(sides[side]/2);
-            }
-          }
-    }
+    box_holes(dimensions,sides);
   }
 }
 
