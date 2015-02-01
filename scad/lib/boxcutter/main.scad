@@ -1,18 +1,18 @@
-bc_tab_len=9;
-bc_shoulder_width=6;
-bc_thickness=6;
-bc_tab_from_end_dist=bc_shoulder_width*3;
-bc_ziptie_width = 3.75;
-bc_ziptie_thickness = 1.75;
-bc_screw_diam = 3;
-bc_screw_len  = 6;
-bc_nut_diam = 5.5;
+bc_tab_len           = 9;
+bc_shoulder_width    = 6;
+bc_thickness         = 6;
+bc_tab_from_end_dist = bc_shoulder_width*1;
+bc_ziptie_width      = 3.75;
+bc_ziptie_thickness  = 1.75;
+bc_screw_diam        = 3;
+bc_screw_len         = 6;
+bc_nut_diam          = 5.5;
 
-bc_tab_slot_pair_space = bc_tab_len * 1.5;
-bc_tab_slot_pair_len = bc_tab_len*2 + bc_tab_slot_pair_space;
+bc_tab_slot_pair_space          = bc_tab_len * .75;
+bc_tab_slot_pair_len            = bc_tab_len*2 + bc_tab_slot_pair_space;
 bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*2.01;
 bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*1.5;
-bc_pair_and_spacing_len = bc_tab_slot_pair_len + bc_space_between_tab_slot_pairs;
+bc_pair_and_spacing_len         = bc_tab_slot_pair_len + bc_space_between_tab_slot_pairs;
 
 BC_ZIP_TAB    = 1;
 BC_ZIP_SLOT   = 2;
@@ -110,6 +110,9 @@ module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
     translate([bc_tab_slot_pair_len/2,0,0])
       cylinder(r=bc_screw_diam/2,h=bc_thickness+0.05,center=true,$fn=8);
   }
+}
+
+module box_holes(dimensions=[0,0],sides=[0,0,0,0]) {
 }
 
 module box_side(dimensions=[0,0],sides=[0,0,0,0]) {

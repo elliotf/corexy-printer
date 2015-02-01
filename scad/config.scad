@@ -16,6 +16,9 @@ x = 0;
 y = 1;
 z = 2;
 
+resolution = 8;
+resolution = 16;
+
 // material dimensions
 zip_tie_width = 3;
 zip_tie_thickness = 2;
@@ -23,13 +26,22 @@ line_diam = .5;
 line_cube = [line_diam,line_diam,line_diam];
 
 // Printer size
-build_x = 600;
-build_y = 600;
-build_z = 600;
+build_x = 200;
+build_y = 200;
+build_z = 200;
 
 build_x = 150;
 build_y = 150;
 build_z = 150;
+
+build_x = 100;
+build_y = 100;
+build_z = 100;
+/*
+*/
+
+belt_thickness = 0.5; // FIXME: make correct
+belt_width     = 6; // FIXME: make correct
 
 hotend_diam                = 16;
 hotend_groove_diam         = 12;
@@ -97,6 +109,7 @@ bearing_groove_width   = lm8uu_bearing_groove_width;
 bearing_groove_depth   = lm8uu_bearing_groove_depth;
 rod_diam               = lm8uu_rod_diam;
 
+/*
 bearing_diam           = bronze_bearing_diam;
 bearing_len            = bronze_bearing_len;
 bearing_groove_spacing = bronze_bearing_groove_spacing;
@@ -110,7 +123,6 @@ bearing_groove_spacing = lm6uu_bearing_groove_spacing;
 bearing_groove_width   = lm6uu_bearing_groove_width;
 bearing_groove_depth   = lm6uu_bearing_groove_depth;
 rod_diam               = lm6uu_rod_diam;
-/*
 */
 
 // if you'd like the z axis to use different rods/bearings
@@ -164,13 +176,13 @@ belt_bearing_nut_thickness = m5_nut_thickness;
 
 // 623vv
 /*
+*/
 belt_bearing_diam = 12;
 belt_bearing_groove_depth = 1.7;
 belt_bearing_inner = m3_diam;
 belt_bearing_thickness = 4;
 belt_bearing_nut_diam = m3_nut_diam;
 belt_bearing_nut_thickness = m3_nut_thickness;
-*/
 
 belt_bearing_effective_diam = belt_bearing_diam - (belt_bearing_groove_depth*2);
 
@@ -182,13 +194,15 @@ pulley_idler_bearing_thickness = 5;
 nema17_side = 43;
 nema17_len = nema17_side;
 nema17_hole_spacing = 31;
+nema17_shoulder_diam = 22;
 nema17_screw_diam = m3_diam;
 nema17_shaft_diam = 5;
-nema17_shaft_len = 16.5;
+nema17_shaft_len = 24.5;
 
 nema14_side = 35.3;
 nema14_len = nema14_side;
 nema14_hole_spacing = 26;
+nema14_shoulder_diam = 22;
 nema14_screw_diam = m3_diam;
 nema14_shaft_diam = 5;
 nema14_shaft_len = 20;
@@ -196,6 +210,7 @@ nema14_shaft_len = 20;
 motor_side = nema17_side;
 motor_len = motor_side;
 motor_hole_spacing = nema17_hole_spacing;
+motor_shoulder_diam = nema17_hole_spacing;
 motor_screw_diam = nema17_screw_diam;
 motor_shaft_diam = nema17_shaft_diam;
 motor_shaft_len = nema17_shaft_len;
@@ -205,6 +220,7 @@ motor_wire_hole_height = 6;
 z_motor_side = nema14_side;
 z_motor_len = z_motor_side;
 z_motor_hole_spacing = nema14_hole_spacing;
+z_motor_shoulder_diam = nema14_hole_spacing;
 z_motor_screw_diam = nema14_screw_diam;
 z_motor_shaft_diam = nema14_shaft_diam;
 z_motor_shaft_len = nema14_shaft_len;
@@ -212,6 +228,7 @@ z_motor_shaft_len = nema14_shaft_len;
 z_motor_side = nema17_side;
 z_motor_len = z_motor_side;
 z_motor_hole_spacing = nema17_hole_spacing;
+z_motor_shoulder_diam = nema17_hole_spacing;
 z_motor_screw_diam = nema17_screw_diam;
 z_motor_shaft_diam = nema17_shaft_diam;
 z_motor_shaft_len = nema17_shaft_len;
@@ -223,8 +240,7 @@ sheet_shoulder_width = 3; // material to have on the far side of a slot
 sheet_screw_diam = m3_diam;
 sheet_screw_nut_diam = m3_nut_diam;
 sheet_screw_nut_thickness = m3_nut_thickness;
-sheet_hole_resolution = 36;
-sheet_hole_resolution = 8;
+sheet_hole_resolution = resolution;
 
 top_plate_screw_diam = sheet_screw_diam;
 
