@@ -272,8 +272,6 @@ x_carriage_depth = x_rod_spacing + bearing_diam;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
 
-echo("X/Y rod len: ", x_rod_len, y_rod_len);
-
 // tuner dimensions (pull out into a different file)
 tuner_shoulder_width = 10;
 tuner_shoulder_diam  = 10;
