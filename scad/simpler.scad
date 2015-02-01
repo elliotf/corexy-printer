@@ -56,7 +56,7 @@ heatbed_and_glass_thickness = 4;
 
 z_axis_overhead = sheet_thickness + heatbed_and_glass_thickness + motor_side;
 
-front_sheet_width = (side_sheet_pos_x + sheet_thickness/2 + min_sheet_material)*2;
+front_sheet_width = side_sheet_pos_x*2 - sheet_thickness;
 rear_sheet_width  = front_sheet_width;
 
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
@@ -64,7 +64,7 @@ top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
 bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2;
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 
-sheet_height       = top_of_sheet - bottom_sheet_pos_z + sheet_thickness/2 + min_sheet_material; // below gantry
+sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
 side_sheet_height  = (top_sheet_pos_z - bottom_sheet_pos_z) + min_sheet_material;
 side_sheet_height  = sheet_height;
 //sheet_height = top_sheet_pos_z - bottom_sheet_pos_z + sheet_thickness + min_sheet_material*2; // above gantry
@@ -437,7 +437,7 @@ module front_sheet() {
   opening_height   = min((sheet_height - bottom_material),(sheet_height*.50));
 
   module body() {
-    cube([front_sheet_width,sheet_height,sheet_thickness],center=true);
+    box_side([front_sheet_width,sheet_height],[0,4,4,4]);
   }
 
   module holes() {
@@ -457,7 +457,7 @@ module front_sheet() {
 
 module rear_sheet() {
   module body() {
-    cube([rear_sheet_width,sheet_height,sheet_thickness],center=true);
+    box_side([front_sheet_width,sheet_height],[0,4,4,4]);
   }
 
   module holes() {
@@ -488,7 +488,7 @@ module side_sheet() {
   //height = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness/2 + min_sheet_material;
 
   module body() {
-    cube([side_sheet_depth,side_sheet_height,sheet_thickness],center=true);
+    box_side([side_sheet_depth,side_sheet_height],[0,3,4,3]);
   }
 
   module holes() {
@@ -599,7 +599,7 @@ module assembly() {
       rotate([0,90*side,0]) {
         rotate([0,0,90*side]) {
           color("lightgreen", sheet_opacity) {
-            //side_sheet();
+            side_sheet();
           }
         }
       }
