@@ -441,6 +441,10 @@ module front_sheet() {
   }
 
   module holes() {
+    translate([0,-sheet_pos_z+top_sheet_pos_z,0]) {
+      box_holes_for_side(front_sheet_width,4);
+    }
+
     hull() {
       translate([0,sheet_height/2,0]) {
         cube([build_x,opening_height*2,sheet_thickness+1],center=true);
@@ -461,6 +465,10 @@ module rear_sheet() {
   }
 
   module holes() {
+    translate([0,-sheet_pos_z+top_sheet_pos_z,0]) {
+      box_holes_for_side(front_sheet_width,4);
+    }
+
     translate([z_motor_pos_x,-sheet_pos_z+z_motor_pos_z,0]) {
       hole(z_motor_shoulder_diam,sheet_thickness*2,resolution);
 
@@ -492,6 +500,10 @@ module side_sheet() {
   }
 
   module holes() {
+    translate([0,-sheet_pos_z+top_sheet_pos_z,0]) {
+      box_holes_for_side(side_sheet_depth,4);
+    }
+
     cube([side_sheet_depth/2,sheet_height/2,sheet_thickness+1],center=true);
   }
 

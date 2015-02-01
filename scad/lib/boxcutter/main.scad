@@ -112,11 +112,11 @@ module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
   }
 }
 
-function offset_for_side(side,dimensions)       = dimensions[1-side%2]/2 + bc_thickness/2;
+function bc_offset_for_side(side,dimensions)       = dimensions[1-side%2]/2 + bc_thickness/2;
 function bc_tab_space_for_side(side,dimensions) = dimensions[side%2]-bc_tab_from_end_dist*2;
 function bc_tab_space_for_len(len)              = len-bc_tab_from_end_dist*2;
 
-module holes_for_side(len,type) {
+module box_holes_for_side(len,type) {
   tab_space = bc_tab_space_for_len(len);
   if(type == BC_ZIP_TAB) {
     bc_position_along_line(tab_space) bc_offset_ziptie_hole();
@@ -139,8 +139,8 @@ module box_holes(dimensions=[0,0],sides=[0,0,0,0]) {
   for(side=[0,1,2,3]) {
     color(colors[side]) {
       rotate([0,0,90*side]) {
-        translate([0,offset_for_side(side,dimensions),0]) {
-          holes_for_side(dimensions[side%2],sides[side]);
+        translate([0,bc_offset_for_side(side,dimensions),0]) {
+          box_holes_for_side(dimensions[side%2],sides[side]);
         }
       }
     }
@@ -199,7 +199,7 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
       for(side=[0,1,2,3]) {
         color(colors[side]) {
           rotate([0,0,90*side]) {
-            translate([0,offset_for_side(side,dimensions),0]) {
+            translate([0,bc_offset_for_side(side,dimensions),0]) {
               // tabs
               if(sides[side] == BC_ZIP_TAB || sides[side] == BC_SCREW_TAB) {
                 bc_position_along_line(bc_tab_space_for_side(side,dimensions)) bc_offset_tab_pair();
