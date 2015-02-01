@@ -1,3 +1,5 @@
+use <../../util.scad>;
+
 bc_tab_len           = 9;
 bc_shoulder_width    = 4;
 bc_thickness         = 6;
@@ -108,7 +110,7 @@ module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
 
   if(with_hole==BC_WITH_SCREW_HOLES) {
     translate([bc_tab_slot_pair_len/2,0,0])
-      cylinder(r=bc_screw_diam/2,h=bc_thickness+0.05,center=true,$fn=8);
+      hole(bc_screw_diam,bc_thickness+0.05,8);
   }
 }
 
