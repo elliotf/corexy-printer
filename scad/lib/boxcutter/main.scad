@@ -1,17 +1,17 @@
 bc_tab_len           = 9;
-bc_shoulder_width    = 6;
+bc_shoulder_width    = 4;
 bc_thickness         = 6;
-bc_tab_from_end_dist = bc_shoulder_width*1;
+bc_tab_from_end_dist = bc_thickness;
 bc_ziptie_width      = 3.75;
 bc_ziptie_thickness  = 1.75;
-bc_screw_diam        = 3;
+bc_screw_diam        = 2.8;
 bc_screw_len         = 6;
 bc_nut_diam          = 5.5;
 
 bc_tab_slot_pair_space          = bc_tab_len * .75;
 bc_tab_slot_pair_len            = bc_tab_len*2 + bc_tab_slot_pair_space;
 bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*2.01;
-bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*1.5;
+bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*1.75;
 bc_pair_and_spacing_len         = bc_tab_slot_pair_len + bc_space_between_tab_slot_pairs;
 
 BC_ZIP_TAB    = 1;
@@ -27,14 +27,14 @@ function bc_hole_diam(diam,sides=8) = 1 / cos(180 / sides) / 2;
 
 module bc_screw_nut_hole() {
   nyloc_nut_height = 4;
-  std_nut_height = 2.5;
+  std_nut_height = 2;
   bc_nut_height = nyloc_nut_height;
   bc_nut_height = std_nut_height;
 
-  bc_screw_len = bc_shoulder_width * .9 + bc_nut_height;
+  bc_screw_len = bc_thickness + bc_nut_height;
 
   translate([0,-bc_thickness/2,0]) {
-    translate([0,-bc_shoulder_width*0.65-bc_nut_height/2,0])
+    translate([0,-bc_thickness*0.65-bc_nut_height/2,0])
       cube([bc_nut_diam,bc_nut_height,bc_thickness+0.05],center=true);
 
     translate([0,-bc_screw_len/2+0.05,0])
@@ -133,12 +133,14 @@ module holes_for_side(len,type) {
   }
 }
 
+colors = ["red","green","blue","yellow"];
+
 module box_holes(dimensions=[0,0],sides=[0,0,0,0]) {
   for(side=[0,1,2,3]) {
     color(colors[side]) {
       rotate([0,0,90*side]) {
         translate([0,offset_for_side(side,dimensions),0]) {
-          holes_for_side(dimensions[side],sides[side]);
+          holes_for_side(dimensions[side%2],sides[side]);
         }
       }
     }
@@ -158,12 +160,22 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
   //   used as a basis for the distance of a tab/slot from an edge
   // bc_thickness is the bc_thickness of the material
 
-  colors = ["red","green","blue","yellow"];
-
   function len_for_side(side) = dimensions[side%2];
+  function added(type) = (type == BC_ZIP_SLOT || type == BC_SCREW_SLOT)
+                       ? (bc_shoulder_width+bc_thickness)
+                       : 0
+                       ;
+
+  to_top    = added(sides[0]);
+  to_bottom = added(sides[2]);
+  to_right  = added(sides[1]);
+  to_left   = added(sides[3]);
+
+  width  = dimensions[0] + to_right + to_left;
+  height = dimensions[1] + to_top + to_bottom;
 
   module add_material_for_slot_side(side) {
-    to_left = sides[(side+1)%4];
+    to_left  = sides[(side+1)%4];
     to_right = sides[(side+3)%4];
     slots_to_left  = (to_left && floor(to_left % 2) == 0) ? 1 : 0;
     slots_to_right  = (to_right && floor(to_right % 2) == 0) ? 1 : 0;
@@ -179,23 +191,22 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
 
   difference() {
     union() {
-      cube([dimensions[0],dimensions[1],bc_thickness],center=true);
+      translate([to_right/2-to_left/2,to_top/2-to_bottom/2,0]) {
+        cube([width,height,bc_thickness],center=true);
+      }
 
       // add material
       for(side=[0,1,2,3]) {
-        color(colors[side])
-          rotate([0,0,90*side])
+        color(colors[side]) {
+          rotate([0,0,90*side]) {
             translate([0,offset_for_side(side,dimensions),0]) {
               // tabs
               if(sides[side] == BC_ZIP_TAB || sides[side] == BC_SCREW_TAB) {
                 bc_position_along_line(bc_tab_space_for_side(side,dimensions)) bc_offset_tab_pair();
               }
-
-              // slots
-              if(sides[side] == BC_ZIP_SLOT || sides[side] == BC_SCREW_SLOT) {
-                add_material_for_slot_side(side);
-              }
             }
+          }
+        }
       }
     }
 
