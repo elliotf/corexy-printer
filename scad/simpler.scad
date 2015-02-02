@@ -230,7 +230,19 @@ module front_sheet() {
     box_side([front_sheet_width,sheet_height],[0,4,4,4]);
   }
 
-  module unpositioned_holes() {
+  module holes() {
+    translate([0,-sheet_pos_z,0]) {
+      translate([0,top_sheet_pos_z,0]) {
+        box_holes_for_side(front_sheet_width,4);
+      }
+
+      for(side=[left,right]) {
+        translate([y_rod_x*side,0,0]) {
+          hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+        }
+      }
+    }
+
     hull() {
       translate([0,sheet_height/2,0]) {
         cube([build_x,opening_height*2,sheet_thickness+1],center=true);
@@ -239,18 +251,9 @@ module front_sheet() {
     }
   }
 
-  module holes() {
-    translate([0,top_sheet_pos_z,0]) {
-      box_holes_for_side(front_sheet_width,4);
-    }
-  }
-
   difference() {
     body();
-    translate([0,-sheet_pos_z,0]) {
-      holes();
-    }
-    unpositioned_holes();
+    holes();
   }
 }
 
@@ -260,17 +263,24 @@ module rear_sheet() {
   }
 
   module holes() {
-    translate([0,-sheet_pos_z+top_sheet_pos_z,0]) {
-      box_holes_for_side(front_sheet_width,4);
-    }
+    translate([0,-sheet_pos_z,0]) {
+      translate([0,top_sheet_pos_z,0]) {
+        box_holes_for_side(front_sheet_width,4);
+      }
+      for(side=[left,right]) {
+        translate([y_rod_x*side,0,0]) {
+          hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+        }
+      }
 
-    translate([z_motor_pos_x,-sheet_pos_z+z_motor_pos_z,0]) {
-      hole(z_motor_shoulder_diam,sheet_thickness*2,resolution);
+      translate([z_motor_pos_x,z_motor_pos_z,0]) {
+        hole(z_motor_shoulder_diam,sheet_thickness*2,resolution);
 
-      for(x=[left,right]) {
-        for(y=[top,bottom]) {
-          translate([z_motor_hole_spacing/2*x,z_motor_hole_spacing/2*y,0]) {
-            hole(z_motor_screw_diam,sheet_thickness*2,resolution);
+        for(x=[left,right]) {
+          for(y=[top,bottom]) {
+            translate([z_motor_hole_spacing/2*x,z_motor_hole_spacing/2*y,0]) {
+              hole(z_motor_screw_diam,sheet_thickness*2,resolution);
+            }
           }
         }
       }
@@ -332,6 +342,12 @@ module top_sheet() {
     translate([0,front*(top_sheet_depth/2),0]) {
       cube([main_opening_width/2,sheet_thickness*4,sheet_thickness+1],center=true);
     }
+
+    for(side=[left,right]) {
+      translate([z_rod_pos_x*side,z_rod_pos_y,0]) {
+        hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+      }
+    }
   }
 
   difference() {
@@ -349,6 +365,11 @@ module bottom_sheet() {
   }
 
   module holes() {
+    for(side=[left,right]) {
+      translate([z_rod_pos_x*side,z_rod_pos_y,0]) {
+        hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+      }
+    }
   }
 
   difference() {

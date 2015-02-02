@@ -4,6 +4,8 @@ da8 = 1 / cos(180 / 8) / 2;
 
 approx_pi = 3.14159;
 
+laser_cut_kerf = 0.06;
+
 // make coordinates more communicative
 left    = -1;
 right   = 1;
@@ -37,10 +39,10 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
+/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
-/*
 */
 
 belt_thickness = 0.5; // FIXME: make correct
