@@ -16,8 +16,11 @@ x = 0;
 y = 1;
 z = 2;
 
-resolution = 8;
 resolution = 16;
+resolution = 64;
+
+extrusion_width  = 0.5;
+extrusion_height = 0.3;
 
 // material dimensions
 zip_tie_width = 3;
@@ -34,10 +37,14 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
+/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
-/*
+
+build_x = 50;
+build_y = 50;
+build_z = 50;
 */
 
 belt_thickness = 0.5; // FIXME: make correct
@@ -149,6 +156,8 @@ z_bearing_groove_depth   = bearing_groove_depth;
 z_rod_diam               = rod_diam;
 */
 
+rod_slop = 0.1;
+
 // endstop dimensions
 endstop_len = 20;
 endstop_width = 6;
@@ -161,9 +170,11 @@ endstop_hole_from_top = 5;
 m3_diam = 3;
 m3_nut_diam  = 5.5;
 m3_nut_thickness  = 3;
+m3_washer_thickness  = .6;
 m5_diam = 5;
 m5_nut_diam = 8;
 m5_nut_thickness = 5;
+m5_washer_thickness  = 1;
 
 // Groove bearings
 // 625s
@@ -173,6 +184,7 @@ belt_bearing_inner = m5_diam;
 belt_bearing_thickness = 5;
 belt_bearing_nut_diam = m5_nut_diam;
 belt_bearing_nut_thickness = m5_nut_thickness;
+belt_bearing_washer_thickness = m5_washer_thickness;
 
 // 623vv
 /*
@@ -183,6 +195,7 @@ belt_bearing_inner = m3_diam;
 belt_bearing_thickness = 4;
 belt_bearing_nut_diam = m3_nut_diam;
 belt_bearing_nut_thickness = m3_nut_thickness;
+belt_bearing_washer_thickness = m3_washer_thickness;
 
 belt_bearing_effective_diam = belt_bearing_diam - (belt_bearing_groove_depth*2);
 
