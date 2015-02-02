@@ -3,8 +3,8 @@ use <lib/boxcutter/main.scad>;
 use <util.scad>;
 
 min_material_thickness = 1;
-sheet_opacity          = 0.4;
 sheet_opacity          = 1;
+sheet_opacity          = 0.4;
 
 spool_diam = 18;
 spool_len  = 25.5;
@@ -90,13 +90,13 @@ z_motor_pos_y  = rear*sheet_pos_y + sheet_thickness/2;
 z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2 - (z_motor_side-z_motor_hole_spacing)/2 + z_motor_screw_diam/2 + 2;
 z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
 
-main_opening_width  = build_y + x_carriage_width;
+main_opening_width  = build_y + hotend_diam + 6;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 
-x_pos = -build_x/2+build_x*.5;
-y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*.5;
+x_pos = -build_x/2+build_x*.0;
+y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*.0;
 
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);
