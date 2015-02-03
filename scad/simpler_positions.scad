@@ -98,5 +98,10 @@ x_pos = -build_x/2+build_x*.0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
 z_pos = build_z*0+10;
 
+handle_hole_width        = 125;
+handle_hole_height       = 50;
+handle_material_width    = 25;
+handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
+
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);

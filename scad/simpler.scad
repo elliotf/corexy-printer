@@ -227,11 +227,6 @@ module y_carriage() {
 }
 
 module handle() {
-  handle_hole_width        = 125;
-  handle_hole_height       = 50;
-  handle_material_width    = 25;
-  handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
-
   module body() {
     hull() {
       translate([0,-handle_attachment_height/2,0]) {
