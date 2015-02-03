@@ -1,4 +1,4 @@
-use <../../util.scad>;
+use <util.scad>;
 
 bc_tab_len           = 9;
 bc_shoulder_width    = 4;

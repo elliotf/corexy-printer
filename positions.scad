@@ -1,5 +1,5 @@
 include <config.scad>;
-use <lib/boxcutter/main.scad>;
+use <boxcutter.scad>;
 use <util.scad>;
 
 min_material_thickness = 1;
