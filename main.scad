@@ -1,6 +1,6 @@
 include <config.scad>;
 include <positions.scad>;
-use <lib/boxcutter/main.scad>;
+use <boxcutter.scad>;
 use <util.scad>;
 
 module line_hole() {
