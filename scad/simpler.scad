@@ -226,6 +226,45 @@ module y_carriage() {
   }
 }
 
+module handle() {
+  handle_hole_width        = 125;
+  handle_hole_height       = 50;
+  handle_material_width    = 25;
+  handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
+
+  module body() {
+    hull() {
+      translate([0,-handle_attachment_height/2,0]) {
+        cube([handle_hole_width+handle_material_width*2,handle_attachment_height,sheet_thickness],center=true);
+      }
+
+      for(x=[left,right]) {
+        translate([x*(handle_hole_width/2+handle_material_width/2-5),handle_hole_height+handle_material_width/2,0]) {
+          hole(handle_material_width,sheet_thickness,resolution);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    hull() {
+      for(x=[left,right]) {
+        translate([x*(handle_hole_width/2-handle_material_width/2),handle_hole_height/2+top*(handle_hole_height/2-handle_material_width/2),0]) {
+          hole(handle_material_width,sheet_thickness+1,resolution);
+        }
+        translate([x*(handle_hole_width/2-handle_material_width/2),handle_hole_height/2+bottom*(handle_hole_height/2-handle_material_width/2),0]) {
+          hole(handle_material_width,sheet_thickness+1,resolution);
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module front_sheet() {
   bottom_material  = 30;
   opening_height   = min((sheet_height - bottom_material),(sheet_height*.60));
@@ -451,7 +490,7 @@ module assembly() {
   }
 
   translate([0,sheet_pos_y*rear,sheet_pos_z]) {
-    color("gold", sheet_opacity) {
+    color("lightgreen", sheet_opacity) {
       rotate([90,0,0]) {
         rear_sheet();
       }
@@ -462,7 +501,7 @@ module assembly() {
     translate([side_sheet_pos_x*side,side_sheet_pos_y,side_sheet_pos_z]) {
       rotate([0,90*side,0]) {
         rotate([0,0,90*side]) {
-          color("lightgreen", sheet_opacity) {
+          color("khaki", sheet_opacity) {
             side_sheet();
           }
         }
@@ -490,10 +529,11 @@ module assembly() {
   }
 
   // xy motors
-  /*
   // inside
+  /*
   for(side=[left,right]) {
-    translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y-sheet_thickness/2,top_sheet_pos_z-sheet_thickness/2-motor_side/2-5]) {
+    //translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y-sheet_thickness/2,top_sheet_pos_z-sheet_thickness/2-motor_side/2-5]) {
+    translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y-sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
       rotate([-90,0,0]) {
         % motor();
       }
@@ -501,9 +541,8 @@ module assembly() {
   }
   */
   // on the back
-  /*
   for(side=[left,right]) {
-    translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
+    translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2-motor_shaft_len/2)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
       rotate([0,90*side,0]) {
         % motor();
 
@@ -512,7 +551,17 @@ module assembly() {
       }
     }
   }
+  /*
   */
+
+  // handle!
+  translate([0,sheet_pos_y*rear-sheet_thickness,top_of_sheet]) {
+    color("blue", sheet_opacity) {
+      rotate([90,0,0]) {
+        handle();
+      }
+    }
+  }
 }
 
 module z_axis_stationary() {
@@ -591,7 +640,7 @@ module z_axis() {
       }
     }
 
-    cube([build_x+14,build_y+14,sheet_thickness],center=true);
+    cube([build_x+20,build_y+20,sheet_thickness],center=true);
   }
 
   z_belt_bearing_diam = 10;
@@ -600,7 +649,7 @@ module z_axis() {
   motor_pos_z         = bottom_sheet_pos_z+sheet_thickness/2+motor_side/2;
 }
 
-translate([0,0,build_z*1]) {
+translate([0,0,build_z*1-z_pos]) {
   z_axis();
 }
 

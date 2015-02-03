@@ -3,8 +3,8 @@ use <lib/boxcutter/main.scad>;
 use <util.scad>;
 
 min_material_thickness = 1;
-sheet_opacity          = 1;
 sheet_opacity          = 0.4;
+sheet_opacity          = 1;
 
 spool_diam = 18;
 spool_len  = 25.5;
@@ -96,6 +96,7 @@ build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build
 
 x_pos = -build_x/2+build_x*.0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
+z_pos = build_z*0+10;
 
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);
