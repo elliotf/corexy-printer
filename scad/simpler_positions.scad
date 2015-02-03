@@ -30,8 +30,7 @@ hotend_y    = (bearing_diam/2 + spacer + hotend_diam/2)*front;
 hotend_z    = x_carriage_height/2 + -hotend_len/2 + hotend_clamped_height;
 
 top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
-y_rod_clamp_len = 8;
-y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2 + y_rod_clamp_len*2;
+y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2;
 y_rod_x         = x_rod_len/2 - bearing_diam/2;
 
 y_carriage_belt_bearing_x = y_rod_x - bearing_diam/2 - min_material_thickness - spacer - belt_bearing_diam/2;
@@ -65,7 +64,7 @@ side_sheet_height  = (top_sheet_pos_z - bottom_sheet_pos_z) + min_sheet_material
 side_sheet_height  = sheet_height;
 //sheet_height = top_sheet_pos_z - bottom_sheet_pos_z + sheet_thickness + min_sheet_material*2; // above gantry
 
-sheet_pos_y = y_rod_len/2-y_rod_clamp_len-sheet_thickness/2;
+sheet_pos_y = y_rod_len/2-sheet_thickness/2;
 sheet_pos_z = top_of_sheet-sheet_height/2; // below gantry
 side_sheet_pos_z   = top_sheet_pos_z - sheet_thickness/2 - side_sheet_height/2;
 side_sheet_pos_z   = sheet_pos_z;

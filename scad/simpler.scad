@@ -3,6 +3,10 @@ include <simpler_positions.scad>;
 use <lib/boxcutter/main.scad>;
 use <util.scad>;
 
+module line_hole() {
+  hole(3,sheet_thickness+1,resolution);
+}
+
 module zip_tie_hole(diam,width=zip_tie_width,thickness=zip_tie_thickness) {
   difference() {
     hole(diam+thickness*2,width,resolution);
@@ -40,7 +44,7 @@ module belt_bearing() {
   // y rods
   translate([y_rod_x*end,0,0]) {
     rotate([90,0,0]) {
-      cylinder(r=rod_diam/2,h=y_rod_len,center=true,$fn=16);
+      cylinder(r=rod_diam/2,h=y_rod_len+2,center=true,$fn=16);
     }
   }
 }
@@ -240,6 +244,14 @@ module front_sheet() {
         translate([y_rod_x*side,0,0]) {
           hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
         }
+
+        translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2,0]) {
+          line_hole();
+
+          translate([0,belt_bearing_effective_diam,0]) {
+            line_hole();
+          }
+        }
       }
     }
 
@@ -270,6 +282,18 @@ module rear_sheet() {
       for(side=[left,right]) {
         translate([y_rod_x*side,0,0]) {
           hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+        }
+
+        hull() {
+          translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,y_carriage_belt_bearing_z]) {
+            translate([0,-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam,0]) {
+              line_hole();
+            }
+
+            translate([0,belt_bearing_washer_thickness/2+belt_bearing_thickness/2,0]) {
+              line_hole();
+            }
+          }
         }
       }
 
