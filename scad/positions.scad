@@ -1,162 +1,107 @@
 include <config.scad>;
+use <lib/boxcutter/main.scad>;
+use <util.scad>;
 
-// rods
-y_rod_x = x_rod_len/2 + bearing_diam/2 + min_material_thickness;
-y_rod_x = (build_x + x_carriage_width + min_material_thickness) / 2;
-y_rod_z_distance_to_x = 0;
-y_rod_z = bearing_diam/2 + 2;
-x_rod_z = y_rod_z + bearing_diam/2 + 2;
+min_material_thickness = 1;
+sheet_opacity          = 0.4;
+sheet_opacity          = 1;
 
-y_end_rear_rod_end_screw_y = y_clamp_len+screw_pad_outer_diam/2;
+spool_diam = 18;
+spool_len  = 25.5;
 
-// idlers
-xy_idler_x = y_rod_x - bearing_diam/2 - belt_bearing_diam/2 - min_material_thickness;
-xy_idler_y = x_rod_spacing/2 - rod_diam/2 - belt_bearing_diam/2 - min_material_thickness/2;
-xy_idler_z = x_rod_z + rod_diam/2 + min_material_thickness + belt_bearing_thickness/2 + spacer;
+x_rod_spacing        = bearing_diam + min_material_thickness * 2 + rod_diam;
+x_carriage_width     = bearing_len + min_material_thickness * 2;
 
-front_idler_x = xy_idler_x + belt_bearing_diam/2;
-front_idler_x = xy_idler_x + belt_bearing_diam;
-front_idler_y = -y_rod_len/2 - belt_bearing_inner/2 - min_material_thickness/2;
-front_idler_z = xy_idler_z - belt_bearing_diam/2;
-front_idler_z = xy_idler_z;
+y_carriage_belt_bearing_y = rod_diam/2+belt_bearing_inner/2 + min_material_thickness;
+y_carriage_belt_bearing_z = -rod_diam/2-belt_bearing_inner/2+belt_bearing_effective_diam/2;
+y_carriage_belt_bearing_z = -x_rod_spacing/2+rod_diam/2+min_material_thickness*3+belt_bearing_washer_thickness*1.5+belt_bearing_thickness;
+y_belt_bearing_from_rod   = 3;
+y_carriage_width          = bearing_diam + min_material_thickness + spacer + belt_bearing_diam;
+y_carriage_depth          = (y_carriage_belt_bearing_y + belt_bearing_nut_diam/2 + min_material_thickness*2)*2;
+y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
+y_carriage_space          = y_carriage_belt_bearing_y*2+belt_bearing_diam;
 
-lower_rear_idler_x = front_idler_x - belt_bearing_diam/2;
-lower_rear_idler_y = y_rod_len/2 - y_clamp_len + belt_bearing_diam/2;
-lower_rear_idler_z = front_idler_z - belt_bearing_diam/2;
+x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + 1;
+//x_rod_len            = 265;
+x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
+x_carriage_thickness = bearing_diam;
 
-upper_rear_idler_x = lower_rear_idler_x;
-upper_rear_idler_y = lower_rear_idler_y;
-upper_rear_idler_z = xy_idler_z;
+hotend_y    = (bearing_diam/2 + spacer + hotend_diam/2)*front;
+hotend_z    = x_carriage_height/2 + -hotend_len/2 + hotend_clamped_height;
 
-inner_rear_idler_x = xy_idler_x+belt_bearing_diam/2;
-inner_rear_idler_y = y_rod_len/2+sheet_thickness+pulley_height/2;
-inner_rear_idler_z = xy_idler_z;
+top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
+y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2;
+y_rod_x         = x_rod_len/2 - bearing_diam/2;
 
-outer_rear_idler_x = front_idler_x+belt_bearing_diam/2;
-outer_rear_idler_x = front_idler_x+belt_bearing_diam*1.75;
-outer_rear_idler_y = y_rod_len/2+belt_bearing_diam/2;
-outer_rear_idler_z = xy_idler_z-2;
+y_carriage_belt_bearing_x = y_rod_x - bearing_diam/2 - min_material_thickness - spacer - belt_bearing_diam/2;
 
-bed_zero = x_rod_z - (hotend_len - 10 - bearing_diam/2) - build_z;
-side_panel_height = -1*bed_zero + motor_len + sheet_min_width;
+min_sheet_material = 3;
 
-// z axis
-z_axis_smooth_threaded_dist_x = motor_side/2-rod_diam/2;
-z_bearing_wrapper_thickness = min_material_thickness*1.5;
-z_carriage_width = (z_axis_smooth_threaded_dist_x+z_bearing_diam/2+z_bearing_wrapper_thickness)*2;
-z_carriage_depth = m5_nut_thickness+min_material_thickness*2;
-z_carriage_height = z_bearing_len*2+min_material_thickness*3;
+top_of_sheet = x_rod_spacing/2;
+hotend_sheet_clearance = (hotend_z-hotend_len/2-top_of_sheet-sheet_thickness*2)*bottom;
 
-// need to calculate
-top_sheet_to_z_threaded_dist_z = 8;
+build_pos_x = 0;
+build_pos_z = hotend_z-hotend_len/2-build_z/2-1;
 
-z_carriage_bolt_area_depth = z_carriage_depth*2+z_bearing_diam;
-z_carriage_bolt_area_thickness = m5_nut_thickness+min_material_thickness*2;
+space_between_y_rod_and_sheet = bearing_diam/2 + 4;
+side_sheet_pos_x = y_rod_x + space_between_y_rod_and_sheet + sheet_thickness/2;
+side_sheet_pos_y = 0;
 
-z_threaded_rod_len = build_z+5+z_carriage_height;
-z_threaded_rod_z = -top_sheet_to_z_threaded_dist_z - z_threaded_rod_len/2;
-z_rod_len = z_threaded_rod_len + sheet_thickness + spacer + motor_shaft_len + top_sheet_to_z_threaded_dist_z;
+heatbed_and_glass_thickness = 4;
 
-z_rod_x = (top_sheet_width/2 - spacer*2 - zip_tie_thickness - z_bearing_diam/2);
-z_rod_x = y_rod_x+z_bearing_diam/2+rod_diam;
-z_rod_z = -z_rod_len/2+sheet_thickness;
-z_motor_x = z_rod_x-z_axis_smooth_threaded_dist_x;
+z_axis_overhead = sheet_thickness + heatbed_and_glass_thickness + motor_side;
 
-z_support_slot_height = z_carriage_height/4;
-z_support_slot_len = z_carriage_width/2+sheet_thickness;
-z_support_slot_len = z_carriage_width/4+sheet_thickness;
-z_support_slots = [z_carriage_height/2-z_carriage_height/8,-z_carriage_height/4+z_carriage_height/8];
+front_sheet_width = side_sheet_pos_x*2 - sheet_thickness;
+rear_sheet_width  = front_sheet_width;
 
-// in relation to the motor plate
-z_carriage_x = -z_axis_smooth_threaded_dist_x/2;
-z_carriage_x = 0;
-z_carriage_y = z_bearing_diam/2+z_carriage_depth/2;
+top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
+//top_sheet_pos_z    = y_carriage_height/2+5+sheet_thickness/2; // above gantry
+bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2;
+z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 
-z_leadscrew_nut_body_height = m5_nut_thickness+min_material_thickness*2;
-z_leadscrew_nut_body_diam = m5_nut_diam+min_material_thickness*2;
+sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
+side_sheet_height  = (top_sheet_pos_z - bottom_sheet_pos_z) + min_sheet_material;
+side_sheet_height  = sheet_height;
+//sheet_height = top_sheet_pos_z - bottom_sheet_pos_z + sheet_thickness + min_sheet_material*2; // above gantry
 
-z_x_support_y = z_carriage_y+z_carriage_depth/2+sheet_thickness/2;
-z_x_support_len = z_motor_x*2-z_carriage_width+z_support_slot_len*2;
-z_y_support_x = (z_x_support_len-z_support_slot_len*2)/2+sheet_thickness/2;
-z_y_support_x = z_motor_x-z_carriage_width/2-sheet_thickness/2;
-z_y_support_len = build_y;
+sheet_pos_y = y_rod_len/2-sheet_thickness/2;
+sheet_pos_z = top_of_sheet-sheet_height/2; // below gantry
+side_sheet_pos_z   = top_sheet_pos_z - sheet_thickness/2 - side_sheet_height/2;
+side_sheet_pos_z   = sheet_pos_z;
+//sheet_pos_z = top_sheet_pos_z+sheet_thickness/2+min_sheet_material-sheet_height/2; // above gantry
 
-z_bed_support_width = z_y_support_x*2+sheet_thickness*2+3*2;
-z_bed_support_depth = heatbed_depth+3*3;
+top_sheet_depth = sheet_pos_y*2-sheet_thickness;
 
-z_axis_z = -z_rod_len+z_carriage_height/2+sheet_thickness+spacer;
-z_motor_z = -z_threaded_rod_len/2-spacer-motor_shaft_len;
+side_sheet_depth = sheet_pos_y*2 - sheet_thickness;
+top_sheet_width  = side_sheet_pos_x*2 - sheet_thickness;
 
-// sheets
-top_sheet_opening_width = build_x + x_carriage_width;
-top_sheet_opening_depth = build_y + x_carriage_depth*.7;
-top_sheet_opening_depth = (y_rod_len/2-y_clamp_len-bearing_diam*1.5)*2;
 
-box_width = (z_motor_x+z_carriage_width/2+spacer)*2;
-box_depth = y_rod_len-sheet_thickness*2-y_clamp_len*2;
-box_height = build_z+z_carriage_height/2+motor_side+sheet_thickness;
-box_y     = sheet_thickness/2+y_clamp_len/2;
-box_y     = 0;
+z_rod_pos_x  = max(build_x*0.33);
+z_rod_pos_y  = rear*sheet_pos_y + sheet_thickness/2 - z_motor_shaft_len + belt_width/2;
+z_rod_pos_z  = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
 
-top_sheet_width = box_width;
-top_sheet_depth = box_depth;
+z_belt_bearing_diam      = 10;
+z_belt_bearing_inner     = 3;
+z_belt_bearing_thickness = 8; // F623ZZ * 2
+z_pulley_diam  = (16*2)/approx_pi;
+z_motor_pos_x  = z_belt_bearing_diam/2 + belt_thickness + z_pulley_diam/2;
+z_motor_pos_y  = rear*sheet_pos_y + sheet_thickness/2;
+z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2 - (z_motor_side-z_motor_hole_spacing)/2 + z_motor_screw_diam/2 + 2;
+z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
 
-front_sheet_width  = box_width;
-front_sheet_height = box_height;
+main_opening_width  = build_y + hotend_diam + 6;
+main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 
-side_sheet_depth  = box_depth;
-side_sheet_height = box_height;
+build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 
-rear_sheet_width  = box_width;
-rear_sheet_height = box_height;
+x_pos = -build_x/2+build_x*.0;
+y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
+z_pos = build_z*0+10;
 
-bottom_sheet_width  = box_width;
-bottom_sheet_depth = box_depth;
+handle_hole_width        = 125;
+handle_hole_height       = 50;
+handle_material_width    = 25;
+handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
 
-top_sheet_x = 0;
-top_sheet_y = box_y;
-top_sheet_z = -sheet_thickness/2;
-
-front_sheet_x = 0;
-front_sheet_y = box_y-box_depth/2-sheet_thickness/2;
-front_sheet_z = -front_sheet_height/2-sheet_thickness;
-
-side_sheet_x = box_width/2+sheet_thickness/2;
-side_sheet_y = box_y;
-side_sheet_z = -side_sheet_height/2-sheet_thickness;
-
-rear_sheet_x = 0;
-rear_sheet_y = box_y+box_depth/2+sheet_thickness/2;
-rear_sheet_z = -rear_sheet_height/2-sheet_thickness;
-
-bottom_sheet_x = 0;
-bottom_sheet_y = box_y;
-bottom_sheet_z = -box_height-sheet_thickness*1.5;
-
-side_sheet_x = top_sheet_width/2+sheet_thickness/2;
-
-// motors
-xy_motor_x = xy_idler_x+belt_bearing_diam/2+pulley_diam/2;
-xy_motor_y = rear_sheet_y-sheet_thickness/2;
-xy_motor_z = -sheet_thickness-motor_side;
-xy_pulley_above_motor_plate = (xy_idler_z-belt_bearing_diam/2)-xy_motor_z;
-xy_pulley_above_motor_plate = spacer*2+pulley_height/2;
-xy_pulley_above_motor_plate = sheet_thickness+pulley_height/2;
-xy_pulley_above_motor_plate = sheet_thickness+1;
-
-xy_pulley_idler_x = xy_motor_x;
-xy_pulley_idler_y = xy_motor_y;
-xy_pulley_idler_z = xy_motor_z-motor_side;
-xy_pulley_idler_hole = m5_diam;
-
-function get_inner_rear_idler_angle_y(short,long) = atan(short/long);
-inner_rear_idler_angle_y = get_inner_rear_idler_angle_y(inner_rear_idler_z-xy_motor_z-pulley_diam/2,inner_rear_idler_x+xy_motor_x);
-
-outer_rear_idler_angle_x = 3; // TODO: use trig to get angle?
-outer_rear_idler_angle_x = 0; // TODO: use trig to get angle?
-function get_outer_rear_idler_angle_y(short,long) = atan(short/long);
-outer_rear_idler_angle_y = get_outer_rear_idler_angle_y(outer_rear_idler_x-xy_motor_x+pulley_diam/2,outer_rear_idler_z-xy_motor_z);
-
-y_end_body_width = screw_pad_width;
-y_end_body_depth = y_clamp_len + min_material_thickness + belt_bearing_inner + min_material_thickness*2;
-y_end_body_height = y_rod_z + rod_diam/2 + min_material_thickness; //idler_clearance + rod_diam/2 + y_rod_z;
+echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
+echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);
