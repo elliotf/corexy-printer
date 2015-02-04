@@ -21,7 +21,7 @@ y_carriage_depth          = (y_carriage_belt_bearing_y + belt_bearing_nut_diam/2
 y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
 y_carriage_space          = y_carriage_belt_bearing_y*2+belt_bearing_diam;
 
-x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + 1;
+x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + 1 + 25;
 //x_rod_len            = 265;
 x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
 x_carriage_thickness = bearing_diam;
@@ -56,7 +56,7 @@ rear_sheet_width  = front_sheet_width;
 
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
 //top_sheet_pos_z    = y_carriage_height/2+5+sheet_thickness/2; // above gantry
-bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2;
+bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2 - 30;
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 
 sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
@@ -90,6 +90,7 @@ z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;// - (z_m
 z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
 
 main_opening_width  = build_y + hotend_diam + 6;
+main_opening_width  = y_rod_x*2 - 45; // replace magic number with the y carriage height, probably
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;

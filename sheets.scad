@@ -6,7 +6,7 @@ laser_cutter_width = 609;
 laser_cutter_depth = 457;
 
 module sides_and_top() {
-  translate([-35,0,0]) {
+  translate([-laser_cutter_width/2+sheet_thickness*3+sheet_height,0,0]) {
     for(side=[left,right]) {
       translate([(side_sheet_height/2+1)*side,side_sheet_depth/2+sheet_thickness+1,0]) {
         rotate([0,0,90*side]) {
@@ -32,7 +32,7 @@ module sides_and_top() {
 }
 
 module front_back_and_other() {
-  translate([0,laser_cutter_depth/2-sheet_height/2-sheet_thickness*2,0]) {
+  translate([-laser_cutter_width/2+front_sheet_width+sheet_thickness*5,laser_cutter_depth/2-sheet_height/2-sheet_thickness*3,0]) {
     translate([left*(front_sheet_width/2+sheet_thickness*2),0,0]) {
       rotate([0,0,180]) {
         front_sheet();
@@ -46,7 +46,7 @@ module front_back_and_other() {
   }
   translate([left*(front_sheet_width/2+sheet_thickness*2),0,0]) {
     rotate([0,0,90]) {
-      # handle();
+      //# handle();
     }
   }
 
