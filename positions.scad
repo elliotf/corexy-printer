@@ -86,7 +86,7 @@ z_belt_bearing_thickness = 8; // F623ZZ * 2
 z_pulley_diam  = (16*2)/approx_pi;
 z_motor_pos_x  = z_belt_bearing_diam/2 + belt_thickness + z_pulley_diam/2;
 z_motor_pos_y  = rear*sheet_pos_y + sheet_thickness/2;
-z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2 - (z_motor_side-z_motor_hole_spacing)/2 + z_motor_screw_diam/2 + 2;
+z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;// - (z_motor_side-z_motor_hole_spacing)/2 + z_motor_screw_diam/2 + 2;
 z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
 
 main_opening_width  = build_y + hotend_diam + 6;

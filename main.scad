@@ -537,7 +537,7 @@ module assembly() {
   */
   // on the back
   for(side=[left,right]) {
-    translate([(side_sheet_pos_x-sheet_thickness/2-motor_side/2-motor_shaft_len/2)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
+    translate([(y_carriage_belt_bearing_x-motor_shaft_len/2)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
       rotate([0,90*side,0]) {
         % motor();
 
@@ -550,10 +550,11 @@ module assembly() {
   */
 
   // handle!
+  // shouldn't put the handle here, because it's probably going to interfere with the bowden tube.
   translate([0,sheet_pos_y*rear-sheet_thickness,top_of_sheet]) {
     color("blue", sheet_opacity) {
       rotate([90,0,0]) {
-        handle();
+        //handle();
       }
     }
   }
