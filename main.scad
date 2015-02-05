@@ -1,6 +1,6 @@
 include <config.scad>;
 include <positions.scad>;
-use <boxcutter.scad>;
+include <boxcutter.scad>;
 use <util.scad>;
 
 module line_hole() {
@@ -15,7 +15,7 @@ module zip_tie_hole(diam,width=zip_tie_width,thickness=zip_tie_thickness) {
 }
 
 module belt_bearing() {
-  res = 24;
+  res = 64;
 
   module body() {
     for(side=[top,bottom]) {
@@ -107,13 +107,13 @@ module x_carriage() {
 }
 
 module y_carriage() {
-  rod_bearing_x  = 0; //min_material_thickness*2 + bearing_diam/2;
-  belt_bearing_x = rod_bearing_x + (y_rod_x - y_carriage_belt_bearing_x);
+  belt_bearing_x = (y_rod_x - y_carriage_belt_bearing_x);
   belt_bearing_opening_height = belt_bearing_thickness*2+belt_bearing_washer_thickness*3;
 
   rod_hole_diam = rod_diam + rod_slop;
 
   x_rod_clamp_len = belt_bearing_x + belt_bearing_nut_diam/2 + min_material_thickness*2;
+  x_rod_clamp_len = y_carriage_width;
 
   module body() {
     // main body, hold x rods
@@ -170,7 +170,7 @@ module y_carriage() {
     }
 
     // y rod bearing and clamp
-    translate([rod_bearing_x,0,0]) {
+    translate([0,0,0]) {
       rotate([90,0,0]) {
         hole(bearing_diam,bearing_len*2,resolution);
       }
@@ -219,7 +219,7 @@ module y_carriage() {
     holes();
   }
 
-  translate([rod_bearing_x,0,0]) {
+  translate([0,0,0]) {
     rotate([90,0,0]) {
       % cylinder(r=bearing_diam/2,h=bearing_len,center=true);
     }
@@ -436,6 +436,134 @@ module bottom_sheet() {
   }
 }
 
+module rear_xy_endcap() {
+  side_screw_hole_pos_x = side_sheet_pos_x-y_rod_x;
+  side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
+  top_screw_hole_pos_x = top_sheet_width/2-y_rod_x-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
+  top_screw_hole_pos_z = top_sheet_pos_z;
+
+  line_x = xy_line_x-y_rod_x;
+
+  top_bearing_y = spacer+belt_bearing_diam/2;
+  mid_bearing_y = spacer+belt_bearing_diam/2+belt_bearing_effective_diam;
+  low_bearing_y = motor_side/2-pulley_diam/2;
+
+  mount_thickness = 5;
+
+  wall_thickness = extrusion_width*4;
+
+  bearing_body_thickness = belt_bearing_thickness+spacer*2+wall_thickness*4;
+  bearing_body_depth     = belt_bearing_diam+spacer+wall_thickness*2;
+  bearing_body_diam      = belt_bearing_nut_diam+wall_thickness*2;
+
+  top_bearing_body_depth = top_bearing_y + belt_bearing_inner + wall_thickness;
+  mid_bearing_body_depth = mid_bearing_y + belt_bearing_inner + wall_thickness;
+
+  module body() {
+    hull() {
+      translate([0,mount_thickness/2,0]) {
+        translate([side_screw_hole_pos_x,0,side_screw_hole_pos_z]) {
+          rotate([90,0,0]) {
+            hole(bc_screw_diam+wall_thickness*3,mount_thickness,resolution);
+          }
+        }
+        translate([top_screw_hole_pos_x,0,top_screw_hole_pos_z]) {
+          rotate([90,0,0]) {
+            hole(bc_screw_diam+wall_thickness*3,mount_thickness,resolution);
+          }
+        }
+      }
+      // top bearing holder
+      translate([line_x-belt_bearing_effective_diam/2,mount_thickness/2,top_line_z]) {
+        cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+      }
+      // mid bearing holder
+      translate([line_x,mount_thickness/2,mid_line_z-belt_bearing_effective_diam/2]) {
+        cube([bearing_body_thickness,mount_thickness,bearing_body_depth],center=true);
+      }
+    }
+    // top bearing holder
+    hull() {
+      translate([line_x-belt_bearing_effective_diam/2,0,top_line_z]) {
+        translate([0,mount_thickness/2,0]) {
+          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+        }
+        translate([0,top_bearing_y,0]) {
+          hole(bearing_body_diam,bearing_body_thickness,resolution);
+        }
+      }
+    }
+    // mid bearing holder
+    hull() {
+      translate([line_x,0,mid_line_z-belt_bearing_effective_diam/2]) {
+        translate([0,mount_thickness/2,0]) {
+          cube([bearing_body_thickness,mount_thickness,bearing_body_depth],center=true);
+        }
+        translate([0,mid_bearing_y,0]) {
+          rotate([0,90,0]) {
+            hole(bearing_body_diam,bearing_body_thickness,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    // side sheet screw hole
+    translate([side_screw_hole_pos_x,24,side_screw_hole_pos_z]) {
+      rotate([90,0,0]) {
+        hole(3,50,16);
+      }
+    }
+    // top sheet screw hole
+    translate([top_screw_hole_pos_x,24,top_screw_hole_pos_z]) {
+      rotate([90,0,0]) {
+        hole(3,50,16);
+      }
+    }
+    // line opening
+    hull() {
+      for(z=[top_line_z,mid_line_z]) {
+        translate([line_x,0,z]) {
+          rotate([90,0,0]) {
+            hole(3,50,16);
+          }
+        }
+      }
+    }
+    // top bearing
+    translate([line_x-belt_bearing_effective_diam/2,top_bearing_y,top_line_z]) {
+      rotate([0,0,0]) {
+        hole(3,60,8);
+        hole(belt_bearing_diam+spacer,belt_bearing_thickness+spacer*2,resolution);
+      }
+      translate([0,belt_bearing_diam/2,0]) {
+        cube([belt_bearing_diam+spacer,belt_bearing_diam,belt_bearing_thickness+spacer*2],center=true);
+      }
+    }
+    // mid bearing
+    translate([line_x,mid_bearing_y,mid_line_z-belt_bearing_effective_diam/2]) {
+      rotate([0,90,0]) {
+        hole(3,60,8);
+        //hole(belt_bearing_diam+spacer,belt_bearing_thickness+spacer*2,resolution);
+      }
+      translate([0,0,0]) {
+        cube([belt_bearing_thickness+spacer*2,belt_bearing_diam,belt_bearing_diam+spacer*2],center=true);
+      }
+    }
+
+    // y rod
+    rotate([90,0,0]) {
+      % hole(rod_diam,mount_thickness*2+1,16);
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module assembly() {
   translate([0,y_pos,0]) {
     for(side=[left,right]) {
@@ -504,20 +632,37 @@ module assembly() {
     }
   }
 
-  // messing around with line return from front to carriage
   for(side=[left,right]) {
-    translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*front,y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam/2]) {
+    mirror([1-side,0,0]) {
+      translate([y_rod_x,sheet_pos_y+sheet_thickness/2,0]) {
+        rear_xy_endcap();
+      }
+    }
+    // messing around with line return from front to carriage
+    translate([xy_line_x*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*front,y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam/2]) {
       rotate([0,90,0]) {
         % belt_bearing();
       }
     }
   }
-  // messing around with line return from front to rear to opposite side
+
+  // rear line pulleys
   for(side=[left,right]) {
-    translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*rear,y_carriage_belt_bearing_z]) {
-      rotate([0,-10*side,0]) {
-        translate([belt_bearing_effective_diam/2*-side,0,0]) {
-          //% belt_bearing();
+    translate([xy_line_x*side,(sheet_pos_y+sheet_thickness/2)*rear,0]) {
+      // from front to opposite side
+      translate([belt_bearing_effective_diam/2*-side,belt_bearing_diam/2+spacer,top_line_z]) {
+        % belt_bearing();
+      }
+      // from carriage to motor
+      translate([0,belt_bearing_diam/2+spacer+belt_bearing_effective_diam,mid_line_z-belt_bearing_effective_diam/2]) {
+        rotate([0,90,0]) {
+          % belt_bearing();
+        }
+      }
+      // to motor from opposite side
+      translate([-belt_bearing_effective_diam/2+3,motor_side/2-pulley_diam/2,mid_line_z-belt_bearing_effective_diam*2]) {
+        rotate([90,0,0]) {
+          % belt_bearing();
         }
       }
     }
@@ -537,11 +682,12 @@ module assembly() {
   */
   // on the back
   for(side=[left,right]) {
-    translate([(y_carriage_belt_bearing_x-motor_shaft_len/2)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
+    translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2-motor_shaft_len*.6)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
       rotate([0,90*side,0]) {
         % motor();
 
-        translate([0,0,0]) {
+        translate([0,0,2+motor_shaft_len/2]) {
+          % hole(pulley_diam,motor_shaft_len-4,resolution);
         }
       }
     }

@@ -16,12 +16,12 @@ y_carriage_belt_bearing_y = rod_diam/2+belt_bearing_inner/2 + min_material_thick
 y_carriage_belt_bearing_z = -rod_diam/2-belt_bearing_inner/2+belt_bearing_effective_diam/2;
 y_carriage_belt_bearing_z = -x_rod_spacing/2+rod_diam/2+min_material_thickness*3+belt_bearing_washer_thickness*1.5+belt_bearing_thickness;
 y_belt_bearing_from_rod   = 3;
-y_carriage_width          = bearing_diam + min_material_thickness + spacer + belt_bearing_diam;
+y_carriage_width          = bearing_diam/2 + min_material_thickness*2 + spacer + belt_bearing_diam;
 y_carriage_depth          = (y_carriage_belt_bearing_y + belt_bearing_nut_diam/2 + min_material_thickness*2)*2;
 y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
 y_carriage_space          = y_carriage_belt_bearing_y*2+belt_bearing_diam;
 
-x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + 1 + 25;
+x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + 1 + 40;
 //x_rod_len            = 265;
 x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
 x_carriage_thickness = bearing_diam;
@@ -33,7 +33,7 @@ top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
 y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2;
 y_rod_x         = x_rod_len/2 - bearing_diam/2;
 
-y_carriage_belt_bearing_x = y_rod_x - bearing_diam/2 - min_material_thickness - spacer - belt_bearing_diam/2;
+y_carriage_belt_bearing_x = y_rod_x - y_carriage_width + belt_bearing_diam/2;
 
 min_sheet_material = 3;
 
@@ -56,7 +56,7 @@ rear_sheet_width  = front_sheet_width;
 
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
 //top_sheet_pos_z    = y_carriage_height/2+5+sheet_thickness/2; // above gantry
-bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2 - 30;
+bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2 - 35;
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 
 sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
@@ -103,6 +103,10 @@ handle_hole_width        = 125;
 handle_hole_height       = 50;
 handle_material_width    = 25;
 handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
+
+xy_line_x = y_carriage_belt_bearing_x+belt_bearing_effective_diam/2;
+top_line_z  = y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam;
+mid_line_z  = y_carriage_belt_bearing_z+belt_bearing_washer_thickness/2+belt_bearing_thickness/2;
 
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);

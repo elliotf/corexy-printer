@@ -298,6 +298,7 @@ psu_height = 50;
 // Pulley
 pulley_diam = 20;
 pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
+pulley_diam = 15; // graber cars pulley
 pulley_height = belt_bearing_diam;
 pulley_height = 13;
 
