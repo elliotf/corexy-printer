@@ -21,8 +21,7 @@ y_carriage_depth          = (y_carriage_belt_bearing_y + belt_bearing_nut_diam/2
 y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
 y_carriage_space          = y_carriage_belt_bearing_y*2+belt_bearing_diam;
 
-x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + 1 + 40;
-//x_rod_len            = 265;
+x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + 1;// + 40; // fill out 24x18 sheet
 x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
 x_carriage_thickness = bearing_diam;
 
@@ -56,7 +55,7 @@ rear_sheet_width  = front_sheet_width;
 
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
 //top_sheet_pos_z    = y_carriage_height/2+5+sheet_thickness/2; // above gantry
-bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2 - 35;
+bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2; // - 35; // fill out 24x18 sheet
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 
 sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
