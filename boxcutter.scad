@@ -75,12 +75,12 @@ module bc_position_along_line(to_fill=0) {
 
   if(num_fit ==1) {
     translate([-bc_tab_slot_pair_len/2,0,0])
-    child(0);
+    children();
   } else {
     translate([-to_fill/2,0,0]) {
       for(i=[0:num_fit-1]) {
         translate([i*(bc_tab_slot_pair_len+bc_space_between),0,0]) {
-          child(0);
+          children();
         }
       }
     }
