@@ -444,7 +444,7 @@ module rear_xy_endcap() {
 
   line_x          = xy_line_x-y_rod_x;
   line_to_motor_x = line_x + 2;
-  line_to_motor_z = mid_line_z-belt_bearing_effective_diam*1.5;
+  line_to_motor_z = low_line_z;
 
   high_bearing_y = spacer+belt_bearing_diam/2;
   mid_bearing_y  = spacer+belt_bearing_diam/2+belt_bearing_effective_diam;
@@ -463,7 +463,7 @@ module rear_xy_endcap() {
   bearing_body_diam      = belt_bearing_nut_diam+wall_thickness*2;
 
   high_bearing_body_depth = high_bearing_y + belt_bearing_inner + wall_thickness;
-  mid_bearing_body_depth = mid_bearing_y + belt_bearing_inner + wall_thickness;
+  mid_bearing_body_depth  = mid_bearing_y + belt_bearing_inner + wall_thickness;
 
   module high_bearing_pos() {
     translate([line_x,high_bearing_y,top_line_z]) {
@@ -491,6 +491,14 @@ module rear_xy_endcap() {
             children();
           }
         }
+      }
+    }
+  }
+
+  module lower_bearing_mount_base() {
+    translate([line_to_motor_x-belt_bearing_effective_diam/2,mount_thickness/2,low_line_z-belt_bearing_effective_diam/2]) {
+      rotate([90,0,0]) {
+        hole(bearing_body_diam+wall_thickness*2,mount_thickness,resolution);
       }
     }
   }
@@ -529,9 +537,7 @@ module rear_xy_endcap() {
           cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
         }
       }
-      low_bearing_pos() {
-        % belt_bearing();
-      }
+      lower_bearing_mount_base();
     }
     high_bearing_pos() {
       hull() {
@@ -548,6 +554,19 @@ module rear_xy_endcap() {
         }
         hole(bearing_body_diam,bearing_body_thickness,resolution);
       }
+    }
+    hull() {
+      low_bearing_pos() {
+        % belt_bearing();
+        translate([0,0,belt_bearing_thickness/2+1]) {
+          hole(belt_bearing_inner+wall_thickness,2,resolution);
+        }
+        translate([0,0,belt_bearing_thickness+1]) {
+          hole(bearing_body_diam+wall_thickness*2,2,resolution);
+        }
+      }
+
+      lower_bearing_mount_base();
     }
   }
 
@@ -577,14 +596,17 @@ module rear_xy_endcap() {
     // top bearing
     high_bearing_pos() {
       hole(3,60,8);
-      hole(belt_bearing_diam+spacer,belt_bearing_thickness+spacer*2,resolution);
+      hole(belt_bearing_diam+spacer,belt_bearing_thickness+belt_bearing_washer_thickness*2,resolution);
       translate([0,50,0]) {
-        cube([belt_bearing_diam+spacer,100,belt_bearing_thickness+spacer*2],center=true);
+        cube([belt_bearing_diam+spacer,100,belt_bearing_thickness+belt_bearing_washer_thickness*2],center=true);
       }
     }
     mid_bearing_pos() {
       hole(3,60,8);
-      cube([belt_bearing_diam+spacer*4,belt_bearing_diam+spacer*2,belt_bearing_thickness+spacer*2],center=true);
+      cube([belt_bearing_diam+spacer*4,belt_bearing_diam+spacer,belt_bearing_thickness+belt_bearing_washer_thickness*2],center=true);
+    }
+    low_bearing_pos() {
+      hole(3,60,resolution);
     }
 
     // y rod
@@ -596,7 +618,7 @@ module rear_xy_endcap() {
   % low_bearing_pos() {
     rotate([0,0,high_to_low_line_angle_y]) {
       translate([-xy_line_x,belt_bearing_effective_diam/2,0]) {
-        cube([xy_line_x*2,.5,.5],center=true);
+        //cube([xy_line_x*2,.5,.5],center=true);
       }
     }
   }

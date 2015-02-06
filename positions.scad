@@ -106,6 +106,7 @@ handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
 xy_line_x = y_carriage_belt_bearing_x+belt_bearing_effective_diam/2;
 top_line_z  = y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam;
 mid_line_z  = y_carriage_belt_bearing_z+belt_bearing_washer_thickness/2+belt_bearing_thickness/2;
+low_line_z  = mid_line_z - belt_bearing_effective_diam*1.5;
 
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);
