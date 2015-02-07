@@ -419,7 +419,7 @@ module top_sheet() {
       }
     }
     translate([0,front*(top_sheet_depth/2),0]) {
-      cube([main_opening_width/2,sheet_thickness*4,sheet_thickness+1],center=true);
+      cube([front_opening_width-hole_diam,sheet_thickness*4,sheet_thickness+1],center=true);
     }
 
     for(side=[left,right]) {
