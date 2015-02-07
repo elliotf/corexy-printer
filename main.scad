@@ -306,10 +306,11 @@ module front_sheet() {
       }
     }
 
+    front_opening_width = main_opening_width - sheet_thickness*2;
     hull() {
       translate([0,sheet_height/2,0]) {
         cube([build_x-sheet_thickness*2,opening_height*2,sheet_thickness+1],center=true);
-        cube([main_opening_width-sheet_thickness*2,hotend_sheet_clearance*2,sheet_thickness+1],center=true);
+        cube([front_opening_width-sheet_thickness*2,hotend_sheet_clearance*2,sheet_thickness+1],center=true);
       }
     }
   }
@@ -403,18 +404,18 @@ module top_sheet() {
     hole_diam = hotend_diam*0.8;
     front_y   = front*top_sheet_depth/2;
 
-    top_hole_width = build_x+hotend_diam+6;
+    front_opening_width = main_opening_width - sheet_thickness*2;
 
     hull() {
       for(x=[left,right]) {
         for(y=[front_y+hole_diam,front_y+main_opening_depth-hole_diam/2]) {
-          translate([x*(top_hole_width/2-hole_diam/2),y,0]) {
+          translate([x*(main_opening_width/2-hole_diam/2),y,0]) {
             hole(hole_diam,sheet_thickness+2,resolution);
           }
         }
       }
       translate([0,front*(top_sheet_depth/2-sheet_thickness/2+0.05),0]) {
-        cube([main_opening_width-hole_diam,sheet_thickness,sheet_thickness+1],center=true);
+        cube([front_opening_width-hole_diam,sheet_thickness,sheet_thickness+1],center=true);
       }
     }
     translate([0,front*(top_sheet_depth/2),0]) {
