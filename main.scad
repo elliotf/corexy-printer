@@ -45,9 +45,9 @@ module belt_bearing_bevel(sides=[top,bottom]) {
     for(side=sides) {
       translate([0,0,(belt_bearing_thickness/2+belt_bearing_washer_thickness)*side]) {
         hull() {
-          hole(belt_bearing_inner+2,belt_bearing_washer_thickness*2,resolution);
+          hole(belt_bearing_inner+1,belt_bearing_washer_thickness*2,8);
           translate([0,0,belt_bearing_washer_thickness*side]) {
-            hole(belt_bearing_inner+4,belt_bearing_washer_thickness,resolution);
+            hole(belt_bearing_inner+4,belt_bearing_washer_thickness,8);
           }
         }
       }
