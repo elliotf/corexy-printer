@@ -167,7 +167,7 @@ endstop_hole_from_top = 5;
 // Screws, nuts
 m3_diam = 3;
 m3_nut_diam  = 5.5;
-m3_nut_thickness  = 3;
+m3_nut_thickness  = 4;
 m3_washer_thickness  = .6;
 m5_diam = 5;
 m5_nut_diam = 8;
