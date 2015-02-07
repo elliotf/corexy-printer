@@ -1,5 +1,5 @@
 include <config.scad>;
-use <boxcutter.scad>;
+include <boxcutter.scad>;
 use <util.scad>;
 
 min_material_thickness = 1;
@@ -107,6 +107,11 @@ xy_line_x = y_carriage_belt_bearing_x+belt_bearing_effective_diam/2;
 top_line_z  = y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam;
 mid_line_z  = y_carriage_belt_bearing_z+belt_bearing_washer_thickness/2+belt_bearing_thickness/2;
 low_line_z  = mid_line_z - belt_bearing_effective_diam*1.5;
+
+endcap_side_screw_hole_pos_x = side_sheet_pos_x-y_rod_x;
+endcap_side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
+endcap_top_screw_hole_pos_x  = top_sheet_width/2-y_rod_x-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
+endcap_top_screw_hole_pos_z  = top_sheet_pos_z;
 
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);

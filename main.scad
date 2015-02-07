@@ -453,14 +453,131 @@ module bottom_sheet() {
   }
 }
 
-module rear_xy_endcap() {
+module front_xy_endcap() {
   mount_thickness = 5;
   wall_thickness  = extrusion_width*4;
 
-  side_screw_hole_pos_x = side_sheet_pos_x-y_rod_x;
-  side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
-  top_screw_hole_pos_x  = top_sheet_width/2-y_rod_x-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
-  top_screw_hole_pos_z  = top_sheet_pos_z;
+  line_x = xy_line_x-y_rod_x;
+
+  bearing_y = front*(mount_thickness+belt_bearing_nut_diam/2+spacer);
+  bearing_z = top_line_z-belt_bearing_effective_diam/2;
+
+  bearing_body_thickness = belt_bearing_thickness+spacer*2+wall_thickness*5;
+  bearing_body_depth     = belt_bearing_diam+spacer+wall_thickness*2;
+  bearing_body_diam      = belt_bearing_nut_diam+wall_thickness*3;
+
+  module bearing_pos() {
+    translate([line_x,bearing_y,bearing_z]) {
+      rotate([0,90,0]) {
+        translate([0,0,0]) {
+          children();
+        }
+      }
+    }
+  }
+
+  module body() {
+    hull() {
+      // rod body
+      translate([0,-mount_thickness/2,0]) {
+        rotate([90,0,0]) {
+          hole(rod_diam+wall_thickness*3,mount_thickness,resolution);
+        }
+      }
+      translate([0,-mount_thickness/2,0]) {
+        // side sheet screw hole
+        translate([endcap_side_screw_hole_pos_x,0,endcap_side_screw_hole_pos_z]) {
+          rotate([90,0,0]) {
+            hole(bc_screw_diam+wall_thickness*3,mount_thickness,resolution);
+          }
+        }
+        // top sheet screw hole
+        translate([endcap_top_screw_hole_pos_x,0,endcap_top_screw_hole_pos_z]) {
+          rotate([90,0,0]) {
+            hole(bc_screw_diam+wall_thickness*3,mount_thickness,resolution);
+          }
+        }
+      }
+      bearing_pos() {
+        translate([0,-bearing_y-mount_thickness/2,0]) {
+          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+        }
+      }
+    }
+    bearing_pos() {
+      % belt_bearing();
+      hull() {
+        translate([0,-bearing_y-mount_thickness/2,0]) {
+          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+        }
+        hole(bearing_body_diam,bearing_body_thickness,resolution);
+      }
+    }
+  }
+
+  module holes() {
+    // side sheet screw hole
+    translate([endcap_side_screw_hole_pos_x,0,endcap_side_screw_hole_pos_z]) {
+      rotate([90,0,0]) {
+        hole(3,50,16);
+      }
+    }
+    // top sheet screw hole
+    translate([endcap_top_screw_hole_pos_x,0,endcap_top_screw_hole_pos_z]) {
+      rotate([90,0,0]) {
+        hole(3,50,16);
+      }
+    }
+
+    bearing_pos() {
+      hole(belt_bearing_diam+spacer*2,belt_bearing_thickness+belt_bearing_washer_thickness*2,resolution);
+      hole(3,60,8);
+
+      translate([0,0,bearing_body_thickness/2]) {
+        rotate([0,0,90]) {
+          hole(belt_bearing_nut_diam,belt_bearing_nut_thickness*2,6);
+        }
+      }
+
+      for(side=[top,bottom]) {
+        translate([belt_bearing_effective_diam/2*side,0,0]) {
+          rotate([90,0,0]) {
+            hole(3,60,resolution);
+          }
+        }
+      }
+    }
+
+    // y rod
+    rotate([90,0,0]) {
+      % hole(rod_diam,mount_thickness*2+1,16);
+    }
+  }
+
+  module bridges() {
+    bearing_pos() {
+      belt_bearing_bevel();
+    }
+  }
+
+  % low_bearing_pos() {
+    rotate([0,0,high_to_low_line_angle_y]) {
+      translate([-xy_line_x,belt_bearing_effective_diam/2,0]) {
+        //cube([xy_line_x*2,.5,.5],center=true);
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+  bridges();
+}
+
+module rear_xy_endcap() {
+  mount_thickness = 5;
+  wall_thickness  = extrusion_width*4;
 
   line_x          = xy_line_x-y_rod_x;
   line_to_motor_x = line_x + 2;
@@ -478,9 +595,6 @@ module rear_xy_endcap() {
   bearing_body_thickness = belt_bearing_thickness+spacer*2+wall_thickness*5;
   bearing_body_depth     = belt_bearing_diam+spacer+wall_thickness*2;
   bearing_body_diam      = belt_bearing_nut_diam+wall_thickness*3;
-
-  high_bearing_body_depth = high_bearing_y + belt_bearing_inner + wall_thickness;
-  mid_bearing_body_depth  = mid_bearing_y + belt_bearing_inner + wall_thickness;
 
   module high_bearing_pos() {
     translate([line_x,high_bearing_y,top_line_z]) {
@@ -530,13 +644,13 @@ module rear_xy_endcap() {
       }
       translate([0,mount_thickness/2,0]) {
         // side sheet screw hole
-        translate([side_screw_hole_pos_x,0,side_screw_hole_pos_z]) {
+        translate([endcap_side_screw_hole_pos_x,0,endcap_side_screw_hole_pos_z]) {
           rotate([90,0,0]) {
             hole(bc_screw_diam+wall_thickness*3,mount_thickness,resolution);
           }
         }
         // top sheet screw hole
-        translate([top_screw_hole_pos_x,0,top_screw_hole_pos_z]) {
+        translate([endcap_top_screw_hole_pos_x,0,endcap_top_screw_hole_pos_z]) {
           rotate([90,0,0]) {
             hole(bc_screw_diam+wall_thickness*3,mount_thickness,resolution);
           }
@@ -605,13 +719,13 @@ module rear_xy_endcap() {
 
   module holes() {
     // side sheet screw hole
-    translate([side_screw_hole_pos_x,24,side_screw_hole_pos_z]) {
+    translate([endcap_side_screw_hole_pos_x,0,endcap_side_screw_hole_pos_z]) {
       rotate([90,0,0]) {
         hole(3,50,16);
       }
     }
     // top sheet screw hole
-    translate([top_screw_hole_pos_x,24,top_screw_hole_pos_z]) {
+    translate([endcap_top_screw_hole_pos_x,0,endcap_top_screw_hole_pos_z]) {
       rotate([90,0,0]) {
         hole(3,50,16);
       }
@@ -761,11 +875,8 @@ module assembly() {
       translate([y_rod_x,sheet_pos_y+sheet_thickness/2,0]) {
         rear_xy_endcap();
       }
-    }
-    // messing around with line return from front to carriage
-    translate([xy_line_x*side,(sheet_pos_y+sheet_thickness/2+belt_bearing_diam/2+spacer)*front,y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam/2]) {
-      rotate([0,90,0]) {
-        % belt_bearing();
+      translate([y_rod_x,front*(sheet_pos_y+sheet_thickness/2),0]) {
+        front_xy_endcap();
       }
     }
   }
