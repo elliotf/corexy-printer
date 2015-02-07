@@ -39,10 +39,10 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
-/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
+/*
 */
 
 belt_thickness = 0.5; // FIXME: make correct

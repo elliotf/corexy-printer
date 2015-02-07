@@ -308,7 +308,7 @@ module front_sheet() {
 
     hull() {
       translate([0,sheet_height/2,0]) {
-        cube([build_x,opening_height*2,sheet_thickness+1],center=true);
+        cube([build_x-sheet_thickness*2,opening_height*2,sheet_thickness+1],center=true);
         cube([main_opening_width-sheet_thickness*2,hotend_sheet_clearance*2,sheet_thickness+1],center=true);
       }
     }
@@ -402,10 +402,13 @@ module top_sheet() {
   module holes() {
     hole_diam = hotend_diam*0.8;
     front_y   = front*top_sheet_depth/2;
+
+    top_hole_width = build_x+hotend_diam+6;
+
     hull() {
       for(x=[left,right]) {
         for(y=[front_y+hole_diam,front_y+main_opening_depth-hole_diam/2]) {
-          translate([x*(main_opening_width/2-hole_diam/2),y,0]) {
+          translate([x*(top_hole_width/2-hole_diam/2),y,0]) {
             hole(hole_diam,sheet_thickness+2,resolution);
           }
         }
@@ -557,14 +560,6 @@ module front_xy_endcap() {
   module bridges() {
     bearing_pos() {
       belt_bearing_bevel();
-    }
-  }
-
-  % low_bearing_pos() {
-    rotate([0,0,high_to_low_line_angle_y]) {
-      translate([-xy_line_x,belt_bearing_effective_diam/2,0]) {
-        //cube([xy_line_x*2,.5,.5],center=true);
-      }
     }
   }
 
