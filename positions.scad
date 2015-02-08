@@ -50,30 +50,19 @@ heatbed_and_glass_thickness = 4;
 
 z_axis_overhead = sheet_thickness + heatbed_and_glass_thickness + motor_side;
 
-front_sheet_width = side_sheet_pos_x*2 - sheet_thickness;
-rear_sheet_width  = front_sheet_width;
-
-top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2; // below gantry
-//top_sheet_pos_z    = y_carriage_height/2+5+sheet_thickness/2; // above gantry
+front_sheet_width  = side_sheet_pos_x*2 - sheet_thickness;
+rear_sheet_width   = front_sheet_width;
+top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2;
 bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2; // - 35; // fill out 24x18 sheet
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
-
 sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
-side_sheet_height  = (top_sheet_pos_z - bottom_sheet_pos_z) + min_sheet_material;
 side_sheet_height  = sheet_height;
-//sheet_height = top_sheet_pos_z - bottom_sheet_pos_z + sheet_thickness + min_sheet_material*2; // above gantry
-
-sheet_pos_y = y_rod_len/2-sheet_thickness/2;
-sheet_pos_z = top_of_sheet-sheet_height/2; // below gantry
-side_sheet_pos_z   = top_sheet_pos_z - sheet_thickness/2 - side_sheet_height/2;
+sheet_pos_y        = y_rod_len/2-sheet_thickness/2;
+sheet_pos_z        = top_of_sheet-sheet_height/2;
 side_sheet_pos_z   = sheet_pos_z;
-//sheet_pos_z = top_sheet_pos_z+sheet_thickness/2+min_sheet_material-sheet_height/2; // above gantry
-
-top_sheet_depth = sheet_pos_y*2-sheet_thickness;
-
-side_sheet_depth = sheet_pos_y*2 - sheet_thickness;
-top_sheet_width  = side_sheet_pos_x*2 - sheet_thickness;
-
+top_sheet_depth    = sheet_pos_y*2-sheet_thickness;
+side_sheet_depth   = sheet_pos_y*2 - sheet_thickness;
+top_sheet_width    = side_sheet_pos_x*2 - sheet_thickness;
 
 z_rod_pos_x  = max(build_x*0.33);
 z_rod_pos_y  = rear*sheet_pos_y + sheet_thickness/2 - z_motor_shaft_len + belt_width/2;
