@@ -136,13 +136,10 @@ module x_carriage() {
 }
 
 module y_carriage() {
-  belt_bearing_x = (y_rod_x - y_carriage_belt_bearing_x);
+  belt_bearing_x              = (y_rod_x - y_carriage_belt_bearing_x);
   belt_bearing_opening_height = belt_bearing_thickness*2+belt_bearing_washer_thickness*3;
-
-  rod_hole_diam = rod_diam + rod_slop;
-
-  x_rod_clamp_len = belt_bearing_x + belt_bearing_nut_diam/2 + min_material_thickness*2;
-  x_rod_clamp_len = y_carriage_width;
+  rod_hole_diam               = rod_diam + rod_slop;
+  x_rod_clamp_len             = y_carriage_width;
 
   module body() {
     // main body, hold x rods
@@ -221,17 +218,16 @@ module y_carriage() {
         }
       }
 
-      // rear to front line return
-      translate([-belt_bearing_effective_diam/2,0,-belt_bearing_thickness/2+belt_bearing_effective_diam+0.25]) {
+      translate([-belt_bearing_effective_diam/2-0.4,0,-belt_bearing_thickness/2-belt_bearing_washer_thickness/2]) {
+        // through carriage hole to front
         rotate([90,0,0]) {
           hole(2,60,8);
         }
-      }
-
-      // through carriage hole to front
-      translate([-belt_bearing_effective_diam/2-0.5,0,-(belt_bearing_thickness/2)]) {
-        rotate([90,0,0]) {
-          hole(2,60,8);
+        // front to rear line return
+        translate([0,0,belt_bearing_effective_diam+0.4]) {
+          rotate([90,0,0]) {
+            hole(2,60,8);
+          }
         }
       }
 
@@ -243,10 +239,19 @@ module y_carriage() {
     }
   }
 
+  module bridges() {
+    for(side=[top,bottom]) {
+      translate([belt_bearing_x,y_carriage_belt_bearing_y,y_carriage_belt_bearing_z+side*(belt_bearing_washer_thickness/2+belt_bearing_thickness/2)]) {
+        belt_bearing_bevel([side]);
+      }
+    }
+  }
+
   difference() {
     body();
     holes();
   }
+  bridges();
 
   translate([0,0,0]) {
     rotate([90,0,0]) {
