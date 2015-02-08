@@ -69,15 +69,6 @@ module assembly() {
     }
   }
 
-  // tension adjustment
-  for(side=[left,right]) {
-    translate([(x_carriage_width/2-8)*side,-xy_idler_y+belt_bearing_diam/2,x_rod_z+bearing_diam/2+5]) {
-      rotate([0,0,90]) rotate([45*side,0,0]) mirror([0,1+side,0]) {
-        color("grey") tuner();
-      }
-    }
-  }
-
   for(side=[left,right]) {
     mirror([1-side,0,0]) {
       translate([y_rod_x,sheet_pos_y+sheet_thickness/2,0]) {

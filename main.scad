@@ -952,7 +952,7 @@ module tuner() {
   adjuster_paddle_width = 17.8;
   adjuster_paddle_thickness = adjuster_thin_diam;
 
-  module tuner_body() {
+  module body() {
     //% translate([-hole_to_shoulder/2,-thick_diam,0]) rotate([0,90,0]) cylinder(r=thin_diam/4,h=hole_to_shoulder,center=true);
 
     // thin shaft
@@ -995,7 +995,8 @@ module tuner() {
       }
     }
   }
-  module tuner_holes() {
+
+  module holes() {
     cylinder(r=wire_hole_diam/3,h=thin_diam*2,center=true);
 
     translate([anchor_screw_hole_pos_x,anchor_screw_hole_pos_y,anchor_screw_hole_pos_z]) rotate([0,90,0])
@@ -1003,7 +1004,7 @@ module tuner() {
   }
 
   difference() {
-    tuner_body();
-    tuner_holes();
+    body();
+    holes();
   }
 }
