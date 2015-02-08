@@ -564,7 +564,7 @@ module front_xy_endcap() {
 
       translate([0,0,bearing_body_thickness/2]) {
         rotate([0,0,90]) {
-          hole(belt_bearing_nut_diam,belt_bearing_nut_thickness*2,6);
+          hole(belt_bearing_nut_diam,belt_bearing_nut_thickness,6);
         }
       }
 
