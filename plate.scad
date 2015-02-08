@@ -21,7 +21,7 @@ module plate() {
           }
         }
 
-        translate([bearing_len+belt_bearing_diam,-belt_bearing_effective_diam/2,0]) {
+        translate([bearing_len+belt_bearing_diam+2,-belt_bearing_effective_diam/2,0]) {
           rotate([90,0,0]) {
             rear_xy_endcap();
           }
