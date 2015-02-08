@@ -168,10 +168,6 @@ module y_carriage() {
   rod_hole_diam               = rod_diam + rod_slop;
   x_rod_clamp_len             = y_carriage_width;
 
-  to_rear_line_z              = y_carriage_belt_bearing_z + belt_bearing_washer_thickness/2 + belt_bearing_thickness/2;
-  to_front_line_z             = y_carriage_belt_bearing_z - belt_bearing_washer_thickness/2 - belt_bearing_thickness/2;
-  return_line_z               = to_front_line_z + belt_bearing_effective_diam + 0.4;
-
   module body() {
     // main body, hold x rods
     hull() {
@@ -511,7 +507,7 @@ module front_xy_endcap() {
   line_x = xy_line_x-y_rod_x;
 
   bearing_y = front*(mount_thickness+belt_bearing_nut_diam/2+spacer);
-  bearing_z = top_line_z-belt_bearing_effective_diam/2;
+  bearing_z = to_front_line_z+belt_bearing_effective_diam/2;
 
   module bearing_base() {
     for(x=[left,right]) {
@@ -631,7 +627,7 @@ module rear_xy_endcap() {
 
   line_x          = xy_line_x-y_rod_x;
   line_to_motor_x = line_x + 2;
-  line_to_motor_z = low_line_z;
+  line_to_motor_z = opposite_to_motor_line_z;
 
   high_bearing_y = spacer+belt_bearing_diam/2;
   mid_bearing_y  = high_bearing_y+belt_bearing_nut_diam/2+wall_thickness+spacer+belt_bearing_diam/2;
@@ -685,7 +681,7 @@ module rear_xy_endcap() {
   }
 
   module lower_bearing_mount_base() {
-    translate([line_to_motor_x-belt_bearing_effective_diam/2,mount_thickness/2,low_line_z-belt_bearing_effective_diam/2]) {
+    translate([line_to_motor_x-belt_bearing_effective_diam/2,mount_thickness/2,line_to_motor_z-belt_bearing_effective_diam/2]) {
       rotate([90,0,0]) {
         hole(bearing_body_diam+wall_thickness*2,mount_thickness,resolution);
       }

@@ -90,10 +90,17 @@ handle_hole_height       = 50;
 handle_material_width    = 25;
 handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
 
-xy_line_x = y_carriage_belt_bearing_x+belt_bearing_effective_diam/2;
+to_rear_line_z            = y_carriage_belt_bearing_z + belt_bearing_washer_thickness/2 + belt_bearing_thickness/2;
+to_front_line_z           = y_carriage_belt_bearing_z - belt_bearing_washer_thickness/2 - belt_bearing_thickness/2;
+return_line_z             = to_front_line_z + belt_bearing_effective_diam;
+opposite_to_motor_line_z  = to_rear_line_z - belt_bearing_effective_diam*1.5;
+
+top_line_z                = return_line_z;
+mid_line_z                = to_rear_line_z;
+
+xy_line_x   = y_carriage_belt_bearing_x+belt_bearing_effective_diam/2;
 top_line_z  = y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam;
 mid_line_z  = y_carriage_belt_bearing_z+belt_bearing_washer_thickness/2+belt_bearing_thickness/2;
-low_line_z  = mid_line_z - belt_bearing_effective_diam*1.5;
 
 endcap_side_screw_hole_pos_x = side_sheet_pos_x-y_rod_x;
 endcap_side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
