@@ -101,5 +101,10 @@ endcap_side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-b
 endcap_top_screw_hole_pos_x  = top_sheet_width/2-y_rod_x-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
 endcap_top_screw_hole_pos_z  = top_sheet_pos_z;
 
+wall_thickness  = extrusion_width*4;
+bearing_body_thickness = belt_bearing_thickness+spacer*2+wall_thickness*5;
+bearing_body_depth     = belt_bearing_diam+spacer+wall_thickness*2;
+bearing_body_diam      = belt_bearing_nut_diam+wall_thickness*3;
+
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);

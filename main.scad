@@ -3,6 +3,18 @@ include <positions.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
 
+module debug_lines() {
+  color("red") % translate([20,0,0]) {
+    cube([40,.5,.5],center=true);
+  }
+  color("green") % translate([0,20,0]) {
+    cube([.5,40,.5],center=true);
+  }
+  color("blue") % translate([0,0,20]) {
+    cube([.5,.5,40],center=true);
+  }
+}
+
 module line_hole() {
   hole(3,sheet_thickness+1,resolution);
 }
@@ -466,9 +478,17 @@ module front_xy_endcap() {
   bearing_y = front*(mount_thickness+belt_bearing_nut_diam/2+spacer);
   bearing_z = top_line_z-belt_bearing_effective_diam/2;
 
-  bearing_body_thickness = belt_bearing_thickness+spacer*2+wall_thickness*5;
-  bearing_body_depth     = belt_bearing_diam+spacer+wall_thickness*2;
-  bearing_body_diam      = belt_bearing_nut_diam+wall_thickness*3;
+  module bearing_base() {
+    for(x=[left,right]) {
+      for(y=[front,rear]) {
+        translate([(bearing_body_depth/2-wall_thickness)*x,0,(bearing_body_thickness/2-wall_thickness)*y]) {
+          rotate([90,0,0]) {
+            hole(wall_thickness*2,mount_thickness,resolution);
+          }
+        }
+      }
+    }
+  }
 
   module bearing_pos() {
     translate([line_x,bearing_y,bearing_z]) {
@@ -504,7 +524,7 @@ module front_xy_endcap() {
       }
       bearing_pos() {
         translate([0,-bearing_y-mount_thickness/2,0]) {
-          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+          bearing_base();
         }
       }
     }
@@ -512,7 +532,7 @@ module front_xy_endcap() {
       % belt_bearing();
       hull() {
         translate([0,-bearing_y-mount_thickness/2,0]) {
-          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+          bearing_base();
         }
         hole(bearing_body_diam,bearing_body_thickness,resolution);
       }
@@ -573,7 +593,6 @@ module front_xy_endcap() {
 
 module rear_xy_endcap() {
   mount_thickness = 5;
-  wall_thickness  = extrusion_width*4;
 
   line_x          = xy_line_x-y_rod_x;
   line_to_motor_x = line_x + 2;
@@ -588,9 +607,17 @@ module rear_xy_endcap() {
   low_to_high_line_angle_z = atan2(low_high_dist_y,low_high_dist_x);
   high_to_low_line_angle_y = -atan2(top_line_z - line_to_motor_z,line_x-line_to_motor_x+xy_line_x*2);
 
-  bearing_body_thickness = belt_bearing_thickness+spacer*2+wall_thickness*5;
-  bearing_body_depth     = belt_bearing_diam+spacer+wall_thickness*2;
-  bearing_body_diam      = belt_bearing_nut_diam+wall_thickness*3;
+  module bearing_base() {
+    for(x=[left,right]) {
+      for(y=[front,rear]) {
+        translate([(bearing_body_depth/2-wall_thickness)*x,0,(bearing_body_thickness/2-wall_thickness)*y]) {
+          rotate([90,0,0]) {
+            hole(wall_thickness*2,mount_thickness,resolution);
+          }
+        }
+      }
+    }
+  }
 
   module high_bearing_pos() {
     translate([line_x,high_bearing_y,top_line_z]) {
@@ -655,13 +682,13 @@ module rear_xy_endcap() {
       high_bearing_pos() {
         % belt_bearing();
         translate([0,-high_bearing_y+mount_thickness/2,0]) {
-          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+          bearing_base();
         }
       }
       mid_bearing_pos() {
         % belt_bearing();
         translate([0,-mid_bearing_y+mount_thickness/2,0]) {
-          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+          bearing_base();
         }
       }
       lower_bearing_mount_base();
@@ -669,7 +696,7 @@ module rear_xy_endcap() {
     hull() {
       high_bearing_pos() {
         translate([0,-high_bearing_y+mount_thickness/2,0]) {
-          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+          bearing_base();
         }
         translate([0,0,-belt_bearing_thickness*2]) {
           hole(belt_bearing_nut_diam+wall_thickness*2,belt_bearing_nut_thickness+wall_thickness*2,resolution);
@@ -681,7 +708,7 @@ module rear_xy_endcap() {
     mid_bearing_pos() {
       hull() {
         translate([0,-mid_bearing_y+mount_thickness/2,0]) {
-          cube([bearing_body_depth,mount_thickness,bearing_body_thickness],center=true);
+          bearing_base();
         }
         hole(bearing_body_diam,bearing_body_thickness,resolution);
       }
