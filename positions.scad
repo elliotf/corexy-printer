@@ -24,7 +24,7 @@ x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*
 x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
 x_carriage_thickness = bearing_diam;
 
-hotend_y    = (bearing_diam/2 + spacer + hotend_diam/2)*front;
+hotend_y    = (bearing_diam/2 + wall_thickness + spacer + hotend_diam/2)*front;
 hotend_z    = x_carriage_height/2 + -hotend_len/2 + hotend_clamped_height;
 
 top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
@@ -81,7 +81,7 @@ main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 
-x_pos = -build_x/2+build_x*.0;
+x_pos = -build_x/2+build_x*.0 + 20;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
 z_pos = build_z*0+10;
 

@@ -1,7 +1,12 @@
+include <config.scad>;
 use <main.scad>;
 
-front_xy_endcap();
+x_carriage();
 
-translate([0,40,0]) {
-  rear_xy_endcap();
+for(side=[left,right]) {
+  mirror([1+side,0,0]) {
+    translate([-60,0,0]) {
+      y_carriage();
+    }
+  }
 }
