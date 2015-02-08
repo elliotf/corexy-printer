@@ -168,6 +168,10 @@ module y_carriage() {
   rod_hole_diam               = rod_diam + rod_slop;
   x_rod_clamp_len             = y_carriage_width;
 
+  to_rear_line_z              = y_carriage_belt_bearing_z + belt_bearing_washer_thickness/2 + belt_bearing_thickness/2;
+  to_front_line_z             = y_carriage_belt_bearing_z - belt_bearing_washer_thickness/2 - belt_bearing_thickness/2;
+  return_line_z               = to_front_line_z + belt_bearing_effective_diam + 0.4;
+
   module body() {
     // main body, hold x rods
     hull() {
@@ -230,6 +234,18 @@ module y_carriage() {
     }
 
     // bearing/line-related holes
+    translate([belt_bearing_x-belt_bearing_effective_diam/2-0.4,y_carriage_belt_bearing_y,0]) {
+      translate([0,0,to_front_line_z]) {
+        rotate([90,0,0]) {
+          hole(2,60,8);
+        }
+      }
+      translate([0,0,return_line_z]) {
+        rotate([90,0,0]) {
+          hole(2,60,8);
+        }
+      }
+    }
     translate([belt_bearing_x,y_carriage_belt_bearing_y,y_carriage_belt_bearing_z]) {
       // bearing/clamp screw
       hole(belt_bearing_inner+rod_slop,50,8);
@@ -242,19 +258,6 @@ module y_carriage() {
         }
         translate([belt_bearing_diam/2,0,0]) {
           cube([belt_bearing_diam+spacer*2,belt_bearing_diam+spacer*2,belt_bearing_opening_height],center=true);
-        }
-      }
-
-      translate([-belt_bearing_effective_diam/2-0.4,0,-belt_bearing_thickness/2-belt_bearing_washer_thickness/2]) {
-        // through carriage hole to front
-        rotate([90,0,0]) {
-          hole(2,60,8);
-        }
-        // front to rear line return
-        translate([0,0,belt_bearing_effective_diam+0.4]) {
-          rotate([90,0,0]) {
-            hole(2,60,8);
-          }
         }
       }
 
