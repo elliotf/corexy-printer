@@ -348,10 +348,12 @@ module front_sheet() {
           hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
         }
 
-        translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2,0]) {
-          line_hole();
+        translate([xy_line_x*side,0,0]) {
+          translate([0,mid_line_z,0]) {
+            line_hole();
+          }
 
-          translate([0,belt_bearing_effective_diam,0]) {
+          translate([0,to_front_line_z,0]) {
             line_hole();
           }
         }
@@ -389,12 +391,12 @@ module rear_sheet() {
         }
 
         hull() {
-          translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2)*side,y_carriage_belt_bearing_z]) {
-            translate([0,-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam,0]) {
+          translate([xy_line_x*side,0,0]) {
+            translate([0,top_line_z,0]) {
               line_hole();
             }
 
-            translate([0,belt_bearing_washer_thickness/2+belt_bearing_thickness/2,0]) {
+            translate([0,mid_line_z,0]) {
               line_hole();
             }
           }
@@ -516,7 +518,7 @@ module front_xy_endcap() {
   line_x = xy_line_x-y_rod_x;
 
   bearing_y = front*(mount_thickness+belt_bearing_nut_diam/2+spacer);
-  bearing_z = to_front_line_z+belt_bearing_effective_diam/2;
+  bearing_z = to_front_line_z-belt_bearing_effective_diam/2;
 
   module bearing_base() {
     for(x=[left,right]) {
@@ -641,6 +643,8 @@ module rear_xy_endcap() {
   high_bearing_y = spacer+belt_bearing_diam/2;
   mid_bearing_y  = high_bearing_y+belt_bearing_nut_diam/2+wall_thickness+spacer+belt_bearing_diam/2;
   low_bearing_y  = motor_side/2-pulley_diam/2;
+  line_to_motor_x = endcap_top_screw_hole_pos_x+belt_bearing_effective_diam/2;
+  line_to_motor_z = endcap_top_screw_hole_pos_z+belt_bearing_effective_diam/2;
 
   low_high_dist_x          = xy_line_x*2+line_to_motor_x;
   low_high_dist_y          = low_bearing_y - high_bearing_y - belt_bearing_diam/2;

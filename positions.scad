@@ -13,8 +13,7 @@ x_carriage_width     = bearing_len + min_material_thickness * 2;
 x_carriage_width     = 45;
 
 y_carriage_belt_bearing_y = rod_diam/2+belt_bearing_inner/2 + min_material_thickness;
-y_carriage_belt_bearing_z = -rod_diam/2-belt_bearing_inner/2+belt_bearing_effective_diam/2;
-y_carriage_belt_bearing_z = -x_rod_spacing/2+rod_diam/2+min_material_thickness*3+belt_bearing_washer_thickness*1.5+belt_bearing_thickness;
+y_carriage_belt_bearing_z = x_rod_spacing/2-rod_diam/2-min_material_thickness*3-belt_bearing_washer_thickness*1.5-belt_bearing_thickness;
 y_belt_bearing_from_rod   = 3;
 y_carriage_width          = bearing_diam/2 + min_material_thickness*2 + spacer + belt_bearing_diam;
 y_carriage_depth          = (y_carriage_belt_bearing_y + belt_bearing_nut_diam/2 + min_material_thickness*2)*2;
@@ -91,17 +90,14 @@ handle_hole_height       = 50;
 handle_material_width    = 25;
 handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
 
-to_rear_line_z            = y_carriage_belt_bearing_z + belt_bearing_washer_thickness/2 + belt_bearing_thickness/2;
-to_front_line_z           = y_carriage_belt_bearing_z - belt_bearing_washer_thickness/2 - belt_bearing_thickness/2;
-return_line_z             = to_front_line_z + belt_bearing_effective_diam;
+to_front_line_z           = y_carriage_belt_bearing_z + belt_bearing_washer_thickness/2 + belt_bearing_thickness/2;
+to_rear_line_z            = y_carriage_belt_bearing_z - belt_bearing_washer_thickness/2 - belt_bearing_thickness/2;
+return_line_z             = to_front_line_z - belt_bearing_effective_diam;
 opposite_to_motor_line_z  = to_rear_line_z - belt_bearing_effective_diam*1.5;
 
-top_line_z                = return_line_z;
-mid_line_z                = to_rear_line_z;
-
+top_line_z  = to_rear_line_z;
+mid_line_z  = return_line_z;
 xy_line_x   = y_carriage_belt_bearing_x+belt_bearing_effective_diam/2;
-top_line_z  = y_carriage_belt_bearing_z-belt_bearing_washer_thickness/2-belt_bearing_thickness/2+belt_bearing_effective_diam;
-mid_line_z  = y_carriage_belt_bearing_z+belt_bearing_washer_thickness/2+belt_bearing_thickness/2;
 
 endcap_side_screw_hole_pos_x = side_sheet_pos_x-y_rod_x;
 endcap_side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
