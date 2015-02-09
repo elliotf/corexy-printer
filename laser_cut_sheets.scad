@@ -14,14 +14,16 @@ module sides_and_top() {
         }
       }
     }
+  }
 
-    translate([left*(top_sheet_width/2+sheet_thickness+1),-top_sheet_depth/2-sheet_thickness,0]) {
+  translate([-laser_cutter_width/2+sheet_thickness*3+top_sheet_width,-top_sheet_depth/2-sheet_thickness,0]) {
+    translate([left*(top_sheet_width/2+sheet_thickness+1),0,0]) {
       rotate([0,0,0]) {
         top_sheet();
       }
     }
 
-    translate([right*(top_sheet_width/2+sheet_thickness+1),-top_sheet_depth/2-sheet_thickness,0]) {
+    translate([right*(top_sheet_width/2+sheet_thickness+1),0,0]) {
       rotate([0,0,0]) {
         bottom_sheet();
       }

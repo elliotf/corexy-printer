@@ -93,10 +93,25 @@ module motor() {
 
 module x_carriage() {
   body_side = rear;
-  bottom_line_pos_y = y_carriage_belt_bearing_y+belt_bearing_effective_diam/2;
+  bottom_line_pos_y = y_carriage_belt_bearing_y-belt_bearing_effective_diam/2;
   bottom_line_pos_z = y_carriage_belt_bearing_z-(belt_bearing_washer_thickness/2+belt_bearing_thickness/2);
-  top_line_pos_y = bottom_line_pos_y - belt_bearing_effective_diam;
+  bottom_line_pos_z = y_carriage_belt_bearing_z-(belt_bearing_washer_thickness/2+belt_bearing_thickness/2);
+  top_line_pos_y = bottom_line_pos_y + belt_bearing_effective_diam;
   top_line_pos_z = bottom_line_pos_z + belt_bearing_thickness + belt_bearing_washer_thickness;
+
+  module position_tuner() {
+    translate([14,top_line_pos_y+3,top_line_pos_z]) {
+      rotate([0,0,0]) {
+        rotate([0,0,-70]) {
+          rotate([0,90,0]) {
+            mirror([0,0,0]) {
+              % tuner();
+            }
+          }
+        }
+      }
+    }
+  }
 
   module body() {
     for(side=[top,bottom]) {
@@ -132,14 +147,8 @@ module x_carriage() {
 
   for(side=[left,right]) {
     mirror([1+side,0,0]) {
-      translate([12,bottom_line_pos_y,bottom_line_pos_z]) {
-        rotate([-12,0,0]) {
-          rotate([0,0,-85]) {
-            rotate([0,90,0]) {
-              % tuner();
-            }
-          }
-        }
+      position_tuner() {
+        % tuner();
       }
     }
   }

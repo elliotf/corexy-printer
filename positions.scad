@@ -10,6 +10,7 @@ spool_len  = 25.5;
 
 x_rod_spacing        = bearing_diam + min_material_thickness * 2 + rod_diam;
 x_carriage_width     = bearing_len + min_material_thickness * 2;
+x_carriage_width     = 45;
 
 y_carriage_belt_bearing_y = rod_diam/2+belt_bearing_inner/2 + min_material_thickness;
 y_carriage_belt_bearing_z = -rod_diam/2-belt_bearing_inner/2+belt_bearing_effective_diam/2;
@@ -76,12 +77,12 @@ z_motor_pos_y  = rear*sheet_pos_y + sheet_thickness/2;
 z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;// - (z_motor_side-z_motor_hole_spacing)/2 + z_motor_screw_diam/2 + 2;
 z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
 
-main_opening_width  = y_rod_x*2 - y_carriage_width*2;
+main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 
-x_pos = -build_x/2+build_x*.0 + 20;
+x_pos = -build_x/2+build_x*0.0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
 z_pos = build_z*0+10;
 
