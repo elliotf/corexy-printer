@@ -272,13 +272,6 @@ clamp_screw_nut_diam = m3_nut_diam;
 clamp_screw_nut_thickness = m3_nut_thickness;
 clamp_area_width = clamp_screw_diam+min_material_thickness*2;
 
-// Printer settings
-y_clamp_len = 10; // amount of bar to clamp onto
-x_rod_spacing = bearing_diam + min_material_thickness * 2;
-x_carriage_width = bearing_len * 2 + 10 + min_material_thickness*4;
-x_carriage_width = bearing_len * 2 + min_material_thickness*3;
-x_carriage_depth = x_rod_spacing + bearing_diam;
-
 // calculated rod lengths
 //x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
 //y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2;
@@ -318,3 +311,9 @@ heatbed_hole_spacing_y = build_y+9;
 heatbed_hole_diam = 3;
 heatbed_width = build_x+14;
 heatbed_depth = build_y+14;
+
+tuner_nut_flat_diam      = 10;
+tuner_nut_max_diam       = 11.5;
+tuner_shaft_screw_diam   = 7.75;
+tuner_shaft_screwed_diam = 10;
+tuner_shaft_screwed_len  = 18.5;

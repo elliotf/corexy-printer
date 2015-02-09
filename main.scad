@@ -99,15 +99,21 @@ module x_carriage() {
   top_line_pos_y = bottom_line_pos_y + belt_bearing_effective_diam;
   top_line_pos_z = bottom_line_pos_z + belt_bearing_thickness + belt_bearing_washer_thickness;
 
+  bearing_body_diam = bearing_diam + wall_thickness*2;
+  bearing_body_diam = top_line_pos_y*2;
+
+  body_depth  = top_line_pos_y - bottom_line_pos_y;
+  body_height = x_rod_spacing;
+
+  tuner_pos_x          = 14;
+  tuner_pos_y          = top_line_pos_y+2.5;
+  tuner_shoulder_pos_z = top_line_pos_z+22.5;
+
   module position_tuner() {
-    translate([14,top_line_pos_y+3,top_line_pos_z]) {
-      rotate([0,0,0]) {
-        rotate([0,0,-70]) {
-          rotate([0,90,0]) {
-            mirror([0,0,0]) {
-              % tuner();
-            }
-          }
+    translate([tuner_pos_x,tuner_pos_y,top_line_pos_z]) {
+      rotate([0,0,-55]) {
+        rotate([0,90,0]) {
+          % tuner();
         }
       }
     }
@@ -117,13 +123,48 @@ module x_carriage() {
     for(side=[top,bottom]) {
       translate([0,0,x_rod_spacing/2*side]) {
         rotate([0,90,0]) {
-          hole(bearing_diam+wall_thickness*2,x_carriage_width,resolution);
+          hole(bearing_body_diam,x_carriage_width,resolution);
+        }
+      }
+    }
+
+    translate([0,bottom_line_pos_y+body_depth/2,0]) {
+      cube([x_carriage_width,body_depth,body_height],center=true);
+    }
+
+    // tuner retainer body
+    translate([0,tuner_pos_y,tuner_shoulder_pos_z-tuner_shaft_screwed_len/2]) {
+      cube([x_carriage_width,tuner_shaft_screwed_diam+wall_thickness*2,tuner_shaft_screwed_len],center=true);
+    }
+
+    hull() {
+      translate([0,tuner_pos_y,tuner_shoulder_pos_z-1]) {
+        cube([x_carriage_width,tuner_shaft_screwed_diam+wall_thickness*2,2],center=true);
+      }
+
+      translate([0,0,x_rod_spacing/2]) {
+        rotate([0,90,0]) {
+          hole(bearing_body_diam,x_carriage_width,resolution);
         }
       }
     }
   }
 
   module holes() {
+    for(side=[left,right]) {
+      translate([tuner_pos_x*side,tuner_pos_y,0]) {
+        hole(tuner_shaft_screw_diam,100,8);
+
+        translate([0,0,tuner_shoulder_pos_z]) {
+          hole(tuner_shaft_screwed_diam,21,8);
+
+          translate([0,0,-tuner_shaft_screwed_len-20]) {
+            hole(tuner_nut_max_diam,40,resolution);
+          }
+        }
+      }
+    }
+
     for(side=[top,bottom]) {
       translate([0,0,x_rod_spacing/2*side]) {
         translate([0,x_carriage_thickness/2*-body_side,0]) {
@@ -131,9 +172,30 @@ module x_carriage() {
           //cube([x_carriage_width+1,x_carriage_thickness,rod_diam+1],center=true);
         }
         rotate([0,90,0]) {
+          // bearing hole
           hole(bearing_diam,x_carriage_width+1,resolution);
-          //hole(bearing_diam,bearing_len,resolution);
-          //hole(rod_diam+1,x_carriage_width+2,resolution);
+          // beveled opening
+          for(end=[left,right]) {
+            hull() {
+              translate([0,0,(x_carriage_width/2)*end]) {
+                hole(bearing_diam,3,resolution);
+                translate([0,0,.5*end]) {
+                  hole(bearing_diam+1,1,resolution);
+                }
+              }
+            }
+          }
+        }
+
+        // front opening
+        hull() {
+          for(r=[-45,45]) {
+            rotate([r,0,0]) {
+              translate([extrusion_height,-bearing_body_diam/2,0]) {
+                cube([x_carriage_width,bearing_body_diam,1],center=true);
+              }
+            }
+          }
         }
       }
     }
