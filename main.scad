@@ -109,6 +109,13 @@ module x_carriage() {
   tuner_pos_y          = top_line_pos_y+2.5;
   tuner_shoulder_pos_z = top_line_pos_z+22.5;
 
+  bottom_top_dist_z     = top_line_pos_z - bottom_line_pos_z;
+  bottom_top_dist_y     = top_line_pos_y - bottom_line_pos_y;
+  bottom_top_dist_angle = sqrt(pow(bottom_top_dist_z,2)+pow(bottom_top_dist_y,2));
+  bottom_top_line_angle = atan2(bottom_top_dist_z,bottom_top_dist_y);
+
+  line_hole_opening     = 1.1;
+
   module position_tuner() {
     translate([tuner_pos_x,tuner_pos_y,top_line_pos_z]) {
       rotate([0,0,-55]) {
@@ -151,6 +158,7 @@ module x_carriage() {
   }
 
   module holes() {
+    // tuner mounting
     for(side=[left,right]) {
       translate([tuner_pos_x*side,tuner_pos_y,0]) {
         hole(tuner_shaft_screw_diam,100,8);
@@ -165,12 +173,28 @@ module x_carriage() {
       }
     }
 
+    // line path
+    translate([0,top_line_pos_y,top_line_pos_z]) {
+      rotate([0,90,0]) {
+        hole(line_hole_opening,x_carriage_width+1,8);
+      }
+    }
+    translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
+      rotate([0,90,0]) {
+        hole(line_hole_opening,x_carriage_width+1,8);
+      }
+    }
+    translate([0,top_line_pos_y-bottom_top_dist_y/2,top_line_pos_z-bottom_top_dist_z/2]) {
+      rotate([bottom_top_line_angle,0,0]) {
+        difference() {
+          hole(bottom_top_dist_angle+line_hole_opening,line_hole_opening*1.5,resolution);
+          hole(bottom_top_dist_angle-line_hole_opening,line_hole_opening*1.6,resolution);
+        }
+      }
+    }
+
     for(side=[top,bottom]) {
       translate([0,0,x_rod_spacing/2*side]) {
-        translate([0,x_carriage_thickness/2*-body_side,0]) {
-          //cube([bearing_len,x_carriage_thickness,bearing_diam-1],center=true);
-          //cube([x_carriage_width+1,x_carriage_thickness,rod_diam+1],center=true);
-        }
         rotate([0,90,0]) {
           // bearing hole
           hole(bearing_diam,x_carriage_width+1,resolution);
@@ -195,7 +219,7 @@ module x_carriage() {
       hull() {
         for(r=[-45,45]) {
           rotate([r,0,0]) {
-            translate([extrusion_height,-bearing_body_diam/2,0]) {
+            translate([-extrusion_height,-bearing_body_diam/2,0]) {
               cube([x_carriage_width,bearing_body_diam,1],center=true);
             }
           }
@@ -208,7 +232,7 @@ module x_carriage() {
       hull() {
         for(r=[-45,0,45,90,125]) {
           rotate([r,0,0]) {
-            translate([extrusion_height,-bearing_body_diam/2,0]) {
+            translate([-extrusion_height,-bearing_body_diam/2,0]) {
               cube([x_carriage_width,bearing_body_diam,1],center=true);
             }
           }
@@ -217,10 +241,10 @@ module x_carriage() {
     }
   }
   translate([0,top_line_pos_y,top_line_pos_z]) {
-    color("green") % cube([x_carriage_width+60,0.2,0.2],center=true);
+    //color("green") % cube([x_carriage_width+60,0.8,0.8],center=true);
   }
   translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
-    color("red") % cube([x_carriage_width+60,0.2,0.2],center=true);
+    //color("red") % cube([x_carriage_width+60,0.8,0.8],center=true);
   }
 
   for(side=[left,right]) {

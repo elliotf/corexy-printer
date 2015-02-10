@@ -63,7 +63,7 @@ top_sheet_depth    = sheet_pos_y*2-sheet_thickness;
 side_sheet_depth   = sheet_pos_y*2 - sheet_thickness;
 top_sheet_width    = side_sheet_pos_x*2 - sheet_thickness;
 
-z_rod_pos_x  = max(build_x*0.33);
+z_rod_pos_x  = build_x/2-z_bearing_diam*1.5;
 z_rod_pos_y  = rear*sheet_pos_y + sheet_thickness/2 - z_motor_shaft_len + belt_width/2;
 z_rod_pos_z  = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
 
