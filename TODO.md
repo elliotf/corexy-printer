@@ -1,6 +1,5 @@
 # TODO
 
-* x carriage
-  * line tensioning
 * z carriage
+* endstop mounting
 * compensate for spectra line diameter
