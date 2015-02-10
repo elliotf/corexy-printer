@@ -156,7 +156,7 @@ z_bearing_groove_depth   = bearing_groove_depth;
 z_rod_diam               = rod_diam;
 */
 
-rod_slop = 0.1;
+rod_slop = 0.05;
 
 // endstop dimensions
 endstop_len = 20;
