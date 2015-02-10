@@ -1,19 +1,18 @@
 use <util.scad>;
 
-bc_tab_len           = 9;
+bc_tab_len           = 8;
 bc_shoulder_width    = 4;
 bc_thickness         = 6;
-bc_tab_from_end_dist = 13;
+bc_tab_from_end_dist = 8;
 bc_ziptie_width      = 3.75;
 bc_ziptie_thickness  = 1.75;
 bc_screw_diam        = 2.8;
 bc_screw_len         = 6;
 bc_nut_diam          = 5.5;
 
-bc_tab_slot_pair_space          = bc_tab_len * .75;
+bc_tab_slot_pair_space          = 20;
 bc_tab_slot_pair_len            = bc_tab_len*2 + bc_tab_slot_pair_space;
-bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*2.01;
-bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*1.75;
+bc_space_between_tab_slot_pairs = bc_tab_slot_pair_len*1.25;
 bc_pair_and_spacing_len         = bc_tab_slot_pair_len + bc_space_between_tab_slot_pairs;
 
 BC_ZIP_TAB    = 1;
