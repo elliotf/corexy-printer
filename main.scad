@@ -187,13 +187,29 @@ module x_carriage() {
           }
         }
 
-        // front opening
-        hull() {
-          for(r=[-45,45]) {
-            rotate([r,0,0]) {
-              translate([extrusion_height,-bearing_body_diam/2,0]) {
-                cube([x_carriage_width,bearing_body_diam,1],center=true);
-              }
+      }
+    }
+
+    // front opening top
+    translate([0,0,x_rod_spacing/2]) {
+      hull() {
+        for(r=[-45,45]) {
+          rotate([r,0,0]) {
+            translate([extrusion_height,-bearing_body_diam/2,0]) {
+              cube([x_carriage_width,bearing_body_diam,1],center=true);
+            }
+          }
+        }
+      }
+    }
+
+    // front opening top
+    translate([0,0,-x_rod_spacing/2]) {
+      hull() {
+        for(r=[-45,0,45,90,125]) {
+          rotate([r,0,0]) {
+            translate([extrusion_height,-bearing_body_diam/2,0]) {
+              cube([x_carriage_width,bearing_body_diam,1],center=true);
             }
           }
         }
