@@ -557,7 +557,7 @@ module top_sheet() {
   }
 
   module holes() {
-    hole_diam = hotend_diam*0.8;
+    hole_diam = sheet_thickness*2;
     front_y   = front*top_sheet_depth/2;
 
     front_opening_width = main_opening_width - sheet_thickness*2;
@@ -575,7 +575,7 @@ module top_sheet() {
       }
     }
     translate([0,front*(top_sheet_depth/2),0]) {
-      cube([front_opening_width-hole_diam,sheet_thickness*4,sheet_thickness+1],center=true);
+      cube([front_opening_width-sheet_thickness*2,sheet_thickness*4,sheet_thickness+1],center=true);
     }
 
     for(side=[left,right]) {
