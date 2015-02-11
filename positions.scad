@@ -2,8 +2,8 @@ include <config.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
 
-sheet_opacity          = 0.4;
 sheet_opacity          = 1;
+sheet_opacity          = 0.4;
 
 spool_diam = 18;
 spool_len  = 25.5;
@@ -47,12 +47,16 @@ side_sheet_pos_y = 0;
 
 heatbed_and_glass_thickness = 4;
 
-z_axis_overhead = sheet_thickness + heatbed_and_glass_thickness + motor_side;
+z_axis_overhead   = sheet_thickness + heatbed_and_glass_thickness;
+z_axis_height     = z_axis_overhead + z_bearing_len*2 + z_bearing_spacing;
+z_axis_height     = build_y*.6;
+z_axis_height     = build_y*.6;
+z_bearing_spacing = z_axis_height-z_bearing_len*2;
 
 front_sheet_width  = side_sheet_pos_x*2 - sheet_thickness;
 rear_sheet_width   = front_sheet_width;
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2;
-bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2;// - 32; // fill out 24x18 sheet
+bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_height - sheet_thickness/2;
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
 side_sheet_height  = sheet_height;
@@ -63,11 +67,12 @@ top_sheet_depth    = sheet_pos_y*2-sheet_thickness;
 side_sheet_depth   = sheet_pos_y*2 - sheet_thickness;
 top_sheet_width    = side_sheet_pos_x*2 - sheet_thickness;
 
-z_rod_pos_x  = build_x/2-z_bearing_diam*1.5;
-z_rod_pos_x  = build_x/2-z_bearing_diam/2;
-z_rod_pos_x  = z_build_platform_width/2-z_bearing_diam/2-wall_thickness*2;
+z_rod_pos_x  = heatbed_hole_spacing_x/2-sheet_thickness/2;
+z_rod_pos_x  = build_x/2-z_bearing_diam;
 z_rod_pos_y  = rear*sheet_pos_y + sheet_thickness/2 - z_motor_shaft_len + belt_width/2;
 z_rod_pos_z  = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
+
+z_side_brace_pos_x = 0;
 
 z_belt_bearing_diam      = 10;
 z_belt_bearing_inner     = 3;
@@ -80,7 +85,7 @@ z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
 
 xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*2 - motor_side/2;
 xy_motor_pos_y = rear*sheet_pos_y - sheet_thickness/2;
-xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;
+xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + spacer*2 + motor_side/2;
 
 main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;

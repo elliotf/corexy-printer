@@ -1,30 +1,34 @@
 include <positions.scad>;
 include <main.scad>;
 
+module x_axis() {
+  for(side=[left,right]) {
+    mirror([1+side,0,0]) {
+      translate([-y_rod_x,0,0]) {
+        y_carriage();
+      }
+    }
+  }
+
+  // x rods
+  % for (side=[top,bottom]) {
+    translate([0,0,x_rod_spacing/2*side]) {
+      rotate([0,90,0]) {
+        rotate([0,0,22.5/2]) {
+          cylinder(r=rod_diam/2,h=x_rod_len,center=true,$fn=16);
+        }
+      }
+    }
+  }
+
+  translate([x_pos,0,0]) {
+    x_carriage();
+  }
+}
+
 module assembly() {
   translate([0,y_pos,0]) {
-    for(side=[left,right]) {
-      mirror([1+side,0,0]) {
-        translate([-y_rod_x,0,0]) {
-          y_carriage();
-        }
-      }
-    }
-
-    // x rods
-    % for (side=[top,bottom]) {
-      translate([0,0,x_rod_spacing/2*side]) {
-        rotate([0,90,0]) {
-          rotate([0,0,22.5/2]) {
-            cylinder(r=rod_diam/2,h=x_rod_len,center=true,$fn=16);
-          }
-        }
-      }
-    }
-
-    translate([x_pos,0,0]) {
-      x_carriage();
-    }
+    x_axis();
   }
 
   z_axis_stationary();
@@ -102,7 +106,7 @@ module assembly() {
         % motor();
 
         translate([0,0,2+motor_shaft_len/2]) {
-          % hole(pulley_diam,motor_shaft_len-4,resolution);
+          //% hole(pulley_diam,motor_shaft_len-4,resolution);
         }
       }
     }

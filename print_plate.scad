@@ -1,6 +1,6 @@
 include <config.scad>;
 include <positions.scad>;
-use <main.scad>
+include <main.scad>
 
 module plate() {
   for(side=[left,right]) {
@@ -35,6 +35,12 @@ module plate() {
       rotate([0,90,0]) {
         x_carriage();
       }
+    }
+  }
+
+  translate([0,-x_rod_spacing,z_printed_portion_height/2]) {
+    rotate([0,180,0]) {
+      printed_z_portion();
     }
   }
 

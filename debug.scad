@@ -2,6 +2,9 @@ include <config.scad>;
 include <positions.scad>;
 use <main.scad>;
 
+rear_xy_endcap();
+
+/*
 x_carriage();
 
 //for(side=[left,right]) {
@@ -12,3 +15,4 @@ for(side=[right]) {
     }
   }
 }
+*/

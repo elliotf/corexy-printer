@@ -41,10 +41,10 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
+/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
-/*
 */
 
 belt_thickness = 0.5; // FIXME: make correct
@@ -140,6 +140,7 @@ z_bearing_groove_width   = lm8uu_bearing_groove_width;
 z_bearing_groove_depth   = lm8uu_bearing_groove_depth;
 z_rod_diam               = lm8uu_rod_diam;
 
+/*
 z_bearing_diam           = lm8luu_bearing_diam;
 z_bearing_len            = lm8luu_bearing_len;
 z_bearing_groove_spacing = lm8luu_bearing_groove_spacing;
@@ -147,7 +148,6 @@ z_bearing_groove_width   = lm8luu_bearing_groove_width;
 z_bearing_groove_depth   = lm8luu_bearing_groove_depth;
 z_rod_diam               = lm8luu_rod_diam;
 
-/*
 z_bearing_diam           = bearing_diam;
 z_bearing_len            = bearing_len;
 z_bearing_groove_spacing = bearing_groove_spacing;
