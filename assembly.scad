@@ -81,6 +81,8 @@ module assembly() {
   }
 
   // xy motors
+  // outside
+  /*
   for(side=[left,right]) {
     translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2-motor_shaft_len*.6)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
       rotate([0,90*side,0]) {
@@ -92,6 +94,21 @@ module assembly() {
       }
     }
   }
+  */
+  // inside
+  for(side=[left,right]) {
+    translate([side*(side_sheet_pos_x-sheet_thickness/2-spacer*2-motor_side/2),sheet_pos_y-sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2+spacer*2+motor_side/2]) {
+      rotate([-90,0,0]) {
+        % motor();
+
+        translate([0,0,2+motor_shaft_len/2]) {
+          % hole(pulley_diam,motor_shaft_len-4,resolution);
+        }
+      }
+    }
+  }
+  /*
+  */
 
   // handle!
   // shouldn't put the handle here, because it's probably going to interfere with the bowden tube.

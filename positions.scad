@@ -52,7 +52,7 @@ z_axis_overhead = sheet_thickness + heatbed_and_glass_thickness + motor_side;
 front_sheet_width  = side_sheet_pos_x*2 - sheet_thickness;
 rear_sheet_width   = front_sheet_width;
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2;
-bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2 - 32; // fill out 24x18 sheet
+bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - sheet_thickness/2;// - 32; // fill out 24x18 sheet
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
 side_sheet_height  = sheet_height;
@@ -64,6 +64,8 @@ side_sheet_depth   = sheet_pos_y*2 - sheet_thickness;
 top_sheet_width    = side_sheet_pos_x*2 - sheet_thickness;
 
 z_rod_pos_x  = build_x/2-z_bearing_diam*1.5;
+z_rod_pos_x  = build_x/2-z_bearing_diam/2;
+z_rod_pos_x  = z_build_platform_width/2-z_bearing_diam/2-wall_thickness*2;
 z_rod_pos_y  = rear*sheet_pos_y + sheet_thickness/2 - z_motor_shaft_len + belt_width/2;
 z_rod_pos_z  = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
 
@@ -82,8 +84,8 @@ main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 
 x_pos = -build_x/2+build_x*0.0;
-y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
-z_pos = build_z*0+10;
+y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*0.0;
+z_pos = build_z*1+0;
 
 handle_hole_width        = 125;
 handle_hole_height       = 50;

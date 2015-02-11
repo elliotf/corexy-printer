@@ -41,10 +41,10 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
-/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
+/*
 */
 
 belt_thickness = 0.5; // FIXME: make correct
@@ -317,3 +317,6 @@ tuner_nut_max_diam       = 11.5;
 tuner_shaft_screw_diam   = 7.75;
 tuner_shaft_screwed_diam = 10;
 tuner_shaft_screwed_len  = 18.5;
+
+z_build_platform_width = build_x + 25;
+z_build_platform_depth = build_y + 25;

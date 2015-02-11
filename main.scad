@@ -1011,7 +1011,7 @@ module z_axis_stationary() {
 module z_axis() {
   build_base_z = build_pos_z-build_z/2-heatbed_and_glass_thickness-sheet_thickness/2;
   //build_base_z = z_rod_pos_z;
-  z_bearing_bed_offset = z_bearing_len/2*bottom + sheet_thickness*0;
+  z_bearing_bed_offset = z_bearing_len/2*bottom;
 
   module z_build_plate() {
     cube([build_x+14,build_y+14,2],center=true);
@@ -1036,10 +1036,6 @@ module z_axis() {
     }
   }
 
-  translate([0,build_pos_y,build_base_z+sheet_thickness/2 + 3 + build_z/2]) {
-    //% cube([build_x,build_y,build_z],center=true);
-  }
-
   translate([build_pos_x,build_pos_y,build_base_z]) {
     translate([0,0,sheet_thickness/2+1]) {
       color("red") {
@@ -1047,7 +1043,12 @@ module z_axis() {
       }
     }
 
-    cube([build_x+20,build_y+20,sheet_thickness],center=true);
+    box_side([z_build_platform_width,z_build_platform_depth],[0,3,0,3]);
+  }
+
+  module z_side_outer_brace() {
+    hull() {
+    }
   }
 
   z_belt_bearing_diam = 10;
