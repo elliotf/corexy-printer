@@ -2,8 +2,8 @@ include <config.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
 
-sheet_opacity          = 1;
 sheet_opacity          = 0.4;
+sheet_opacity          = 1;
 
 spool_diam = 18;
 spool_len  = 25.5;
@@ -92,8 +92,8 @@ main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 
-x_pos = -build_x/2+build_x*0.0;
-y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*0.0;
+x_pos = -build_x/2+build_x*0.2;
+y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*0.3;
 z_pos = build_z*1+0;
 
 handle_hole_width        = 125;
