@@ -91,6 +91,18 @@ module motor() {
   translate([0,0,motor_shaft_len/2]) cylinder(r=motor_shaft_diam/2,h=motor_shaft_len,center=true);
 }
 
+module motor_sheet_holes() {
+  hole(z_motor_shoulder_diam,sheet_thickness*2,resolution);
+
+  for(x=[left,right]) {
+    for(y=[top,bottom]) {
+      translate([z_motor_hole_spacing/2*x,z_motor_hole_spacing/2*y,0]) {
+        hole(z_motor_screw_diam,sheet_thickness*2,resolution);
+      }
+    }
+  }
+}
+
 module x_carriage() {
   body_side = rear;
   bottom_line_pos_y = y_carriage_belt_bearing_y-belt_bearing_effective_diam/2;
@@ -503,19 +515,18 @@ module rear_sheet() {
             }
           }
         }
-      }
 
-      translate([z_motor_pos_x,z_motor_pos_z,0]) {
-        hole(z_motor_shoulder_diam,sheet_thickness*2,resolution);
-
-        for(x=[left,right]) {
-          for(y=[top,bottom]) {
-            translate([z_motor_hole_spacing/2*x,z_motor_hole_spacing/2*y,0]) {
-              hole(z_motor_screw_diam,sheet_thickness*2,resolution);
-            }
+        translate([xy_motor_pos_x*side,xy_motor_pos_z,0]) {
+          rotate([0,0,0]) {
+            motor_sheet_holes();
           }
         }
       }
+
+      translate([z_motor_pos_x,z_motor_pos_z,0]) {
+        motor_sheet_holes();
+      }
+
     }
   }
 
@@ -743,7 +754,7 @@ module rear_xy_endcap() {
   line_to_motor_z = opposite_to_motor_line_z;
 
   high_bearing_y = spacer+belt_bearing_diam/2;
-  mid_bearing_y  = high_bearing_y+belt_bearing_nut_diam/2+wall_thickness+spacer+belt_bearing_diam/2;
+  mid_bearing_y  = high_bearing_y+belt_bearing_nut_diam/2+wall_thickness+belt_bearing_diam/2;
   low_bearing_y  = motor_side/2-pulley_diam/2;
   line_to_motor_x = endcap_top_screw_hole_pos_x+belt_bearing_effective_diam/2;
   line_to_motor_z = endcap_top_screw_hole_pos_z+belt_bearing_effective_diam/2;

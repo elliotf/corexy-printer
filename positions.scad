@@ -78,6 +78,10 @@ z_motor_pos_y  = rear*sheet_pos_y + sheet_thickness/2;
 z_motor_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;// - (z_motor_side-z_motor_hole_spacing)/2 + z_motor_screw_diam/2 + 2;
 z_idler_pos_z  = top_sheet_pos_z - sheet_thickness/2 - z_pulley_diam/2 - 3;
 
+xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*2 - motor_side/2;
+xy_motor_pos_y = rear*sheet_pos_y - sheet_thickness/2;
+xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;
+
 main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 

@@ -97,7 +97,7 @@ module assembly() {
   */
   // inside
   for(side=[left,right]) {
-    translate([side*(side_sheet_pos_x-sheet_thickness/2-spacer*2-motor_side/2),sheet_pos_y-sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2+spacer*2+motor_side/2]) {
+    translate([side*(xy_motor_pos_x),xy_motor_pos_y,xy_motor_pos_z]) {
       rotate([-90,0,0]) {
         % motor();
 
