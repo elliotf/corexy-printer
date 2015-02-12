@@ -197,10 +197,14 @@ module x_carriage() {
       }
     }
     translate([0,top_line_pos_y-bottom_top_dist_y/2,top_line_pos_z-bottom_top_dist_z/2]) {
-      rotate([bottom_top_line_angle,0,0]) {
-        difference() {
-          hole(bottom_top_dist_angle+line_hole_opening,line_hole_opening*1.5,resolution);
-          hole(bottom_top_dist_angle-line_hole_opening,line_hole_opening*1.6,resolution);
+      for(side=[left,right]) {
+        rotate([bottom_top_line_angle,0,0]) {
+          difference() {
+            translate([side*(bottom_top_dist_angle/2-2),5,0]) {
+              cube([bottom_top_dist_angle/2+2,bottom_top_dist_angle+10,line_hole_opening*1.5],center=true);
+            }
+            hole(bottom_top_dist_angle-line_hole_opening,line_hole_opening*1.6,resolution);
+          }
         }
       }
     }
