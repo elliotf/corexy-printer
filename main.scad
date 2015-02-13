@@ -220,12 +220,10 @@ module x_carriage() {
     }
 
     // reinforcements
-    for(z=[1,2,3,4,5]) {
-      for(x=[-7,0,7]) {
-        translate([x,tuner_pos_y+tuner_mount_depth/2,tuner_shoulder_pos_z-3*z]) {
-          rotate([90,0,0]) {
-            hole(.5,tuner_mount_depth+tuner_shaft_screwed_diam,6);
-          }
+    for(z=[1,3,5]) {
+      for(x=[-6,0,6]) {
+        translate([x,tuner_pos_y+tuner_mount_depth/2+1,tuner_shoulder_pos_z-3*z]) {
+          cube([1,tuner_mount_depth+tuner_shaft_screwed_diam,1],center=true);
         }
       }
     }
