@@ -121,6 +121,10 @@ module x_carriage() {
   tuner_pos_y          = top_line_pos_y+2.5;
   tuner_shoulder_pos_z = top_line_pos_z+22.5;
 
+  tuner_mount_width  = x_carriage_width;
+  tuner_mount_depth  = tuner_shaft_screwed_diam+wall_thickness*4;
+  tuner_mount_height = tuner_shaft_screwed_len;
+
   bottom_top_dist_z     = top_line_pos_z - bottom_line_pos_z;
   bottom_top_dist_y     = top_line_pos_y - bottom_line_pos_y;
   bottom_top_dist_angle = sqrt(pow(bottom_top_dist_z,2)+pow(bottom_top_dist_y,2));
@@ -128,9 +132,10 @@ module x_carriage() {
 
   line_hole_opening     = 1.1;
 
+  tuner_rotate_z = -55;
   module position_tuner() {
     translate([tuner_pos_x,tuner_pos_y,top_line_pos_z]) {
-      rotate([0,0,-55]) {
+      rotate([0,0,tuner_rotate_z]) {
         rotate([0,90,0]) {
           % tuner();
         }
@@ -152,13 +157,32 @@ module x_carriage() {
     }
 
     // tuner retainer body
-    translate([0,tuner_pos_y,tuner_shoulder_pos_z-tuner_shaft_screwed_len/2]) {
-      cube([x_carriage_width,tuner_shaft_screwed_diam+wall_thickness*2,tuner_shaft_screwed_len],center=true);
+    hull() {
+      translate([0,tuner_pos_y,tuner_shoulder_pos_z-tuner_mount_height/2]) {
+        for(y=[front,rear]) {
+          for(z=[top,bottom]) {
+            translate([0,y*(tuner_mount_depth/2-rounded_diam/2),z*(tuner_mount_height/2-rounded_diam/2)]) {
+              rotate([0,90,0]) {
+                hole(rounded_diam,tuner_mount_width,resolution);
+              }
+            }
+          }
+        }
+      }
     }
 
+    rounded_diam = 5;
     hull() {
-      translate([0,tuner_pos_y,tuner_shoulder_pos_z-1]) {
-        cube([x_carriage_width,tuner_shaft_screwed_diam+wall_thickness*2,2],center=true);
+      translate([0,tuner_pos_y,tuner_shoulder_pos_z-tuner_mount_height/2]) {
+        for(y=[front]) {
+          for(z=[top,bottom]) {
+            translate([0,y*(tuner_mount_depth/2-rounded_diam/2),z*(tuner_mount_height/2-rounded_diam/2)]) {
+              rotate([0,90,0]) {
+                hole(rounded_diam,tuner_mount_width,resolution);
+              }
+            }
+          }
+        }
       }
 
       translate([0,0,x_rod_spacing/2]) {
@@ -175,11 +199,32 @@ module x_carriage() {
       translate([tuner_pos_x*side,tuner_pos_y,0]) {
         hole(tuner_shaft_screw_diam,100,8);
 
+        // anchor screw
+        rotate([0,0,tuner_rotate_z*side]) {
+          translate([-tuner_body_diam/2*side,-tuner_body_diam/2,0]) {
+            rotate([0,0,tuner_rotate_z*-side]) {
+              hole(tuner_anchor_screw_hole_diam-0.2,100,8);
+            }
+          }
+        }
+
+        // main hole and screw hole
         translate([0,0,tuner_shoulder_pos_z]) {
           hole(tuner_shaft_screwed_diam,21,8);
 
           translate([0,0,-tuner_shaft_screwed_len-20]) {
             hole(tuner_nut_max_diam,40,resolution);
+          }
+        }
+      }
+    }
+
+    // reinforcements
+    for(z=[1,2,3,4,5]) {
+      for(x=[-7,0,7]) {
+        translate([x,tuner_pos_y+tuner_mount_depth/2,tuner_shoulder_pos_z-3*z]) {
+          rotate([90,0,0]) {
+            hole(.5,tuner_mount_depth+tuner_shaft_screwed_diam,6);
           }
         }
       }
@@ -200,8 +245,8 @@ module x_carriage() {
       for(side=[left,right]) {
         rotate([bottom_top_line_angle,0,0]) {
           difference() {
-            translate([side*(bottom_top_dist_angle/2-2),5,0]) {
-              cube([bottom_top_dist_angle/2+2,bottom_top_dist_angle+10,line_hole_opening*1.5],center=true);
+            translate([side*(bottom_top_dist_angle/2-2),2,0]) {
+              cube([bottom_top_dist_angle/2+2,bottom_top_dist_angle+4,line_hole_opening*1.5],center=true);
             }
             hole(bottom_top_dist_angle-line_hole_opening,line_hole_opening*1.6,resolution);
           }
@@ -235,7 +280,7 @@ module x_carriage() {
       hull() {
         for(r=[-45,45]) {
           rotate([r,0,0]) {
-            translate([-extrusion_height,-bearing_body_diam/2,0]) {
+            translate([extrusion_height,-bearing_body_diam/2,0]) {
               cube([x_carriage_width,bearing_body_diam,1],center=true);
             }
           }
@@ -243,12 +288,12 @@ module x_carriage() {
       }
     }
 
-    // front opening top
+    // front opening bottom
     translate([0,0,-x_rod_spacing/2]) {
       hull() {
         for(r=[-45,0,45,90,125]) {
           rotate([r,0,0]) {
-            translate([-extrusion_height,-bearing_body_diam/2,0]) {
+            translate([extrusion_height,-bearing_body_diam/2,0]) {
               cube([x_carriage_width,bearing_body_diam,1],center=true);
             }
           }
@@ -1160,72 +1205,48 @@ module z_axis() {
 }
 
 module tuner() {
-  hole_to_shoulder = 22.5;
-  wire_hole_diam = 2;
-
-  thin_diam = 6;
-  thin_len_past_hole = 5;
-  thin_len = hole_to_shoulder + thin_len_past_hole;
-  thin_pos = hole_to_shoulder/2-thin_len_past_hole/2;
-
-  thick_diam = 10;
-  thick_len = 10;
-  thick_pos = hole_to_shoulder-thick_len+thick_len/2;
-
-  body_diam = 15;
-  body_thickness = 9;
-  body_square_len = 10;
-  body_pos = -hole_to_shoulder-body_thickness/2;
-
-  anchor_screw_hole_thickness = 2;
-  anchor_screw_hole_diam = 2;
-  anchor_screw_hole_width = 2;
-  anchor_screw_hole_pos_x = body_pos+body_thickness/2-anchor_screw_hole_thickness/2;
-  anchor_screw_hole_pos_y = -body_diam/2;
-  anchor_screw_hole_pos_z = -body_diam/2;
-
   adjuster_narrow_neck_len = 2;
-  adjuster_len = 24 - body_diam + adjuster_narrow_neck_len;
+  adjuster_len = 24 - tuner_body_diam + adjuster_narrow_neck_len;
   adjuster_large_diam = 8;
-  adjuster_thin_diam = 6;
-  adjuster_x = body_pos;
-  adjuster_y = body_square_len/2;
-  adjuster_shaft_z = body_diam/2+adjuster_len/2;
+  adjuster_tuner_thin_diam = 6;
+  adjuster_x = tuner_body_pos;
+  adjuster_y = tuner_body_square_len/2;
+  adjuster_shaft_z = tuner_body_diam/2+adjuster_len/2;
   adjuster_paddle_len = 20;
   adjuster_paddle_z = adjuster_shaft_z + adjuster_len/2 + adjuster_paddle_len/2;
   adjuster_paddle_width = 17.8;
-  adjuster_paddle_thickness = adjuster_thin_diam;
+  adjuster_paddle_thickness = adjuster_tuner_thin_diam;
 
   module body() {
-    //% translate([-hole_to_shoulder/2,-thick_diam,0]) rotate([0,90,0]) cylinder(r=thin_diam/4,h=hole_to_shoulder,center=true);
+    //% translate([-tuner_hole_to_shoulder/2,-thick_diam,0]) rotate([0,90,0]) cylinder(r=tuner_thin_diam/4,h=tuner_hole_to_shoulder,center=true);
 
     // thin shaft
-    translate([-thin_pos,0,0]) rotate([0,90,0])
-      hole(thin_diam,thin_len,resolution);
+    translate([-tuner_thin_pos,0,0]) rotate([0,90,0])
+      hole(tuner_thin_diam,tuner_thin_len,resolution);
 
     // thick shaft (area to clamp)
     translate([-thick_pos,0,0]) rotate([0,90,0])
       hole(thick_diam,thick_len,resolution);
 
     // body
-    translate([body_pos,0,0]) {
+    translate([tuner_body_pos,0,0]) {
       hull() {
         rotate([0,90,0]) {
-          hole(body_diam,body_thickness,resolution);
+          hole(tuner_body_diam,tuner_body_thickness,resolution);
         }
-        translate([0,body_square_len/2,0]) {
-          cube([body_thickness,body_square_len,body_diam],center=true);
+        translate([0,tuner_body_square_len/2,0]) {
+          cube([tuner_body_thickness,tuner_body_square_len,tuner_body_diam],center=true);
         }
       }
     }
 
     // anchor screw hole
-    translate([anchor_screw_hole_pos_x,0,0]) {
+    translate([tuner_anchor_screw_hole_pos_x,0,0]) {
       hull() {
-        translate([0,anchor_screw_hole_pos_y,anchor_screw_hole_pos_z]) rotate([0,90,0])
-          hole(anchor_screw_hole_diam+anchor_screw_hole_width*2,anchor_screw_hole_thickness,resolution);
+        translate([0,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) rotate([0,90,0])
+          hole(tuner_anchor_screw_hole_diam+tuner_anchor_screw_hole_width*2,tuner_anchor_screw_hole_thickness,resolution);
         rotate([0,90,0])
-          hole(thick_diam,anchor_screw_hole_thickness);
+          hole(thick_diam,tuner_anchor_screw_hole_thickness);
       }
     }
 
@@ -1233,7 +1254,7 @@ module tuner() {
     translate([adjuster_x,adjuster_y,adjuster_shaft_z]) {
       hull() {
         translate([0,0,-adjuster_len/2-.5]) hole(adjuster_large_diam,1,resolution);
-        translate([0,0,+adjuster_len/2-.5]) hole(adjuster_thin_diam,1,resolution);
+        translate([0,0,+adjuster_len/2-.5]) hole(adjuster_tuner_thin_diam,1,resolution);
       }
       // paddle, representing space taken when rotated
       hull() {
@@ -1246,10 +1267,10 @@ module tuner() {
   }
 
   module holes() {
-    cylinder(r=wire_hole_diam/3,h=thin_diam*2,center=true);
+    cylinder(r=wire_hole_diam/3,h=tuner_thin_diam*2,center=true);
 
-    translate([anchor_screw_hole_pos_x,anchor_screw_hole_pos_y,anchor_screw_hole_pos_z]) rotate([0,90,0])
-      hole(anchor_screw_hole_diam,anchor_screw_hole_thickness+1,8);
+    translate([tuner_anchor_screw_hole_pos_x,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) rotate([0,90,0])
+      hole(tuner_anchor_screw_hole_diam,tuner_anchor_screw_hole_thickness+1,8);
   }
 
   difference() {

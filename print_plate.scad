@@ -31,8 +31,8 @@ module plate() {
   }
 
   translate([0,bearing_diam/2,x_carriage_width/2]) {
-    rotate([0,0,-90]) {
-      rotate([0,90,0]) {
+    rotate([0,0,90]) {
+      rotate([0,-90,0]) {
         x_carriage();
       }
     }

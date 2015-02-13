@@ -41,10 +41,10 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
-/*
 build_x = 100;
 build_y = 100;
-build_z = 100;
+build_z = 150;
+/*
 */
 
 belt_thickness = 0.5; // FIXME: make correct
@@ -57,6 +57,30 @@ hotend_height_above_groove = 5;
 hotend_len                 = 63;
 hotend_clamped_height      = hotend_groove_height + hotend_height_above_groove;
 hotend_len_below_groove    = hotend_len - hotend_clamped_height;
+
+tuner_hole_to_shoulder = 22.5;
+wire_hole_diam = 2;
+
+tuner_thin_diam = 6;
+tuner_thin_len_past_hole = 5;
+tuner_thin_len = tuner_hole_to_shoulder + tuner_thin_len_past_hole;
+tuner_thin_pos = tuner_hole_to_shoulder/2-tuner_thin_len_past_hole/2;
+
+thick_diam = 10;
+thick_len = 10;
+thick_pos = tuner_hole_to_shoulder-thick_len+thick_len/2;
+
+tuner_body_diam = 15;
+tuner_body_thickness = 9;
+tuner_body_square_len = 10;
+tuner_body_pos = -tuner_hole_to_shoulder-tuner_body_thickness/2;
+
+tuner_anchor_screw_hole_thickness = 2;
+tuner_anchor_screw_hole_diam = 2;
+tuner_anchor_screw_hole_width = 2;
+tuner_anchor_screw_hole_pos_x = tuner_body_pos+tuner_body_thickness/2-tuner_anchor_screw_hole_thickness/2;
+tuner_anchor_screw_hole_pos_y = -tuner_body_diam/2;
+tuner_anchor_screw_hole_pos_z = -tuner_body_diam/2;
 
 // Linear bearings and rods
 // should record bearing groove offset, depth, width
