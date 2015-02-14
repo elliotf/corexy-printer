@@ -50,6 +50,8 @@ build_z = 150;
 belt_thickness = 0.5; // FIXME: make correct
 belt_width     = 6; // FIXME: make correct
 
+filament_diam = 3;
+
 hotend_diam                = 16;
 hotend_groove_diam         = 12;
 hotend_groove_height       = 4.6;
@@ -57,6 +59,15 @@ hotend_height_above_groove = 5;
 hotend_len                 = 63;
 hotend_clamped_height      = hotend_groove_height + hotend_height_above_groove;
 hotend_len_below_groove    = hotend_len - hotend_clamped_height;
+hotend_clearance   = 0.15;
+
+// e3d v6 direct
+hotend_height_above_groove = 3.7;
+hotend_groove_height = 6;
+
+// jhead
+hotend_height_above_groove = 5;
+hotend_groove_height = 4.6;
 
 tuner_hole_to_shoulder = 22.5;
 wire_hole_diam = 2;

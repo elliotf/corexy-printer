@@ -24,8 +24,19 @@ x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*
 x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
 x_carriage_thickness = bearing_diam;
 
+bottom_line_pos_y = y_carriage_belt_bearing_y-belt_bearing_effective_diam/2;
+bottom_line_pos_z = y_carriage_belt_bearing_z-(belt_bearing_washer_thickness/2+belt_bearing_thickness/2);
+bottom_line_pos_z = y_carriage_belt_bearing_z-(belt_bearing_washer_thickness/2+belt_bearing_thickness/2);
+
+top_line_pos_y = bottom_line_pos_y + belt_bearing_effective_diam;
+top_line_pos_z = bottom_line_pos_z + belt_bearing_thickness + belt_bearing_washer_thickness;
+
+tuner_pos_x          = 14;
+tuner_pos_y          = top_line_pos_y+2.5;
+tuner_shoulder_pos_z = top_line_pos_z+22.5;
+
 hotend_y    = (bearing_diam/2 + wall_thickness + spacer + hotend_diam/2)*front;
-hotend_z    = x_carriage_height/2 + -hotend_len/2 + hotend_clamped_height;
+hotend_z    = tuner_shoulder_pos_z;
 
 top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
 y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2;
@@ -36,10 +47,10 @@ y_carriage_belt_bearing_x = y_rod_x - y_carriage_width + belt_bearing_diam/2;
 min_sheet_material = 3;
 
 top_of_sheet = x_rod_spacing/2;
-hotend_sheet_clearance = (hotend_z-hotend_len/2-top_of_sheet-sheet_thickness*2)*bottom;
+hotend_sheet_clearance = (hotend_z-hotend_len-top_of_sheet-sheet_thickness*2)*bottom;
 
 build_pos_x = 0;
-build_pos_z = hotend_z-hotend_len/2-build_z/2-1;
+build_pos_z = hotend_z-hotend_len-build_z/2-1;
 
 space_between_y_rod_and_sheet = bearing_diam/2 + 4;
 side_sheet_pos_x = y_rod_x + space_between_y_rod_and_sheet + sheet_thickness/2;
@@ -93,7 +104,7 @@ main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 
 x_pos = -build_x/2+build_x*0.2;
-y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*0.3;
+y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
 z_pos = build_z*1+0;
 
 handle_hole_width        = 125;
