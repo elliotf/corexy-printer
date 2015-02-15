@@ -20,7 +20,7 @@ y_carriage_depth          = (y_carriage_belt_bearing_y + belt_bearing_nut_diam/2
 y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
 y_carriage_space          = y_carriage_belt_bearing_y*2+belt_bearing_diam;
 
-x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*2 + bearing_diam + 5; // fill out 24x18 sheet
+x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*2 + bearing_diam + 8; // fill out 24x18 sheet
 x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
 x_carriage_thickness = bearing_diam;
 
@@ -60,14 +60,13 @@ heatbed_and_glass_thickness = 4;
 
 z_axis_overhead   = sheet_thickness + heatbed_and_glass_thickness;
 z_axis_height     = z_axis_overhead + z_bearing_len*2 + z_bearing_spacing;
-z_axis_height     = build_y*.6;
-z_axis_height     = build_y*.6;
+z_axis_height     = build_y*.5;
 z_bearing_spacing = z_axis_height-z_bearing_len*2;
 
 front_sheet_width  = side_sheet_pos_x*2 - sheet_thickness;
 rear_sheet_width   = front_sheet_width;
 top_sheet_pos_z    = -y_carriage_height/2-5-sheet_thickness/2;
-bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_height - sheet_thickness/2;
+bottom_sheet_pos_z = build_pos_z - build_z/2 - z_axis_overhead - z_axis_height - sheet_thickness/2;
 z_rod_len          = (top_sheet_pos_z - bottom_sheet_pos_z) + sheet_thickness;
 sheet_height       = top_of_sheet - bottom_sheet_pos_z - sheet_thickness/2;
 side_sheet_height  = sheet_height;
@@ -105,7 +104,7 @@ build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build
 
 x_pos = -build_x/2+build_x*0.2;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
-z_pos = build_z*1+0;
+z_pos = build_z*1.0+0;
 
 handle_hole_width        = 125;
 handle_hole_height       = 50;

@@ -1175,7 +1175,11 @@ module z_axis_stationary() {
 z_bearing_bed_offset     = -z_bearing_len/2;
 z_printed_portion_height = z_bearing_len*2 + z_bearing_spacing;
 z_bearing_body_diam      = z_bearing_diam+wall_thickness*3;
-z_bed_support_pos_x      = z_rod_pos_x-z_bearing_body_diam/2-sheet_thickness/2;
+z_bed_support_pos_x      = z_rod_pos_x-sheet_thickness/2;
+z_bed_support_mount_width = wall_thickness*4+m3_nut_thickness;
+z_bed_support_mount_depth = wall_thickness*4+m3_nut_thickness;
+z_support_arm_hole_spacing = (z_printed_portion_height-m3_nut_diam) / 4;
+z_belt_bearing_hole_spacing = z_belt_bearing_diam/2 + belt_thickness*2 + spacer;
 
 module printed_z_portion() {
   module body() {
@@ -1186,6 +1190,10 @@ module printed_z_portion() {
         translate([z_bearing_body_diam/4*-side,-z_bearing_body_diam/4,0]) {
           cube([z_bearing_body_diam/2,z_bearing_body_diam/2,z_printed_portion_height],center=true);
         }
+      }
+
+      translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width/2)*side,-z_bearing_body_diam/2-z_bed_support_mount_depth/2,0]) {
+        cube([z_bed_support_mount_width,z_bed_support_mount_depth,z_printed_portion_height],center=true);
       }
     }
     translate([0,-z_bearing_diam/2,0]) {
@@ -1202,12 +1210,30 @@ module printed_z_portion() {
           cube([z_bearing_body_diam,5,z_printed_portion_height],center=true);
         }
       }
+
+
+      for(z=[-1.5,-.5,.5,1.5]) {
+        translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width)*side,-z_bearing_body_diam/2-wall_thickness-m3_nut_diam/2,z_support_arm_hole_spacing*z]) {
+          rotate([0,90,0]) {
+            hole(m3_nut_diam,m3_nut_thickness*2,6);
+            hole(3,z_bearing_body_diam*3,8);
+          }
+        }
+      }
+
+      for(z=[top,bottom]) {
+        translate([0,0,z*(z_belt_bearing_hole_spacing)]) {
+          rotate([90,0,0]) {
+            hole(z_belt_bearing_inner,40,8);
+          }
+        }
+      }
     }
 
     translate([0,0,-z_printed_portion_height/2]) {
       rotate([90,0,0]) {
-        resize(newsize=[z_bed_support_pos_x*2-sheet_thickness,z_printed_portion_height,z_bearing_body_diam+1]) {
-          hole(10,10,resolution);
+        resize(newsize=[z_bed_support_pos_x*2-sheet_thickness-wall_thickness*4,z_printed_portion_height,z_bearing_body_diam+1]) {
+          //hole(10,10,resolution);
         }
       }
     }
@@ -1283,8 +1309,8 @@ module z_axis() {
     translate([0,z_rod_pos_y,build_base_z+z_bearing_bed_offset+(z_belt_bearing_diam/2+belt_thickness*2+1)*side]) {
       rotate([90,0,0]) {
         % difference() {
-          hole(z_belt_bearing_diam,z_belt_bearing_thickness,16);
-          hole(z_belt_bearing_inner,z_belt_bearing_thickness+1,16);
+          //hole(z_belt_bearing_diam,z_belt_bearing_thickness,16);
+          //hole(z_belt_bearing_inner,z_belt_bearing_thickness+1,16);
         }
       }
     }
