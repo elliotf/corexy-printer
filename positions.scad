@@ -2,8 +2,8 @@ include <config.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
 
-sheet_opacity          = 0.4;
 sheet_opacity          = 1;
+sheet_opacity          = 0.4;
 
 spool_diam = 18;
 spool_len  = 25.5;

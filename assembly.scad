@@ -28,7 +28,7 @@ module x_axis() {
 
 module assembly() {
   translate([0,y_pos,0]) {
-    x_axis();
+    //x_axis();
   }
 
   z_axis_stationary();
@@ -36,7 +36,7 @@ module assembly() {
   translate([0,sheet_pos_y*front,sheet_pos_z]) {
     rotate([90,0,0]) {
       color("lightblue", sheet_opacity) {
-        front_sheet();
+        //front_sheet();
       }
     }
   }
@@ -49,14 +49,14 @@ module assembly() {
 
   translate([0,0,bottom_sheet_pos_z]) {
     color("yellowgreen", sheet_opacity) {
-      bottom_sheet();
+      //bottom_sheet();
     }
   }
 
   translate([0,sheet_pos_y*rear,sheet_pos_z]) {
     color("lightgreen", sheet_opacity) {
       rotate([90,0,0]) {
-        rear_sheet();
+        //rear_sheet();
       }
     }
   }
@@ -66,7 +66,7 @@ module assembly() {
       rotate([0,90*side,0]) {
         rotate([0,0,90*side]) {
           color("khaki", sheet_opacity) {
-            side_sheet();
+            //side_sheet();
           }
         }
       }
@@ -76,10 +76,10 @@ module assembly() {
   for(side=[left,right]) {
     mirror([1-side,0,0]) {
       translate([y_rod_x,sheet_pos_y+sheet_thickness/2,0]) {
-        rear_xy_endcap();
+        //rear_xy_endcap();
       }
       translate([y_rod_x,front*(sheet_pos_y+sheet_thickness/2),0]) {
-        front_xy_endcap();
+        //front_xy_endcap();
       }
     }
   }
