@@ -11,15 +11,15 @@ projection(cut=true) {
       mirror([1-side,0,0]) {
         translate([box_side_len*2.75,0,0]) {
           difference() {
-            box_side([box_side_len*3,box_side_len*1.5],[3,3,3,3]);
+            box_side([box_side_len*2,box_side_len*1],[3,3,3,3]);
 
-            translate([-box_side_len*1.5,0,0]) {
-              for(x=[2:8]) {
-                translate([rod_diam*2*x,rod_diam,0]) {
+            translate([-box_side_len*1,0,0]) {
+              for(x=[1:7]) {
+                translate([rod_diam*1+rod_diam*1.35*x,rod_diam,0]) {
                   hole(rod_diam-0.02*x,sheet_thickness+1,resolution);
 
                 }
-                translate([rod_diam*2*x,-rod_diam,0]) {
+                translate([rod_diam*1+rod_diam*1.35*x,-rod_diam,0]) {
                   hole(rod_diam-0.02*x,sheet_thickness+1,x*2);
                 }
               }
@@ -32,7 +32,7 @@ projection(cut=true) {
   translate([0,-box_side_len,0]) {
     for(side=[left,right]) {
       translate([box_side_len*2.75*side,0,0]) {
-        box_side([box_side_len*3,box_side_len*1],[4,3,4,3]);
+        box_side([box_side_len*2,box_side_len*1],[4,3,4,3]);
       }
     }
   }
