@@ -41,13 +41,19 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
-/*
 build_x = 100;
 build_y = 100;
-build_z = 150;
+build_z = 100;
+
+build_x = 100;
+build_y = 100;
+build_z = 0;
+/*
 */
 
-belt_thickness = 0.5; // FIXME: make correct
+belt_total_thickness = 1.38;
+belt_tooth_depth     = 0.75;
+belt_thickness = belt_total_thickness - belt_tooth_depth;
 belt_width     = 6; // FIXME: make correct
 
 filament_diam = 3;
@@ -213,26 +219,26 @@ m5_washer_thickness  = 1;
 
 // Groove bearings
 // 625s
-belt_bearing_diam = 15;
-belt_bearing_groove_depth = .5;
-belt_bearing_inner = m5_diam;
-belt_bearing_thickness = 5;
-belt_bearing_nut_diam = m5_nut_diam;
-belt_bearing_nut_thickness = m5_nut_thickness;
-belt_bearing_washer_thickness = m5_washer_thickness;
+line_bearing_diam = 15;
+line_bearing_groove_depth = .5;
+line_bearing_inner = m5_diam;
+line_bearing_thickness = 5;
+line_bearing_nut_diam = m5_nut_diam;
+line_bearing_nut_thickness = m5_nut_thickness;
+line_bearing_washer_thickness = m5_washer_thickness;
 
 // 623vv
 /*
 */
-belt_bearing_diam = 12;
-belt_bearing_groove_depth = 1.7;
-belt_bearing_inner = m3_diam;
-belt_bearing_thickness = 4;
-belt_bearing_nut_diam = m3_nut_diam;
-belt_bearing_nut_thickness = m3_nut_thickness;
-belt_bearing_washer_thickness = m3_washer_thickness;
+line_bearing_diam = 12;
+line_bearing_groove_depth = 1.7;
+line_bearing_inner = m3_diam;
+line_bearing_thickness = 4;
+line_bearing_nut_diam = m3_nut_diam;
+line_bearing_nut_thickness = m3_nut_thickness;
+line_bearing_washer_thickness = m3_washer_thickness;
 
-belt_bearing_effective_diam = belt_bearing_diam - (belt_bearing_groove_depth*2);
+line_bearing_effective_diam = line_bearing_diam - (line_bearing_groove_depth*2);
 
 pulley_idler_bearing_diam = 16;
 pulley_idler_bearing_inner = 5;
@@ -281,6 +287,16 @@ z_motor_screw_diam = nema17_screw_diam;
 z_motor_shaft_diam = nema17_shaft_diam;
 z_motor_shaft_len = nema17_shaft_len;
 
+z_line_bearing_diam      = 10;
+z_line_bearing_inner     = 3;
+z_line_bearing_thickness = 8; // F623ZZ * 2
+z_pulley_diam            = (16*2)/approx_pi;
+z_pulley_height          = 10;
+
+z_pulley_bearing_diam      = 10;
+z_pulley_bearing_inner     = 5;
+z_pulley_bearing_thickness = 4;
+
 // Frame sheet
 sheet_thickness = 6;
 sheet_min_width = 30;
@@ -308,7 +324,7 @@ clamp_screw_nut_thickness = m3_nut_thickness;
 clamp_area_width = clamp_screw_diam+min_material_thickness*2;
 
 // calculated rod lengths
-//x_rod_len = build_x + x_carriage_width + belt_bearing_diam*2 + min_material_thickness;
+//x_rod_len = build_x + x_carriage_width + line_bearing_diam*2 + min_material_thickness;
 //y_rod_len = build_y + x_rod_spacing + rod_diam + min_material_thickness*2;
 //x_rod_len = 270; // have avail
 //y_rod_len = 265; // have avail
@@ -329,7 +345,7 @@ psu_height = 50;
 pulley_diam = 20;
 pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
 pulley_diam = 15; // graber cars pulley
-pulley_height = belt_bearing_diam;
+pulley_height = line_bearing_diam;
 pulley_height = 13;
 
 pulley_idler_height = pulley_height;

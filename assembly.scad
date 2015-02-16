@@ -1,12 +1,12 @@
 include <positions.scad>;
 include <main.scad>;
 
-hide_x = false;
 hide_x = true;
-hide_sheets = false;
+hide_x = false;
 hide_sheets = true;
-hide_ends = false;
+hide_sheets = false;
 hide_ends = true;
+hide_ends = false;
 
 module x_axis() {
   for(side=[left,right]) {

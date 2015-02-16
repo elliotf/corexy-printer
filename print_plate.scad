@@ -5,7 +5,7 @@ include <main.scad>
 module plate() {
   for(side=[left,right]) {
     mirror([1-side,0,0]) {
-      translate([rod_diam+belt_bearing_diam,bearing_body_thickness+rod_diam,0]) {
+      translate([rod_diam+line_bearing_diam,bearing_body_thickness+rod_diam,0]) {
         rotate([0,0,90]) {
           rotate([-90,0,0]) {
             front_xy_endcap();
