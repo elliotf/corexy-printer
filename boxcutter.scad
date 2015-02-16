@@ -9,6 +9,7 @@ bc_ziptie_thickness  = 1.75;
 bc_screw_diam        = 2.8;
 bc_screw_len         = 6;
 bc_nut_diam          = 5.5;
+bc_kerf_width        = 0.04;
 
 bc_tab_slot_pair_space          = 20;
 bc_tab_slot_pair_len            = bc_tab_len*2 + bc_tab_slot_pair_space;
@@ -36,10 +37,10 @@ module bc_screw_nut_hole() {
 
   translate([0,-bc_thickness/2,0]) {
     translate([0,-bc_thickness*0.65-bc_nut_height/2,0])
-      cube([bc_nut_diam,bc_nut_height,bc_thickness+0.05],center=true);
+      cube([bc_nut_diam-bc_kerf_width*2,bc_nut_height-bc_kerf_width*2,bc_thickness+0.05],center=true);
 
     translate([0,-bc_screw_len/2+0.05,0])
-      cube([bc_screw_diam,bc_screw_len,bc_thickness+0.05],center=true);
+      cube([bc_screw_diam-bc_kerf_width*2,bc_screw_len,bc_thickness+0.05],center=true);
   }
 }
 
@@ -93,7 +94,7 @@ module bc_tab_pair(with_hole=BC_WITH_ZIP_HOLES) {
 module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
   module tab() {
     translate([bc_tab_len/2,0,0])
-      cube([bc_tab_len,bc_thickness+0.05,bc_thickness],center=true);
+      cube([bc_tab_len-bc_kerf_width*2,bc_thickness+0.05-bc_kerf_width*2,bc_thickness],center=true);
   }
 
   tab();
@@ -172,23 +173,8 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
   to_right  = added(sides[1]);
   to_left   = added(sides[3]);
 
-  width  = dimensions[0] + to_right + to_left;
-  height = dimensions[1] + to_top + to_bottom;
-
-  module add_material_for_slot_side(side) {
-    to_left  = sides[(side+1)%4];
-    to_right = sides[(side+3)%4];
-    slots_to_left  = (to_left && floor(to_left % 2) == 0) ? 1 : 0;
-    slots_to_right  = (to_right && floor(to_right % 2) == 0) ? 1 : 0;
-
-    len_to_add = bc_shoulder_width+bc_thickness;
-
-    len = len_to_add*(slots_to_right+slots_to_left) + len_for_side(side);
-
-    trans_dist = 0 + len_to_add/2*slots_to_right + len_to_add/2*-slots_to_left;
-    translate([trans_dist,(bc_shoulder_width)/2,0])
-      cube([len,bc_thickness+bc_shoulder_width,bc_thickness],center=true);
-  }
+  width  = dimensions[0] + to_right + to_left + bc_kerf_width*2;
+  height = dimensions[1] + to_top + to_bottom + bc_kerf_width*2;
 
   difference() {
     union() {
