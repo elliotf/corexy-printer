@@ -1,6 +1,13 @@
 include <positions.scad>;
 include <main.scad>;
 
+hide_x = false;
+hide_x = true;
+hide_sheets = false;
+hide_sheets = true;
+hide_ends = false;
+hide_ends = true;
+
 module x_axis() {
   for(side=[left,right]) {
     mirror([1+side,0,0]) {
@@ -28,7 +35,9 @@ module x_axis() {
 
 module assembly() {
   translate([0,y_pos,0]) {
-    //x_axis();
+    if (!hide_x) {
+      x_axis();
+    }
   }
 
   z_axis_stationary();
@@ -36,7 +45,9 @@ module assembly() {
   translate([0,sheet_pos_y*front,sheet_pos_z]) {
     rotate([90,0,0]) {
       color("lightblue", sheet_opacity) {
-        //front_sheet();
+        if (!hide_sheets) {
+          front_sheet();
+        }
       }
     }
   }
@@ -49,14 +60,14 @@ module assembly() {
 
   translate([0,0,bottom_sheet_pos_z]) {
     color("yellowgreen", sheet_opacity) {
-      //bottom_sheet();
+      bottom_sheet();
     }
   }
 
   translate([0,sheet_pos_y*rear,sheet_pos_z]) {
     color("lightgreen", sheet_opacity) {
       rotate([90,0,0]) {
-        //rear_sheet();
+        rear_sheet();
       }
     }
   }
@@ -66,7 +77,9 @@ module assembly() {
       rotate([0,90*side,0]) {
         rotate([0,0,90*side]) {
           color("khaki", sheet_opacity) {
-            //side_sheet();
+            if (!hide_sheets) {
+              side_sheet();
+            }
           }
         }
       }
@@ -76,30 +89,19 @@ module assembly() {
   for(side=[left,right]) {
     mirror([1-side,0,0]) {
       translate([y_rod_x,sheet_pos_y+sheet_thickness/2,0]) {
-        //rear_xy_endcap();
+        if (!hide_ends) {
+          rear_xy_endcap();
+        }
       }
       translate([y_rod_x,front*(sheet_pos_y+sheet_thickness/2),0]) {
-        //front_xy_endcap();
+        if (!hide_ends) {
+          front_xy_endcap();
+        }
       }
     }
   }
 
   // xy motors
-  // outside
-  /*
-  for(side=[left,right]) {
-    translate([(y_carriage_belt_bearing_x+belt_bearing_effective_diam/2-motor_shaft_len*.6)*side,sheet_pos_y+sheet_thickness/2+motor_side/2,bottom_sheet_pos_z+sheet_thickness/2+motor_side/2]) {
-      rotate([0,90*side,0]) {
-        % motor();
-
-        translate([0,0,2+motor_shaft_len/2]) {
-          % hole(pulley_diam,motor_shaft_len-4,resolution);
-        }
-      }
-    }
-  }
-  */
-  // inside
   for(side=[left,right]) {
     translate([side*(xy_motor_pos_x),xy_motor_pos_y,xy_motor_pos_z]) {
       rotate([-90,0,0]) {
@@ -111,8 +113,6 @@ module assembly() {
       }
     }
   }
-  /*
-  */
 
   // handle!
   // shouldn't put the handle here, because it's probably going to interfere with the bowden tube.
