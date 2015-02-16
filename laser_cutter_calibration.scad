@@ -39,7 +39,7 @@ projection(cut=true) {
 
   for(side=[left,right]) {
     translate([0,box_side_len*side,0]) {
-      box_side([box_side_len*1.5,box_side_len*1],[4,4,4,4]);
+      box_side([box_side_len*1,box_side_len*1],[4,4,4,4]);
     }
   }
 }
