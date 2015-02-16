@@ -647,6 +647,10 @@ module rear_sheet() {
     box_side([front_sheet_width,sheet_height],[0,4,4,4]);
   }
 
+  z_belt_opening_width  = z_brace_pos_x*2-z_brace_body_width;
+  z_belt_opening_height = z_brace_screw_dist_from_corner;
+  z_belt_opening_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + z_belt_opening_height/2;
+
   module holes() {
     translate([0,-sheet_pos_z,0]) {
       translate([0,top_sheet_pos_z,0]) {
@@ -680,6 +684,16 @@ module rear_sheet() {
         }
         translate([z_brace_pos_x*side,bottom_sheet_pos_z+sheet_thickness/2+z_brace_screw_dist_from_corner,0]) {
           hole(3,sheet_thickness+1,resolution/2);
+        }
+        translate([0,bottom_sheet_pos_z+sheet_thickness/2,0]) {
+          hull() {
+            translate([0,z_pulley_sheet_dist,0]) {
+              cube([z_belt_opening_width,z_pulley_diam+belt_thickness*4,sheet_thickness+1],center=true);
+            }
+            translate([0,motor_side/2,0]) {
+              cube([z_belt_opening_width,z_pulley_diam+belt_thickness*4,sheet_thickness+1],center=true);
+            }
+          }
         }
       }
 
@@ -1159,16 +1173,14 @@ module z_idler_top() {
 
   module body() {
     hull() {
-      translate([body_pos_x,0,0]) {
-        translate([0,-1,-1]) {
-          cube([body_width,2,2],center=true);
-        }
-        translate([0,-size+1,-3]) {
-          cube([body_width,2,6],center=true);
-        }
-        translate([0,-3,-size+1]) {
-          cube([body_width,6,2],center=true);
-        }
+      translate([0,-1,-1]) {
+        cube([body_width,2,2],center=true);
+      }
+      translate([0,-size+1,-3]) {
+        cube([body_width,2,6],center=true);
+      }
+      translate([0,-3,-size+1]) {
+        cube([body_width,6,2],center=true);
       }
     }
   }
