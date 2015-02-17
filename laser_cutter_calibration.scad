@@ -5,7 +5,8 @@ use <util.scad>;
 
 box_side_len = bc_tab_from_end_dist * 2 + bc_tab_slot_pair_len;
 
-projection(cut=true) {
+/*
+//projection(cut=true) {
   translate([0,box_side_len,0]) {
     for(side=[left,right]) {
       mirror([1-side,0,0]) {
@@ -40,6 +41,15 @@ projection(cut=true) {
   for(side=[left,right]) {
     translate([0,box_side_len*side,0]) {
       box_side([box_side_len*1,box_side_len*1],[4,4,4,4]);
+    }
+  }
+//}
+*/
+
+projection(cut=true) {
+  for(side=[left,right]) {
+    translate([box_side_len*side,0,0]) {
+      box_side([box_side_len*1,box_side_len*1],[4,0,0,3]);
     }
   }
 }
