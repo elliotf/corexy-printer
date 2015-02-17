@@ -2,7 +2,7 @@ use <util.scad>;
 
 bc_tab_len           = 8;
 bc_shoulder_width    = 4;
-bc_thickness         = 6;
+bc_thickness         = 6.5;
 bc_tab_from_end_dist = 8;
 bc_ziptie_width      = 3.75;
 bc_ziptie_thickness  = 1.75;
