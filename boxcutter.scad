@@ -94,7 +94,7 @@ module bc_tab_pair(with_hole=BC_WITH_ZIP_HOLES) {
 module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
   module tab() {
     translate([bc_tab_len/2,0,0])
-      cube([bc_tab_len,bc_thickness+0.05,bc_thickness],center=true);
+      cube([bc_tab_len-bc_kerf_width*2,bc_thickness+0.05,bc_thickness],center=true);
   }
 
   tab();
