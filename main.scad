@@ -1163,11 +1163,6 @@ module rear_xy_endcap() {
 }
 
 module z_idler_top() {
-  to_carriage_pos_y = front*z_pulley_sheet_dist;
-  to_carriage_pos_z = z_pulley_sheet_dist;
-  to_top_pos_y      = front*z_line_bearing_diam/2;
-  to_top_pos_z      = motor_side/2+z_line_bearing_diam/2;
-
   body_width = z_brace_body_width;
   size       = top_rear_brace_depth;
 
@@ -1205,10 +1200,6 @@ module z_idler_top() {
     translate([0,front*z_pulley_sheet_dist,bottom*z_pulley_sheet_dist]) {
       rotate([0,90,0]) {
         hole(5,40,16);
-        % difference() {
-          hole(z_pulley_diam,z_pulley_height,resolution);
-          hole(5,z_pulley_height+1,8);
-        }
       }
     }
   }
@@ -1220,11 +1211,6 @@ module z_idler_top() {
 }
 
 module z_idler_bottom() {
-  to_carriage_pos_y = front*z_pulley_sheet_dist;
-  to_carriage_pos_z = z_pulley_sheet_dist;
-  to_top_pos_y      = front*z_line_bearing_diam/2;
-  to_top_pos_z      = motor_side/2+z_line_bearing_diam/2;
-
   body_width = m3_nut_diam + wall_thickness*2;
   body_pos_x = z_pulley_height/2 + spacer + body_width/2;
 
@@ -1233,8 +1219,8 @@ module z_idler_bottom() {
       translate([0,front*z_pulley_sheet_dist,z_pulley_sheet_dist]) {
         cube([body_width,z_pulley_sheet_dist*2,z_pulley_sheet_dist*2],center=true);
       }
-      translate([0,to_top_pos_y,to_top_pos_z]) {
-        cube([body_width,2*(abs(to_top_pos_y)),body_width],center=true);
+      translate([0,z_belt_bearing_to_top_pos_y,z_belt_bearing_to_top_pos_z]) {
+        cube([body_width,2*(abs(z_belt_bearing_to_top_pos_y)),body_width],center=true);
       }
       translate([0,-z_carriage_idler_pos_y-z_line_bearing_diam-m3_nut_diam,wall_thickness]) {
         cube([body_width,m3_nut_diam,wall_thickness*2],center=true);
@@ -1247,20 +1233,12 @@ module z_idler_bottom() {
     translate([0,front*z_line_bearing_diam/2,motor_side/2+z_line_bearing_diam/2]) {
       rotate([0,90,0]) {
         hole(z_line_bearing_inner,40,16);
-        % difference() {
-          hole(z_line_bearing_diam,z_line_bearing_thickness,resolution);
-          hole(z_line_bearing_inner,z_line_bearing_thickness+1,8);
-        }
       }
     }
     // pulley idler to carriage
-    translate([0,to_carriage_pos_y,to_carriage_pos_z]) {
+    translate([0,z_belt_bearing_to_carriage_pos_y,z_belt_bearing_to_carriage_pos_z]) {
       rotate([0,90,0]) {
         hole(5,40,16);
-        % difference() {
-          hole(z_pulley_diam,z_pulley_height,resolution);
-          hole(5,z_pulley_height+1,8);
-        }
       }
     }
     // screw to top plate
@@ -1325,6 +1303,37 @@ module z_axis_stationary() {
 
       translate([z_brace_pos_x,sheet_pos_y-sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2]) {
         z_idler_bottom();
+      }
+    }
+  }
+  // top z belt bearings
+  % translate([0,sheet_pos_y-sheet_thickness/2,top_sheet_pos_z-sheet_thickness/2]) {
+    translate([0,front*z_pulley_sheet_dist,bottom*z_pulley_sheet_dist]) {
+      rotate([0,90,0]) {
+        difference() {
+          hole(z_pulley_diam,z_pulley_height,resolution);
+          hole(5,z_pulley_height+1,8);
+        }
+      }
+    }
+  }
+  // bottom z belt bearings
+  % translate([0,sheet_pos_y-sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2]) {
+    translate([0,front*z_line_bearing_diam/2,motor_side/2+z_line_bearing_diam/2]) {
+      rotate([0,90,0]) {
+        difference() {
+          hole(z_line_bearing_diam,z_line_bearing_thickness,resolution);
+          hole(z_line_bearing_inner,z_line_bearing_thickness+1,8);
+        }
+      }
+    }
+    // pulley idler to carriage
+    translate([0,z_belt_bearing_to_carriage_pos_y,z_belt_bearing_to_carriage_pos_z]) {
+      rotate([0,90,0]) {
+        difference() {
+          hole(z_pulley_diam,z_pulley_height,resolution);
+          hole(5,z_pulley_height+1,8);
+        }
       }
     }
   }
