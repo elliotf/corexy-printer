@@ -34,7 +34,7 @@ module sides_and_top() {
 }
 
 module front_back_and_other() {
-  translate([-laser_cutter_width/2+front_sheet_width+sheet_thickness*5,laser_cutter_depth/2-sheet_height/2-sheet_thickness*3,0]) {
+  translate([0,laser_cutter_depth/2-sheet_height/2-sheet_thickness*3,0]) {
     translate([left*(front_sheet_width/2+sheet_thickness*2),0,0]) {
       rotate([0,0,180]) {
         front_sheet();
