@@ -41,6 +41,7 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
+/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
@@ -48,7 +49,6 @@ build_z = 100;
 build_x = 100;
 build_y = 100;
 build_z = 0;
-/*
 */
 
 belt_total_thickness = 1.38;
