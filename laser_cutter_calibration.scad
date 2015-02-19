@@ -47,9 +47,10 @@ box_side_len = bc_tab_from_end_dist * 2 + bc_tab_slot_pair_len;
 */
 
 projection(cut=true) {
-  for(side=[left,right]) {
-    translate([box_side_len*side,0,0]) {
-      box_side([box_side_len*1,box_side_len*1],[4,0,0,3]);
-    }
+  translate([box_side_len*left,0,0]) {
+    box_side([box_side_len*1,box_side_len*1],[4,4,4,4]);
+  }
+  translate([box_side_len*right,0,0]) {
+    box_side([box_side_len*1,box_side_len*1],[3,0,0,3]);
   }
 }
