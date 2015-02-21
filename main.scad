@@ -27,11 +27,9 @@ module zip_tie_hole(diam,width=zip_tie_width,thickness=zip_tie_thickness) {
 }
 
 module bevel_hole(diam,height,sides) {
-  translate([0,0,-extrusion_height/2]) {
-    hull() {
-      hole(diam+height*2,extrusion_height,sides);
-      hole(diam,extrusion_height+height*2.2,sides);
-    }
+  hull() {
+    hole(diam+height*2,extrusion_height,sides);
+    hole(diam,extrusion_height+height*2.2,sides);
   }
 }
 
@@ -1097,6 +1095,15 @@ module rear_xy_endcap() {
         }
       }
     }
+    hull() {
+      for(z=[top_line_z,mid_line_z]) {
+        translate([line_x,0,z]) {
+          rotate([90,0,0]) {
+            bevel_hole(3,.5,16);
+          }
+        }
+      }
+    }
   }
 
   module holes() {
@@ -1104,12 +1111,14 @@ module rear_xy_endcap() {
     translate([endcap_side_screw_hole_pos_x,0,endcap_side_screw_hole_pos_z]) {
       rotate([90,0,0]) {
         hole(3,50,16);
+        bevel_hole(3,.5,16);
       }
     }
     // top sheet screw hole
     translate([endcap_top_screw_hole_pos_x,0,endcap_top_screw_hole_pos_z]) {
       rotate([90,0,0]) {
         hole(3,50,16);
+        bevel_hole(3,.5,16);
       }
     }
     line_path();
@@ -1151,6 +1160,7 @@ module rear_xy_endcap() {
     // y rod
     rotate([90,0,0]) {
       hole(rod_diam,mount_thickness*4+1,16);
+      bevel_hole(rod_diam,.5,16);
     }
     translate([rod_diam/2+m3_nut_diam/2,0,0]) {
       translate([0,mount_thickness+extrusion_height,0]) {
