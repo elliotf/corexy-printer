@@ -26,6 +26,15 @@ module zip_tie_hole(diam,width=zip_tie_width,thickness=zip_tie_thickness) {
   }
 }
 
+module bevel_hole(diam,height,sides) {
+  translate([0,0,-extrusion_height/2]) {
+    hull() {
+      hole(diam+height*2,extrusion_height,sides);
+      hole(diam,extrusion_height+height*2.2,sides);
+    }
+  }
+}
+
 module line_bearing() {
   res = 64;
 
@@ -805,7 +814,7 @@ module bottom_sheet() {
 }
 
 module front_xy_endcap() {
-  mount_thickness = 5;
+  mount_thickness = 6;
   wall_thickness  = extrusion_width*4;
 
   line_x = xy_line_x-y_rod_x;
@@ -879,12 +888,23 @@ module front_xy_endcap() {
     translate([endcap_side_screw_hole_pos_x,0,endcap_side_screw_hole_pos_z]) {
       rotate([90,0,0]) {
         hole(3,50,16);
+        bevel_hole(3,.5,16);
       }
     }
     // top sheet screw hole
     translate([endcap_top_screw_hole_pos_x,0,endcap_top_screw_hole_pos_z]) {
       rotate([90,0,0]) {
         hole(3,50,16);
+        bevel_hole(3,.5,16);
+      }
+    }
+
+    for(side=[top,bottom]) {
+      translate([line_x,0,bearing_z+line_bearing_effective_diam/2*side]) {
+        rotate([90,0,0]) {
+          hole(3,60,resolution);
+          bevel_hole(3,.5,resolution);
+        }
       }
     }
 
@@ -895,14 +915,6 @@ module front_xy_endcap() {
       translate([0,0,bearing_body_thickness/2]) {
         rotate([0,0,90]) {
           hole(line_bearing_nut_diam,line_bearing_nut_thickness,6);
-        }
-      }
-
-      for(side=[top,bottom]) {
-        translate([line_bearing_effective_diam/2*side,0,0]) {
-          rotate([90,0,0]) {
-            hole(3,60,resolution);
-          }
         }
       }
     }
