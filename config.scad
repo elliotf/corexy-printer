@@ -22,7 +22,7 @@ resolution = 16;
 resolution = 64;
 
 extrusion_width  = 0.5;
-extrusion_height = 0.3;
+extrusion_height = 0.2;
 min_material_thickness = extrusion_width*2;
 wall_thickness         = extrusion_width*4;
 

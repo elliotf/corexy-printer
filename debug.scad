@@ -2,9 +2,11 @@ include <config.scad>;
 include <positions.scad>;
 use <main.scad>;
 
-//rear_xy_endcap();
+rotate([90,0,0]) {
+  rear_xy_endcap();
+}
 
-x_carriage();
+//x_carriage();
 
 //for(side=[left,right]) {
 for(side=[right]) {
