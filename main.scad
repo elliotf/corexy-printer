@@ -166,7 +166,7 @@ module hotend_groove_mount_void() {
     }
 
     // zip tie restraint
-    translate([0,0,-above_height-hotend_groove_height/2]) {
+    translate([0,0,-above_height/2]) {
       zip_tie_hole(hotend_diam + wall_thickness*2.5);
     }
 
@@ -275,13 +275,18 @@ module x_carriage() {
     hotend_mount_width  = x_carriage_width/2 + hotend_diam/2 + wall_thickness*1.5;
     hotend_mount_depth  = tuner_pos_y - hotend_y;
     hotend_mount_height = hotend_clamped_height + 2;
-    translate([-x_carriage_width/2+hotend_mount_width/2,tuner_pos_y-hotend_mount_depth/2,tuner_shoulder_pos_z-hotend_mount_height/2]) {
-      cube([hotend_mount_width,hotend_mount_depth,hotend_mount_height],center=true);
+    translate([-x_carriage_width/2+hotend_mount_width/2,tuner_pos_y-hotend_mount_depth/4,tuner_shoulder_pos_z-hotend_mount_height/2]) {
+      cube([hotend_mount_width,hotend_mount_depth/2,hotend_mount_height],center=true);
     }
     hull() {
       translate([0,hotend_y,tuner_shoulder_pos_z-hotend_mount_height/2]) {
-        translate([-x_carriage_width/2+hotend_mount_width/2,-hotend_y/2+2,0]) {
-          cube([hotend_mount_width,abs(hotend_y)+4,hotend_mount_height],center=true);
+        translate([-x_carriage_width/2+hotend_mount_width/2,-hotend_y,0]) {
+          cube([hotend_mount_width,4,hotend_mount_height],center=true);
+        }
+        translate([-x_carriage_width/4,-hotend_y/2,0]) {
+          rotate([0,90,0]) {
+            hole(hotend_mount_height,x_carriage_width/2,resolution);
+          }
         }
         translate([0,0,2]) {
           hole(hotend_diam+wall_thickness*3,hotend_mount_height+4,resolution);
