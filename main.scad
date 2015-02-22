@@ -80,7 +80,7 @@ module line_bearing_bevel(sides=[top,bottom]) {
   // y rods
   translate([y_rod_x*end,0,0]) {
     rotate([90,0,0]) {
-      cylinder(r=rod_diam/2,h=y_rod_len+2,center=true,$fn=16);
+      cylinder(r=y_rod_diam/2,h=y_rod_len+2,center=true,$fn=16);
     }
   }
 }
@@ -182,7 +182,7 @@ module hotend_groove_mount_void() {
 module x_carriage() {
   body_side = rear;
 
-  bearing_body_diam = bearing_diam + wall_thickness*3;
+  bearing_body_diam = x_bearing_diam+wall_thickness*3;
   bearing_body_diam = top_line_pos_y*2;
 
   body_depth  = top_line_pos_y - bottom_line_pos_y;
@@ -373,14 +373,14 @@ module x_carriage() {
       translate([0,0,x_rod_spacing/2*side]) {
         rotate([0,90,0]) {
           // bearing hole
-          hole(bearing_diam,x_carriage_width+1,resolution);
+          hole(x_bearing_diam,x_carriage_width+1,resolution);
           // beveled opening
           for(end=[left,right]) {
             hull() {
               translate([0,0,(x_carriage_width/2)*end]) {
-                hole(bearing_diam,3,resolution);
+                hole(x_bearing_diam,3,resolution);
                 translate([0,0,.5*end]) {
-                  hole(bearing_diam+1,1,resolution);
+                  hole(x_bearing_diam+1,1,resolution);
                 }
               }
             }
@@ -435,7 +435,7 @@ module x_carriage() {
   % for(side=[top,bottom]) {
     translate([0,0,x_rod_spacing/2*side]) {
       rotate([0,90,0]) {
-        cylinder(r=bearing_diam/2,h=bearing_len,center=true);
+        cylinder(r=x_bearing_diam/2,h=x_bearing_len,center=true);
       }
     }
   }
@@ -448,7 +448,7 @@ module x_carriage() {
 module y_carriage() {
   line_bearing_x              = (y_rod_x - y_carriage_line_bearing_x);
   line_bearing_opening_height = line_bearing_thickness*2+line_bearing_washer_thickness*3;
-  rod_hole_diam               = rod_diam + rod_slop;
+  rod_hole_diam               = x_rod_diam + rod_slop;
   x_rod_clamp_len             = y_carriage_width;
 
   module body() {
@@ -457,16 +457,16 @@ module y_carriage() {
       for(side=[top,bottom]) {
         translate([x_rod_clamp_len/2,0,x_rod_spacing/2*side]) {
           rotate([0,90,0]) {
-            hole(rod_hole_diam+min_material_thickness*4,x_rod_clamp_len,resolution);
+            hole(y_rod_diam+rod_slop+min_material_thickness*4,x_rod_clamp_len,resolution);
           }
         }
       }
       intersection() {
-        translate([bearing_diam/2,0,0]) {
-          cube([bearing_diam,y_carriage_depth*2,bearing_diam*2],center=true);
+        translate([y_bearing_diam/2,0,0]) {
+          cube([y_bearing_diam,y_carriage_depth*2,y_bearing_diam*2],center=true);
         }
         rotate([90,0,0]) {
-          hole(bearing_diam+min_material_thickness*8,y_carriage_depth,resolution);
+          hole(y_bearing_diam+min_material_thickness*8,y_carriage_depth,resolution);
         }
       }
       translate([x_rod_clamp_len/2,y_carriage_line_bearing_y,0]) {
@@ -501,14 +501,14 @@ module y_carriage() {
     // zip tie to secure the carriage to the y rod bearing
     translate([0,-rod_hole_diam/2-zip_tie_width,0]) {
       rotate([90,0,0]) {
-        zip_tie_hole(bearing_diam+min_material_thickness*2);
+        zip_tie_hole(y_bearing_diam+min_material_thickness*2);
       }
     }
 
     // y rod bearing and clamp
     translate([0,0,0]) {
       rotate([90,0,0]) {
-        hole(bearing_diam,bearing_len*2,resolution);
+        hole(y_bearing_diam,y_bearing_len*2,resolution);
       }
     }
 
@@ -564,7 +564,7 @@ module y_carriage() {
 
   translate([0,0,0]) {
     rotate([90,0,0]) {
-      % cylinder(r=bearing_diam/2,h=bearing_len,center=true);
+      % cylinder(r=y_bearing_diam/2,h=y_bearing_len,center=true);
     }
   }
 }
@@ -619,7 +619,7 @@ module front_sheet() {
 
       for(side=[left,right]) {
         translate([y_rod_x*side,0,0]) {
-          hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+          hole(y_rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
         }
 
         translate([xy_line_x*side,0,0]) {
@@ -665,7 +665,7 @@ module rear_sheet() {
       }
       for(side=[left,right]) {
         translate([y_rod_x*side,0,0]) {
-          hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+          hole(y_rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
         }
 
         hull() {
@@ -775,7 +775,7 @@ module top_sheet() {
         hole(3,sheet_thickness+1,resolution/2);
       }
       translate([z_rod_pos_x*side,z_rod_pos_y,0]) {
-        hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+        hole(y_rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
       }
     }
   }
@@ -797,7 +797,7 @@ module bottom_sheet() {
   module holes() {
     for(side=[left,right]) {
       translate([z_rod_pos_x*side,z_rod_pos_y,0]) {
-        hole(rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
+        hole(z_rod_diam-laser_cut_kerf*2,sheet_thickness+1,64);
       }
       translate([z_brace_pos_x*side,top_sheet_depth/2-z_brace_screw_dist_from_corner,0]) {
         hole(3,sheet_thickness+1,resolution/2);
@@ -847,7 +847,7 @@ module front_xy_endcap() {
       // rod body
       translate([0,-mount_thickness/2,0]) {
         rotate([90,0,0]) {
-          hole(rod_diam+wall_thickness*3,mount_thickness,resolution);
+          hole(y_rod_diam+wall_thickness*3,mount_thickness,resolution);
         }
       }
       translate([0,-mount_thickness/2,0]) {
@@ -919,7 +919,7 @@ module front_xy_endcap() {
 
     // y rod
     rotate([90,0,0]) {
-      % hole(rod_diam,mount_thickness*2+1,16);
+      % hole(y_rod_diam,mount_thickness*2+1,16);
     }
   }
 
@@ -1009,7 +1009,7 @@ module rear_xy_endcap() {
       // rod body
       translate([0,mount_thickness/2,0]) {
         rotate([90,0,0]) {
-          hole(rod_diam+wall_thickness*3,mount_thickness,resolution);
+          hole(y_rod_diam+wall_thickness*3,mount_thickness,resolution);
         }
       }
       translate([0,mount_thickness/2,0]) {
@@ -1076,10 +1076,10 @@ module rear_xy_endcap() {
     hull() {
       translate([0,mount_thickness,0]) {
         rotate([90,0,0]) {
-          hole(rod_diam+wall_thickness*3,mount_thickness*2,resolution);
+          hole(y_rod_diam+wall_thickness*3,mount_thickness*2,resolution);
         }
-        translate([rod_diam/2+m3_nut_diam/2,0,0]) {
-          cube([m3_nut_diam+wall_thickness*2,mount_thickness*2,rod_diam+wall_thickness*3],center=true);
+        translate([y_rod_diam/2+m3_nut_diam/2,0,0]) {
+          cube([m3_nut_diam+wall_thickness*2,mount_thickness*2,y_rod_diam+wall_thickness*3],center=true);
         }
       }
     }
@@ -1159,15 +1159,15 @@ module rear_xy_endcap() {
 
     // y rod
     rotate([90,0,0]) {
-      hole(rod_diam+0.1,mount_thickness*4+1,16);
-      bevel_hole(rod_diam+0.1,.5,16);
+      hole(y_rod_diam+0.1,mount_thickness*4+1,16);
+      bevel_hole(y_rod_diam+0.1,.5,16);
     }
-    translate([rod_diam/2+m3_nut_diam/2,0,0]) {
+    translate([y_rod_diam/2+m3_nut_diam/2,0,0]) {
       translate([0,mount_thickness+extrusion_height,0]) {
-        cube([rod_diam*2,mount_thickness*2,2],center=true);
+        cube([y_rod_diam*2,mount_thickness*2,2],center=true);
 
-        hole(m3_diam,rod_diam*2,8);
-        translate([0,0,-rod_diam/2-wall_thickness*1.5-m3_nut_thickness/2]) {
+        hole(m3_diam,y_rod_diam*2,8);
+        translate([0,0,-y_rod_diam/2-wall_thickness*1.5-m3_nut_thickness/2]) {
           rotate([0,0,90]) {
             hole(m3_nut_diam,m3_nut_thickness*2,6);
           }

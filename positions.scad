@@ -8,21 +8,19 @@ sheet_opacity          = 0.4;
 spool_diam = 18;
 spool_len  = 25.5;
 
-x_rod_spacing        = bearing_diam + min_material_thickness * 2 + rod_diam;
-x_carriage_width     = bearing_len + min_material_thickness * 2;
+x_rod_spacing        = y_bearing_diam + min_material_thickness * 2 + y_rod_diam;
+x_carriage_width     = x_bearing_len + min_material_thickness * 2;
 x_carriage_width     = 45; // lm8luu
 
 y_carriage_line_bearing_y = rod_diam/2+line_bearing_inner/2 + min_material_thickness;
 y_carriage_line_bearing_z = x_rod_spacing/2-rod_diam/2-min_material_thickness*3-line_bearing_washer_thickness*1.5-line_bearing_thickness;
 y_line_bearing_from_rod   = 3;
-y_carriage_width          = bearing_diam/2 + min_material_thickness*2 + spacer + line_bearing_diam;
+y_carriage_width          = y_bearing_diam/2 + min_material_thickness*2 + spacer + line_bearing_diam;
 y_carriage_depth          = (y_carriage_line_bearing_y + line_bearing_nut_diam/2 + min_material_thickness*2)*2;
 y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
 y_carriage_space          = y_carriage_line_bearing_y*2+line_bearing_diam;
 
 x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*2 + bearing_diam + 15; // fill out 24x18 sheet
-x_carriage_height    = x_rod_spacing + bearing_diam + min_material_thickness*2;
-x_carriage_thickness = bearing_diam;
 
 bottom_line_pos_y = y_carriage_line_bearing_y-line_bearing_effective_diam/2;
 bottom_line_pos_z = y_carriage_line_bearing_z-(line_bearing_washer_thickness/2+line_bearing_thickness/2);
@@ -35,12 +33,12 @@ tuner_pos_x          = 14;
 tuner_pos_y          = top_line_pos_y+2.5;
 tuner_shoulder_pos_z = top_line_pos_z+22.5;
 
-hotend_y    = (bearing_diam/2 + wall_thickness + spacer + hotend_diam/2)*front;
+hotend_y    = (x_bearing_diam/2 + wall_thickness + spacer + hotend_diam/2)*front;
 hotend_z    = tuner_shoulder_pos_z;
 
 top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
 y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2;
-y_rod_x         = x_rod_len/2 - bearing_diam/2;
+y_rod_x         = x_rod_len/2 - y_bearing_diam/2;
 
 y_carriage_line_bearing_x = y_rod_x - y_carriage_width + line_bearing_diam/2;
 
@@ -52,7 +50,7 @@ hotend_sheet_clearance = (hotend_z-hotend_len-top_of_sheet-sheet_thickness*2)*bo
 build_pos_x = 0;
 build_pos_z = hotend_z-hotend_len-build_z/2-1;
 
-space_between_y_rod_and_sheet = bearing_diam/2 + 4;
+space_between_y_rod_and_sheet = y_bearing_diam/2 + 4;
 side_sheet_pos_x = y_rod_x + space_between_y_rod_and_sheet + sheet_thickness/2;
 side_sheet_pos_y = 0;
 

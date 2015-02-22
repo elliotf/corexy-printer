@@ -22,7 +22,7 @@ module x_axis() {
     translate([0,0,x_rod_spacing/2*side]) {
       rotate([0,90,0]) {
         rotate([0,0,22.5/2]) {
-          cylinder(r=rod_diam/2,h=x_rod_len,center=true,$fn=16);
+          cylinder(r=x_rod_diam/2,h=x_rod_len,center=true,$fn=16);
         }
       }
     }
