@@ -1159,8 +1159,8 @@ module rear_xy_endcap() {
 
     // y rod
     rotate([90,0,0]) {
-      hole(rod_diam,mount_thickness*4+1,16);
-      bevel_hole(rod_diam,.5,16);
+      hole(rod_diam+0.1,mount_thickness*4+1,16);
+      bevel_hole(rod_diam+0.1,.5,16);
     }
     translate([rod_diam/2+m3_nut_diam/2,0,0]) {
       translate([0,mount_thickness+extrusion_height,0]) {
