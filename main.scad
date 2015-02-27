@@ -1261,9 +1261,11 @@ module z_idler_top() {
 
 module z_idler_bottom() {
   body_width = m3_nut_diam + wall_thickness*2;
+  body_depth = top_rear_brace_depth;
   body_pos_x = z_pulley_height/2 + spacer + body_width/2;
 
   module body() {
+    /*
     hull() {
       translate([0,front*z_pulley_sheet_dist_y,z_pulley_sheet_dist_z]) {
         cube([body_width,z_pulley_sheet_dist_y*2,z_pulley_sheet_dist_z*2],center=true);
@@ -1271,8 +1273,20 @@ module z_idler_bottom() {
       translate([0,z_line_bearing_to_top_pos_y,z_line_bearing_to_top_pos_z]) {
         cube([body_width,2*(abs(z_line_bearing_to_top_pos_y)),body_width],center=true);
       }
-      translate([0,-z_carriage_idler_pos_y-z_line_bearing_diam-m3_nut_diam,wall_thickness]) {
-        cube([body_width,m3_nut_diam,wall_thickness*2],center=true);
+      translate([0,-z_carriage_idler_sheet_dist_y-z_line_bearing_diam-m3_nut_diam,wall_thickness]) {
+        # cube([body_width,m3_nut_diam,wall_thickness*2],center=true);
+      }
+    }
+    */
+    hull() {
+      translate([0,-1,+1]) {
+        # cube([body_width,2,2],center=true);
+      }
+      translate([0,-body_depth+1,+1]) {
+        cube([body_width,2,2],center=true);
+      }
+      translate([0,-3,body_depth-1]) {
+        cube([body_width,6,2],center=true);
       }
     }
   }
