@@ -1220,8 +1220,8 @@ module z_idler_top() {
       translate([0,-1,-1]) {
         cube([body_width,2,2],center=true);
       }
-      translate([0,-size+1,-3]) {
-        cube([body_width,2,6],center=true);
+      translate([0,-size+1,-1]) {
+        cube([body_width,2,2],center=true);
       }
       translate([0,-3,-size+1]) {
         cube([body_width,6,2],center=true);
@@ -1385,6 +1385,7 @@ module z_axis_stationary() {
         }
       }
 
+      /*
       translate([0,-z_pulley_diam/2-belt_thickness/2,80]) {
         cube([belt_width,belt_thickness,200],center=true);
 
@@ -1392,36 +1393,62 @@ module z_axis_stationary() {
           cube([belt_width,belt_thickness,200],center=true);
         }
       }
+      */
     }
   }
 }
 
-z_bearing_bed_offset     = -z_bearing_len/2;
-z_printed_portion_height = z_bearing_len*2 + z_bearing_spacing;
-z_bearing_body_diam      = z_bearing_diam+wall_thickness*3;
-z_bed_support_pos_x      = z_rod_pos_x-sheet_thickness/2;
-z_bed_support_mount_width = wall_thickness*4+m3_nut_thickness;
-z_bed_support_mount_depth = wall_thickness*4+m3_nut_thickness;
-z_support_arm_hole_spacing = (z_printed_portion_height-m3_nut_diam) / 4;
-z_line_bearing_hole_spacing = z_line_bearing_diam/2 + belt_thickness*2 + spacer;
+module z_carriage_bearing_support_arm() {
+  bearing_to_arm_support_dist_y = front*(-z_carriage_bearing_offset_y -z_bearing_body_diam/2 - z_bed_support_mount_depth);
+  //z_carriage_bearing_offset_z;
+
+  module body() {
+    hull() {
+      for(side=[top,bottom]) {
+        translate([0,0,z_carriage_bearing_spacing/2*side]) {
+          rotate([0,90,0]) {
+            hole(z_line_bearing_diam,sheet_thickness,resolution);
+          }
+        }
+      }
+
+      translate([0,-bearing_to_arm_support_dist_y+1,-z_carriage_bearing_offset_z-z_printed_portion_height/2]) {
+        cube([sheet_thickness,2,z_printed_portion_height],center=true);
+      }
+    }
+  }
+
+  module holes() {
+    for(side=[top,bottom]) {
+      translate([0,0,z_carriage_bearing_spacing/2*side]) {
+        rotate([0,90,0]) {
+          hole(z_line_bearing_inner,sheet_thickness+1,resolution);
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
 
 module printed_z_portion() {
   module body() {
     for(side=[left,right]) {
-      translate([z_rod_pos_x*side,0,0]) {
-        hole(z_bearing_body_diam,z_printed_portion_height,resolution);
-
-        translate([z_bearing_body_diam/4*-side,-z_bearing_body_diam/4,0]) {
-          cube([z_bearing_body_diam/2,z_bearing_body_diam/2,z_printed_portion_height],center=true);
+      hull() {
+        translate([z_rod_pos_x*side,0,0]) {
+          hole(z_bearing_body_diam,z_printed_portion_height,resolution);
+        }
+        translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width/2)*side,-z_bearing_body_diam/2+1,0]) {
+          cube([z_bed_support_mount_width,2,z_printed_portion_height],center=true);
         }
       }
 
       translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width/2)*side,-z_bearing_body_diam/2-z_bed_support_mount_depth/2,0]) {
         cube([z_bed_support_mount_width,z_bed_support_mount_depth,z_printed_portion_height],center=true);
       }
-    }
-    translate([0,-z_bearing_diam/2,0]) {
-      //cube([z_rod_pos_x*2,wall_thickness*3,z_printed_portion_height],center=true);
     }
   }
 
@@ -1435,7 +1462,6 @@ module printed_z_portion() {
         }
       }
 
-
       for(z=[-1.5,-.5,.5,1.5]) {
         translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width)*side,-z_bearing_body_diam/2-wall_thickness-m3_nut_diam/2,z_support_arm_hole_spacing*z]) {
           rotate([0,90,0]) {
@@ -1444,23 +1470,23 @@ module printed_z_portion() {
           }
         }
       }
+    }
 
-      // belt bearings
-      # for(z=[top,bottom]) {
-        translate([0,0,z*(z_line_bearing_hole_spacing)]) {
-          rotate([0,90,0]) {
-            //hole(z_line_bearing_inner,40,8);
+    for(side=[top,bottom]) {
+      translate([0,z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z+(z_carriage_bearing_spacing/2)*side]) {
+        rotate([0,90,0]) {
+          % difference() {
+            hole(z_line_bearing_diam,z_line_bearing_thickness,resolution);
+            hole(z_line_bearing_inner,z_line_bearing_thickness+1,8);
           }
         }
       }
     }
+  }
 
-    translate([0,0,-z_printed_portion_height/2]) {
-      rotate([90,0,0]) {
-        resize(newsize=[z_bed_support_pos_x*2-sheet_thickness-wall_thickness*4,z_printed_portion_height,z_bearing_body_diam+1]) {
-          //hole(10,10,resolution);
-        }
-      }
+  for(side=[left,right]) {
+    translate([side*(z_line_bearing_thickness/2+sheet_thickness/2+spacer),z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z]) {
+      # z_carriage_bearing_support_arm();
     }
   }
 
@@ -1472,7 +1498,6 @@ module printed_z_portion() {
 
 module z_axis() {
   build_base_z = build_pos_z-build_z/2-heatbed_and_glass_thickness-sheet_thickness/2;
-  //build_base_z = z_rod_pos_z;
 
   module z_build_plate() {
     difference() {
@@ -1509,6 +1534,7 @@ module z_axis() {
 
   translate([0,z_rod_pos_y,build_base_z-z_printed_portion_height/2]) {
     //color("royalblue") printed_z_portion();
+    printed_z_portion();
 
     for(side=[left,right]) {
       // z bearings
@@ -1522,26 +1548,13 @@ module z_axis() {
       translate([z_bed_support_pos_x*side,-z_bearing_body_diam/2-build_y/2-0.1,0]) {
         rotate([0,0,-90]) {
           rotate([90,0,0]) {
-            //z_side_outer_brace();
+            color("purple") z_side_outer_brace();
           }
         }
       }
     }
   }
 
-  // z belt bearings
-  for(side=[top,bottom]) {
-    translate([0,sheet_pos_y-sheet_thickness/2-z_carriage_idler_pos_y,build_base_z+z_bearing_bed_offset+(z_line_bearing_diam/2+belt_thickness*2+1)*side]) {
-      rotate([0,90,0]) {
-        % difference() {
-          hole(z_line_bearing_diam,z_line_bearing_thickness,resolution);
-          hole(z_line_bearing_inner,z_line_bearing_thickness+1,8);
-        }
-      }
-    }
-  }
-
-  /*
   translate([build_pos_x,build_pos_y,build_base_z+sheet_thickness/2]) {
     translate([0,0,sheet_thickness/2+1]) {
       color("red") {
@@ -1551,6 +1564,7 @@ module z_axis() {
 
     cube([z_build_platform_width,z_build_platform_depth,sheet_thickness],center=true);
   }
+  /*
   */
 }
 
