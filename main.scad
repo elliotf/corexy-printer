@@ -1521,8 +1521,18 @@ module z_bed_plate() {
   echo(fill_to_arm);
 
   module body() {
+    rounded_diam = 10;
+    depth = z_build_platform_depth+fill_to_arm;
     translate([0,fill_to_arm/2,0]) {
-      cube([z_build_platform_width,z_build_platform_depth+fill_to_arm,sheet_thickness],center=true);
+      hull() {
+        for(x=[left,right]) {
+          for(y=[front,rear]) {
+            translate([(z_build_platform_width/2-rounded_diam/2)*x,(depth/2-rounded_diam/2)*y,0]) {
+              hole(rounded_diam,sheet_thickness,resolution);
+            }
+          }
+        }
+      }
     }
   }
 
