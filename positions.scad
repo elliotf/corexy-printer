@@ -2,8 +2,8 @@ include <config.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
 
-sheet_opacity          = 1;
 sheet_opacity          = 0.4;
+sheet_opacity          = 1;
 
 spool_diam = 18;
 spool_len  = 25.5;
@@ -119,6 +119,7 @@ xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + spacer*5 + motor_side/
 
 main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
+main_opening_height = min((sheet_height - top_rear_brace_depth),(sheet_height*.60));
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 echo("build_pos_y: ", build_pos_y);

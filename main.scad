@@ -614,9 +614,6 @@ module handle() {
 }
 
 module front_sheet() {
-  bottom_material  = 30;
-  opening_height   = min((sheet_height - bottom_material),(sheet_height*.60));
-
   module body() {
     box_side([front_sheet_width,sheet_height],[0,4,4,4]);
   }
@@ -647,7 +644,7 @@ module front_sheet() {
     front_opening_width = main_opening_width - sheet_thickness*2;
     hull() {
       translate([0,sheet_height/2,0]) {
-        cube([build_x-sheet_thickness*2,opening_height*2,sheet_thickness+1],center=true);
+        cube([build_x-sheet_thickness*2,main_opening_height*2,sheet_thickness+1],center=true);
         cube([front_opening_width-sheet_thickness*2,hotend_sheet_clearance*2,sheet_thickness+1],center=true);
       }
     }
