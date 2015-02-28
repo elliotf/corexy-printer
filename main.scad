@@ -614,8 +614,25 @@ module handle() {
 }
 
 module front_sheet() {
+  rounded_diam = bc_shoulder_width*2;
+
   module body() {
-    box_side([front_sheet_width,sheet_height],[0,4,4,4]);
+    width  = front_sheet_width + sheet_thickness*2 + bc_shoulder_width*2;
+    height = sheet_height      + sheet_thickness + bc_shoulder_width;
+    intersection() {
+      box_side([front_sheet_width,sheet_height],[0,4,4,4]);
+      translate([0,-sheet_thickness/2-bc_shoulder_width/2]) {
+        hull() {
+          for(x=[left,right]) {
+            for(y=[top,bottom]) {
+              translate([x*(width/2-rounded_diam/2),y*(height/2-rounded_diam/2),0]) {
+                accurate_circle(rounded_diam,resolution);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   module holes() {
@@ -641,11 +658,30 @@ module front_sheet() {
       }
     }
 
+    // rounded top opening
+    for(side=[left,right]) {
+      translate([side*(front_opening_width/2-sheet_thickness),sheet_height/2,0]) {
+        difference() {
+          square([rounded_diam,rounded_diam],center=true);
+          translate([rounded_diam/2*side,-rounded_diam/2,0]) {
+            accurate_circle(rounded_diam,resolution);
+          }
+        }
+      }
+    }
+
     front_opening_width = main_opening_width - sheet_thickness*2;
     hull() {
       translate([0,sheet_height/2,0]) {
-        square([build_x-sheet_thickness*2,main_opening_height*2],center=true);
-        square([front_opening_width-sheet_thickness*2,hotend_sheet_clearance*2],center=true);
+        for(side=[left,right]) {
+          translate([side*(build_x/2-sheet_thickness-rounded_diam/2),-main_opening_height+rounded_diam/2,0]) {
+            accurate_circle(rounded_diam,resolution);
+          }
+          translate([side*(front_opening_width/2-sheet_thickness-rounded_diam/2),-hotend_sheet_clearance+rounded_diam/2,0]) {
+            accurate_circle(rounded_diam,resolution);
+          }
+        }
+        square([front_opening_width-sheet_thickness*2,2],center=true);
       }
     }
   }
