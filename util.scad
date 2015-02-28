@@ -7,6 +7,12 @@ module hole(diam,len,sides=8) {
   }
 }
 
+module accurate_circle(diam,sides=8) {
+  rotate([0,0,180/sides]) {
+    circle(r=accurate_diam(diam,sides),center=true,$fn=sides);
+  }
+}
+
 module debug_axes() {
   color("red") {
     translate([50,0,0]) cube([100,.2,.2],center=true);
