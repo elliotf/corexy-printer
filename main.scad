@@ -1233,7 +1233,7 @@ module z_idler_top() {
     // screw to top plate
     translate([0,-z_brace_screw_dist_from_corner,0]) {
       hole(3,40,8);
-      translate([0,0,-4-20]) {
+      translate([0,0,-6-20]) {
         hole(m3_nut_diam,40,6);
       }
     }
@@ -1241,7 +1241,7 @@ module z_idler_top() {
     translate([0,0,-z_brace_screw_dist_from_corner]) {
       rotate([-90,0,0]) {
         hole(3,40,8);
-        translate([0,0,-4-20]) {
+        translate([0,0,-6-20]) {
           hole(m3_nut_diam,40,6);
         }
       }
@@ -1265,28 +1265,15 @@ module z_idler_bottom() {
   body_pos_x = z_pulley_height/2 + spacer + body_width/2;
 
   module body() {
-    /*
     hull() {
-      translate([0,front*z_pulley_sheet_dist_y,z_pulley_sheet_dist_z]) {
-        cube([body_width,z_pulley_sheet_dist_y*2,z_pulley_sheet_dist_z*2],center=true);
-      }
       translate([0,z_line_bearing_to_top_pos_y,z_line_bearing_to_top_pos_z]) {
         cube([body_width,2*(abs(z_line_bearing_to_top_pos_y)),body_width],center=true);
       }
-      translate([0,-z_carriage_idler_sheet_dist_y-z_line_bearing_diam-m3_nut_diam,wall_thickness]) {
-        # cube([body_width,m3_nut_diam,wall_thickness*2],center=true);
-      }
-    }
-    */
-    hull() {
       translate([0,-1,+1]) {
-        # cube([body_width,2,2],center=true);
+        cube([body_width,2,2],center=true);
       }
       translate([0,-body_depth+1,+1]) {
         cube([body_width,2,2],center=true);
-      }
-      translate([0,-3,body_depth-1]) {
-        cube([body_width,6,2],center=true);
       }
     }
   }
@@ -1307,7 +1294,7 @@ module z_idler_bottom() {
     // screw to top plate
     translate([0,-z_brace_screw_dist_from_corner,0]) {
       hole(3,40,8);
-      translate([0,0,4+20]) {
+      translate([0,0,6+20]) {
         hole(m3_nut_diam,40,6);
       }
     }
@@ -1315,7 +1302,7 @@ module z_idler_bottom() {
     translate([0,0,z_brace_screw_dist_from_corner]) {
       rotate([-90,0,0]) {
         hole(3,40,8);
-        translate([0,0,-4-20]) {
+        translate([0,0,-6-20]) {
           hole(m3_nut_diam,40,6);
         }
       }
@@ -1414,20 +1401,26 @@ module z_axis_stationary() {
 
 module z_carriage_bearing_support_arm() {
   bearing_to_arm_support_dist_y = front*(-z_carriage_bearing_offset_y -z_bearing_body_diam/2 - z_bed_support_mount_depth);
-  //z_carriage_bearing_offset_z;
 
   module body() {
-    hull() {
-      for(side=[top,bottom]) {
-        translate([0,0,z_carriage_bearing_spacing/2*side]) {
-          rotate([0,90,0]) {
-            hole(z_line_bearing_diam,sheet_thickness,resolution);
+    intersection() {
+      hull() {
+        for(side=[top,bottom]) {
+          translate([0,0,z_carriage_bearing_spacing/2*side]) {
+            rotate([0,90,0]) {
+              hole(z_line_bearing_diam,sheet_thickness,resolution);
+            }
           }
         }
-      }
 
-      translate([0,-bearing_to_arm_support_dist_y+1,-z_carriage_bearing_offset_z-z_printed_portion_height/2]) {
-        cube([sheet_thickness,2,z_printed_portion_height],center=true);
+        translate([0,-bearing_to_arm_support_dist_y-9,0]) {
+          cube([sheet_thickness,20,abs(z_carriage_bearing_offset_z)*2],center=true);
+        }
+      }
+      translate([0,-bearing_to_arm_support_dist_y+11,0]) {
+        rotate([0,90,0]) {
+          box_side([z_printed_portion_height,22],[0,0,3,0]);
+        }
       }
     }
   }
@@ -1450,48 +1443,54 @@ module z_carriage_bearing_support_arm() {
 
 module printed_z_portion() {
   module body() {
-    for(side=[left,right]) {
-      hull() {
-        translate([z_rod_pos_x*side,0,0]) {
-          hole(z_bearing_body_diam,z_printed_portion_height,resolution);
-        }
-        translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width/2)*side,-z_bearing_body_diam/2+1,0]) {
-          cube([z_bed_support_mount_width,2,z_printed_portion_height],center=true);
-        }
+    hull() {
+      translate([z_rod_pos_x,0,0]) {
+        hole(z_bearing_body_diam,z_printed_portion_height,resolution);
       }
+      translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width/2),-z_bearing_body_diam/2+1,0]) {
+        cube([z_bed_support_mount_width,2,z_printed_portion_height],center=true);
+      }
+    }
 
-      translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width/2)*side,-z_bearing_body_diam/2-z_bed_support_mount_depth/2,0]) {
-        cube([z_bed_support_mount_width,z_bed_support_mount_depth,z_printed_portion_height],center=true);
+    translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width/2),-z_bearing_body_diam/2-z_bed_support_mount_depth/2,0]) {
+      cube([z_bed_support_mount_width,z_bed_support_mount_depth,z_printed_portion_height],center=true);
+
+      translate([-(z_bed_support_mount_width/2+z_bed_support_mount_depth/2),0,0]) {
+        cube([z_bed_support_mount_depth,z_bed_support_mount_depth,z_printed_portion_height],center=true);
       }
     }
   }
 
   module holes() {
-    for(side=[left,right]) {
-      translate([z_rod_pos_x*side,0,0]) {
-        hole(z_bearing_diam,z_printed_portion_height+1,resolution);
+    translate([z_rod_pos_x,0,0]) {
+      hole(z_bearing_diam,z_printed_portion_height+1,resolution);
 
-        translate([z_bearing_body_diam/2*side,0,-extrusion_height]) {
-          cube([z_bearing_body_diam,5,z_printed_portion_height],center=true);
-        }
+      translate([z_bearing_body_diam/2,0,extrusion_height]) {
+        cube([z_bearing_body_diam,5,z_printed_portion_height],center=true);
       }
+    }
 
-      for(z=[-1.5,-.5,.5,1.5]) {
-        translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_width)*side,-z_bearing_body_diam/2-wall_thickness-m3_nut_diam/2,z_support_arm_hole_spacing*z]) {
+    // arm mounting holes
+    translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_depth/2),0,0]) {
+      for(z=[-2,-1,0,1,2]) {
+        translate([-15,-z_bearing_body_diam/2-z_bed_support_mount_depth/2,z_support_arm_hole_spacing*z]) {
           rotate([0,90,0]) {
-            hole(m3_nut_diam,m3_nut_thickness*2,6);
+            hole(m3_nut_diam,30,6);
             hole(3,z_bearing_body_diam*3,8);
           }
         }
       }
     }
 
-    for(side=[top,bottom]) {
-      translate([0,z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z+(z_carriage_bearing_spacing/2)*side]) {
-        rotate([0,90,0]) {
-          % difference() {
-            hole(z_line_bearing_diam,z_line_bearing_thickness,resolution);
-            hole(z_line_bearing_inner,z_line_bearing_thickness+1,8);
+    // z axis main plate mounting holes
+    translate([(z_bed_support_pos_x-sheet_thickness/2-z_bed_support_mount_depth-m3_nut_diam/2),15,0]) {
+      for(z=[1:z_support_arm_hole_count]) {
+        translate([0,-z_bearing_body_diam/2-z_bed_support_mount_depth/2,z_printed_portion_height/2-z_support_arm_hole_spacing*z]) {
+          rotate([90,0,0]) {
+            rotate([0,0,90]) {
+              hole(m3_nut_diam,30,6);
+              hole(3,z_bearing_body_diam*3,8);
+            }
           }
         }
       }
@@ -1500,13 +1499,109 @@ module printed_z_portion() {
 
   for(side=[left,right]) {
     translate([side*(z_line_bearing_thickness/2+sheet_thickness/2+spacer),z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z]) {
-      # z_carriage_bearing_support_arm();
+      z_carriage_bearing_support_arm();
     }
   }
 
   difference() {
     body();
     holes();
+  }
+}
+
+module z_bed_plate() {
+  support_arm_rod_dist_y = z_bearing_body_diam/2+z_build_platform_depth/2;
+
+  echo("support_arm_rod_dist_y: ", support_arm_rod_dist_y);
+  echo("support_arm_pos_y: ", z_rod_pos_y-support_arm_rod_dist_y);
+  echo("build_pos_y: ", build_pos_y);
+
+  fill_to_arm = abs(abs(z_rod_pos_y-support_arm_rod_dist_y) - abs(build_pos_y));
+
+  echo(fill_to_arm);
+
+  module body() {
+    translate([0,fill_to_arm/2,0]) {
+      cube([z_build_platform_width,z_build_platform_depth+fill_to_arm,sheet_thickness],center=true);
+    }
+  }
+
+  module holes() {
+    for(x=[left,right]) {
+      translate([z_bed_support_pos_x*x,fill_to_arm,0]) {
+        rotate([0,0,90]) {
+          box_holes_for_side(z_build_platform_depth,4);
+        }
+      }
+      for(y=[front,rear]) {
+        translate([heatbed_hole_spacing_x/2*x,heatbed_hole_spacing_y/2*y,0]) {
+          hole(heatbed_hole_diam,sheet_thickness+1,resolution);
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module z_main_plate() {
+  width                  = z_bed_support_pos_x*2-sheet_thickness;
+
+  module body() {
+    cube([width,z_printed_portion_height,sheet_thickness],center=true);
+  }
+
+  module holes() {
+    for(side=[left,right]) {
+      translate([side*(z_line_bearing_thickness/2+sheet_thickness/2+spacer),z_printed_portion_height/2+z_carriage_bearing_offset_z,0]) {
+        rotate([0,0,90]) {
+          box_holes_for_side(z_printed_portion_height,4);
+        }
+      }
+
+      translate([side*(width/2-z_bed_support_mount_depth-m3_nut_diam/2),0,0]) {
+        for(z=[1:z_support_arm_hole_count]) {
+          translate([0,z_printed_portion_height/2-z_support_arm_hole_spacing*z,0]) {
+            hole(3,sheet_thickness+1,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+// laser cut support arm
+module z_support_arm() {
+  angle_length = build_y*.9;
+  angle_height = z_printed_portion_height*.7;
+  difference() {
+    box_side([z_build_platform_depth,z_printed_portion_height],[3,0,0,0]);
+    hull() {
+      translate([z_build_platform_depth/2,-z_printed_portion_height/2,0]) {
+        translate([-angle_length/2,-1,0]) {
+          cube([angle_length,2,sheet_thickness+1],center=true);
+        }
+        translate([1,angle_height/2,0]) {
+          cube([1,angle_height,sheet_thickness+1],center=true);
+        }
+      }
+    }
+
+    translate([-z_build_platform_depth/2+z_bed_support_mount_depth/2,0,0]) {
+      for(z=[-2,-1,0,1,2]) {
+        translate([0,z_support_arm_hole_spacing*z,0]) {
+          hole(3,sheet_thickness+1,resolution);
+        }
+      }
+    }
   }
 }
 
@@ -1527,59 +1622,47 @@ module z_axis() {
     }
   }
 
-  // laser cut support arm
-  module z_side_outer_brace() {
-    angle_length = build_y*.9;
-    angle_height = z_printed_portion_height*.7;
-    difference() {
-      box_side([build_y,z_printed_portion_height],[3,0,0,0]);
-      hull() {
-        translate([build_y/2,-z_printed_portion_height/2,0]) {
-          translate([-angle_length/2,-1,0]) {
-            cube([angle_length,2,sheet_thickness+1],center=true);
-          }
-          translate([1,angle_height/2,0]) {
-            cube([1,angle_height,sheet_thickness+1],center=true);
+  translate([0,z_rod_pos_y,build_base_z-z_printed_portion_height/2]) {
+    for(side=[left,right]) {
+      mirror([1-side,0,0]) {
+        printed_z_portion();
+      }
+    }
+
+    for(side=[left,right]) {
+      // z bearings
+      for(end=[top,bottom]) {
+        translate([z_rod_pos_x*side,0,end*(z_bearing_len/2 + z_bearing_spacing/2)]) {
+          % hole(z_bearing_diam,z_bearing_len,16);
+        }
+      }
+
+      // support arms
+      translate([z_bed_support_pos_x*side,-z_bearing_body_diam/2-z_build_platform_depth/2-0.1,0]) {
+        rotate([0,0,-90]) {
+          rotate([90,0,0]) {
+            color("purple") z_support_arm();
           }
         }
       }
     }
   }
 
-  translate([0,z_rod_pos_y,build_base_z-z_printed_portion_height/2]) {
-    //color("royalblue") printed_z_portion();
-    printed_z_portion();
-
-    for(side=[left,right]) {
-      // z bearings
-      for(end=[top,bottom]) {
-        translate([z_rod_pos_x*side,0,end*(z_bearing_len/2 + z_bearing_spacing/2)]) {
-          //% hole(z_bearing_diam,z_bearing_len,16);
-        }
-      }
-
-      // support arms
-      translate([z_bed_support_pos_x*side,-z_bearing_body_diam/2-build_y/2-0.1,0]) {
-        rotate([0,0,-90]) {
-          rotate([90,0,0]) {
-            color("purple") z_side_outer_brace();
-          }
-        }
-      }
+  translate([0,z_rod_pos_y-z_bearing_body_diam/2-z_bed_support_mount_depth-sheet_thickness/2,build_base_z-z_printed_portion_height/2]) {
+    rotate([90,0,0]) {
+      color("orange") z_main_plate();
     }
   }
 
   translate([build_pos_x,build_pos_y,build_base_z+sheet_thickness/2]) {
     translate([0,0,sheet_thickness/2+1]) {
       color("red") {
-        z_build_plate();
+        //z_build_plate();
       }
     }
 
-    cube([z_build_platform_width,z_build_platform_depth,sheet_thickness],center=true);
+    z_bed_plate();
   }
-  /*
-  */
 }
 
 module tuner() {

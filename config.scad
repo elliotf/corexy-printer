@@ -353,7 +353,7 @@ z_pulley_bearing_inner     = 5;
 z_pulley_bearing_thickness = 4;
 
 // Frame sheet
-sheet_thickness = 6;
+sheet_thickness = 6.5;
 sheet_min_width = 30;
 sheet_shoulder_width = 3; // material to have on the far side of a slot
 sheet_screw_diam = m3_diam;

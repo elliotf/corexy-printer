@@ -105,7 +105,8 @@ z_bearing_body_diam         = z_bearing_diam+wall_thickness*3;
 z_bed_support_mount_width   = wall_thickness*3+m3_nut_thickness;
 z_bed_support_mount_depth   = wall_thickness*4+m3_nut_thickness;
 z_bed_support_pos_x         = z_rod_pos_x-z_bearing_body_diam/2+z_bed_support_mount_width+sheet_thickness/2;
-z_support_arm_hole_spacing  = (z_printed_portion_height-m3_nut_diam) / 4;
+z_support_arm_hole_count    = 4;
+z_support_arm_hole_spacing  = z_printed_portion_height / (z_support_arm_hole_count + 1);
 z_line_bearing_hole_spacing = z_line_bearing_diam/2 + belt_thickness*2 + spacer;
 
 z_motor_pos_x            = z_pulley_height + spacer + sheet_thickness; // z_line_bearing_diam/2 + belt_thickness + z_pulley_diam/2;
@@ -120,6 +121,7 @@ main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
+echo("build_pos_y: ", build_pos_y);
 
 x_pos = -build_x/2+build_x*0.2;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
