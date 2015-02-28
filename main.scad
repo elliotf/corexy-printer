@@ -1679,7 +1679,7 @@ module z_axis() {
   translate([build_pos_x,build_pos_y,build_base_z+sheet_thickness/2]) {
     translate([0,0,sheet_thickness/2+1]) {
       color("red") {
-        //z_build_plate();
+        z_build_plate();
       }
     }
 
