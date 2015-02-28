@@ -46,7 +46,7 @@ module assembly() {
     rotate([90,0,0]) {
       color("lightblue", sheet_opacity) {
         if (!hide_sheets) {
-          front_sheet();
+          linear_extrude(height=sheet_thickness,center=true) front_sheet();
         }
       }
     }
@@ -54,20 +54,20 @@ module assembly() {
 
   translate([0,0,top_sheet_pos_z]) {
     color("violet", sheet_opacity) {
-      top_sheet();
+      linear_extrude(height=sheet_thickness,center=true) top_sheet();
     }
   }
 
   translate([0,0,bottom_sheet_pos_z]) {
     color("yellowgreen", sheet_opacity) {
-      bottom_sheet();
+      linear_extrude(height=sheet_thickness,center=true) bottom_sheet();
     }
   }
 
   translate([0,sheet_pos_y*rear,sheet_pos_z]) {
     color("lightgreen", sheet_opacity) {
       rotate([90,0,0]) {
-        rear_sheet();
+        linear_extrude(height=sheet_thickness,center=true) rear_sheet();
       }
     }
   }
@@ -78,7 +78,7 @@ module assembly() {
         rotate([0,0,90*side]) {
           color("khaki", sheet_opacity) {
             if (!hide_sheets) {
-              side_sheet();
+              linear_extrude(height=sheet_thickness,center=true) side_sheet();
             }
           }
         }

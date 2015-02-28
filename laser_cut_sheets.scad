@@ -90,11 +90,9 @@ module front_back_and_other() {
 }
 
 translate([0,laser_cutter_depth/2+10,0]) {
-  //projection(cut=true) sides_and_top();
   sides_and_top();
 }
 
 translate([0,-laser_cutter_depth/2-10,0]) {
-  //projection(cut=true) front_back_and_other();
   front_back_and_other();
 }

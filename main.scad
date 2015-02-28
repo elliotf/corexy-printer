@@ -1536,7 +1536,9 @@ module printed_z_portion() {
 
   for(side=[left,right]) {
     translate([side*(z_line_bearing_thickness/2+sheet_thickness/2+spacer),z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z]) {
-      z_carriage_bearing_support_arm();
+      rotate([0,90,0]) {
+        linear_extrude(height=sheet_thickness,center=true) z_carriage_bearing_support_arm();
+      }
     }
   }
 
@@ -1688,7 +1690,7 @@ module z_axis() {
       translate([z_bed_support_pos_x*side,-z_bearing_body_diam/2-z_build_platform_depth/2-0.1,0]) {
         rotate([0,0,-90]) {
           rotate([90,0,0]) {
-            color("purple") z_support_arm();
+            color("purple") linear_extrude(height=sheet_thickness,center=true) z_support_arm();
           }
         }
       }
@@ -1697,7 +1699,7 @@ module z_axis() {
 
   translate([0,z_rod_pos_y-z_bearing_body_diam/2-z_bed_support_mount_depth-sheet_thickness/2,build_base_z-z_printed_portion_height/2]) {
     rotate([90,0,0]) {
-      color("orange") z_main_plate();
+      color("orange") linear_extrude(height=sheet_thickness,center=true) z_main_plate();
     }
   }
 
@@ -1708,7 +1710,7 @@ module z_axis() {
       }
     }
 
-    z_bed_plate();
+    linear_extrude(height=sheet_thickness,center=true) z_bed_plate();
   }
 }
 
