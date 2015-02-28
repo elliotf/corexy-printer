@@ -1449,31 +1449,25 @@ module z_carriage_bearing_support_arm() {
     intersection() {
       hull() {
         for(side=[top,bottom]) {
-          translate([0,0,z_carriage_bearing_spacing/2*side]) {
-            rotate([0,90,0]) {
-              hole(z_line_bearing_diam,sheet_thickness,resolution);
-            }
+          translate([z_carriage_bearing_spacing/2*side,0]) {
+            accurate_circle(z_line_bearing_diam,resolution);
           }
         }
 
         translate([0,-bearing_to_arm_support_dist_y-9,0]) {
-          cube([sheet_thickness,20,abs(z_carriage_bearing_offset_z)*2],center=true);
+          square([abs(z_carriage_bearing_offset_z)*2,20],center=true);
         }
       }
       translate([0,-bearing_to_arm_support_dist_y+11,0]) {
-        rotate([0,90,0]) {
-          box_side([z_printed_portion_height,22],[0,0,3,0]);
-        }
+        box_side([z_printed_portion_height,22],[0,0,3,0]);
       }
     }
   }
 
   module holes() {
     for(side=[top,bottom]) {
-      translate([0,0,z_carriage_bearing_spacing/2*side]) {
-        rotate([0,90,0]) {
-          hole(z_line_bearing_inner,sheet_thickness+1,resolution);
-        }
+      translate([z_carriage_bearing_spacing/2*side,0]) {
+          accurate_circle(z_line_bearing_inner,resolution);
       }
     }
   }

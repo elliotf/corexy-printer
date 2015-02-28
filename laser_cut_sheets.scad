@@ -24,9 +24,7 @@ module sides_and_top() {
             mirror([1+x,0,0]) {
               translate([-30,0,0]) {
                 rotate([0,0,90]) {
-                  rotate([0,90,0]) {
-                    //z_carriage_bearing_support_arm();
-                  }
+                  z_carriage_bearing_support_arm();
                 }
               }
             }
