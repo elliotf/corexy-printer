@@ -19,6 +19,12 @@ module sides_and_top() {
       rotate([0,0,0]) {
         top_sheet();
       }
+
+      translate([0,-14,0]) {
+        rotate([0,0,180]) {
+          z_bed_plate();
+        }
+      }
     }
 
     translate([right*(top_sheet_width/2+sheet_thickness+1),0,0]) {
