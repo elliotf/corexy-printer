@@ -38,16 +38,16 @@ module bc_screw_nut_hole() {
 
   translate([0,-bc_thickness/2,0]) {
     translate([0,-bc_thickness*0.65-bc_nut_height/2,0])
-      cube([bc_nut_diam-bc_kerf_width*2,bc_nut_height-bc_kerf_width,bc_thickness+0.05],center=true);
+      square([bc_nut_diam-bc_kerf_width*2,bc_nut_height-bc_kerf_width],center=true);
 
     translate([0,-bc_screw_len/2+0.05,0])
-      cube([bc_screw_diam-bc_kerf_width*2,bc_screw_len,bc_thickness+0.05],center=true);
+      square([bc_screw_diam-bc_kerf_width*2,bc_screw_len],center=true);
   }
 }
 
 module bc_offset_ziptie_hole() {
   translate([bc_tab_slot_pair_len/2,-bc_shoulder_width*.75-bc_thickness/2,0]) {
-    cube([bc_ziptie_width,bc_ziptie_thickness,bc_thickness+0.05],center=true);
+    square([bc_ziptie_width,bc_ziptie_thickness],center=true);
   }
 }
 
@@ -95,7 +95,7 @@ module bc_tab_pair(with_hole=BC_WITH_ZIP_HOLES) {
 module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
   module tab() {
     translate([bc_tab_len/2,0,0])
-      cube([bc_tab_len-bc_kerf_width*2,bc_thickness+0.05,bc_thickness],center=true);
+      square([bc_tab_len-bc_kerf_width*2,bc_thickness+0.05],center=true);
   }
 
   tab();
@@ -104,14 +104,14 @@ module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
   if(with_hole==BC_WITH_ZIP_HOLES) {
     for(side=[-1,1]) {
       translate([bc_tab_slot_pair_len/2,(bc_thickness/2+bc_shoulder_width*.0+bc_ziptie_thickness*1)*side,0]) {
-        cube([bc_ziptie_width,bc_ziptie_thickness,bc_thickness+0.05],center=true);
+        square([bc_ziptie_width,bc_ziptie_thickness],center=true);
       }
     }
   }
 
   if(with_hole==BC_WITH_SCREW_HOLES) {
     translate([bc_tab_slot_pair_len/2,0,0])
-      hole(bc_screw_diam,bc_thickness+0.05,8);
+      accurate_circle(bc_screw_diam,8);
   }
 }
 
@@ -180,7 +180,7 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
   difference() {
     union() {
       translate([to_right/2-to_left/2,to_top/2-to_bottom/2,0]) {
-        cube([width,height,bc_thickness],center=true);
+        square([width,height],center=true);
       }
 
       // add material
@@ -201,71 +201,3 @@ module box_side(dimensions=[0,0],sides=[0,0,0,0]) {
     box_holes(dimensions,sides);
   }
 }
-
-/*
-
-// SAMPLE
-
-vol = [250,200,73];
-
-width = vol[0];
-depth = vol[1];
-height = vol[2];
-
-thickness = 6;
-top = 1;
-bottom = -1;
-left = -1;
-right = 1;
-front = -1;
-rear = 1;
-
-% cube(vol,center=true);
-
-shoulder_width = 40;
-overhead = bc_thickness+3;
-opening_width = width-bc_shoulder_width*2;
-opening_depth = depth-bc_shoulder_width+overhead;
-opening_height = height-bc_shoulder_width+overhead;
-
-// top
-translate([0,0,(height/2+bc_thickness/2+bc_thickness*2)*top]) {
-  difference() {
-    box_side([width,depth],[2,2,0,0]);
-
-    translate([0,bc_shoulder_width/-2-overhead/2-0.05,0]) {
-      //cube([opening_width,opening_depth,bc_thickness+1],center=true);
-    }
-  }
-}
-
-// bottom
-translate([0,0,(height/2+bc_thickness/2+bc_thickness*2)*bottom])
-  box_side([width,depth],[1,1,1,1]);
-
-// sides
-for(side=[-1,1]) {
-  translate([(width/2+bc_thickness/2+bc_thickness*2)*side,0,0]) rotate([0,0,90]) rotate([90,0,0])
-    box_side([depth,height],[1,1,2,2]);
-}
-
-// front
-translate([0,(depth/2+bc_thickness/2+bc_thickness*2)*front,0]) rotate([90,0,0])
-  difference() {
-    box_side([width,height],[1,2,2,2]);
-
-    hull() {
-      translate([0,height/2+bc_thickness/2+0.05,0]) {
-        cube([opening_width,bc_thickness,bc_thickness+1],center=true);
-      }
-
-      translate([0,-height/2+(height-opening_height),0]) {
-        cube([opening_width-25,1,bc_thickness+1],center=true);
-      }
-    }
-  }
-
-// rear
-translate([0,(depth/2+bc_thickness/2+bc_thickness*2)*rear,0]) rotate([90,0,0])
-  box_side([width,height],[1,1,2,1]);
-  */

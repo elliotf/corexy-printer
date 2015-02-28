@@ -14,7 +14,7 @@ module sides_and_top() {
 
       if (side == left) {
         translate([top_sheet_pos_z/2*-side,0,0]) {
-          z_main_plate();
+          //z_main_plate();
         }
       }
 
@@ -25,7 +25,7 @@ module sides_and_top() {
               translate([-30,0,0]) {
                 rotate([0,0,90]) {
                   rotate([0,90,0]) {
-                    z_carriage_bearing_support_arm();
+                    //z_carriage_bearing_support_arm();
                   }
                 }
               }
@@ -44,7 +44,7 @@ module sides_and_top() {
 
       translate([0,-14,0]) {
         rotate([0,0,180]) {
-          z_bed_plate();
+          //z_bed_plate();
         }
       }
     }
@@ -70,7 +70,7 @@ module front_back_and_other() {
         mirror([1-side,0,0]) {
           translate([z_printed_portion_height/2+sheet_thickness+1,-side_sheet_height/2+main_opening_height-z_build_platform_depth/2-5,0]) {
             rotate([0,0,90]) {
-              z_support_arm();
+              //z_support_arm();
             }
           }
         }
@@ -92,11 +92,11 @@ module front_back_and_other() {
 }
 
 translate([0,laser_cutter_depth/2+10,0]) {
-  projection(cut=true) sides_and_top();
-  //sides_and_top();
+  //projection(cut=true) sides_and_top();
+  sides_and_top();
 }
 
 translate([0,-laser_cutter_depth/2-10,0]) {
-  projection(cut=true) front_back_and_other();
-  //front_back_and_other();
+  //projection(cut=true) front_back_and_other();
+  front_back_and_other();
 }
