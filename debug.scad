@@ -2,11 +2,13 @@ include <config.scad>;
 include <positions.scad>;
 use <main.scad>;
 
-printed_z_portion();
+//printed_z_portion();
 
 rotate([90,0,0]) {
   //rear_xy_endcap();
 }
+
+z_carriage_bearing_support_arm();
 
 //x_carriage();
 
