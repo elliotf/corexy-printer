@@ -1643,22 +1643,22 @@ module z_support_arm() {
     intersection() {
       box_side([z_build_platform_depth,z_printed_portion_height],[3,0,0,0]);
       hull() {
-        translate([-z_build_platform_depth/2,z_printed_portion_height/2,0]) {
-          cube([flat_bottom_len*2,z_printed_portion_height*2,sheet_thickness+1],center=true);
+        translate([-z_build_platform_depth/2,z_printed_portion_height/2]) {
+          square([flat_bottom_len*2,z_printed_portion_height*2],center=true);
         }
-        translate([z_build_platform_depth/2,z_printed_portion_height/2,0]) {
-          cube([2,10,sheet_thickness+1],center=true);
+        translate([z_build_platform_depth/2,z_printed_portion_height/2]) {
+          square([2,10],center=true);
         }
-        translate([z_build_platform_depth/2-rounded_diam/2,z_printed_portion_height/2-flat_bottom_len+rounded_diam/2,0]) {
-          hole(rounded_diam,sheet_thickness+1,resolution);
+        translate([z_build_platform_depth/2-rounded_diam/2,z_printed_portion_height/2-flat_bottom_len+rounded_diam/2]) {
+          accurate_circle(rounded_diam,resolution);
         }
       }
     }
 
-    translate([-z_build_platform_depth/2+z_bed_support_mount_depth/2,0,0]) {
+    translate([-z_build_platform_depth/2+z_bed_support_mount_depth/2,0]) {
       for(z=[-2,-1,0,1,2]) {
-        translate([0,z_support_arm_hole_spacing*z,0]) {
-          hole(3,sheet_thickness+1,resolution);
+        translate([0,z_support_arm_hole_spacing*z]) {
+          accurate_circle(3,resolution);
         }
       }
     }

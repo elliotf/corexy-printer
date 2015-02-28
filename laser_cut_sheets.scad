@@ -70,7 +70,7 @@ module front_back_and_other() {
         mirror([1-side,0,0]) {
           translate([z_printed_portion_height/2+sheet_thickness+1,-side_sheet_height/2+main_opening_height-z_build_platform_depth/2-5,0]) {
             rotate([0,0,90]) {
-              //z_support_arm();
+              z_support_arm();
             }
           }
         }
