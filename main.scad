@@ -1587,14 +1587,6 @@ module printed_z_portion() {
     }
   }
 
-  for(side=[left,right]) {
-    translate([side*(z_line_bearing_thickness/2+sheet_thickness/2+spacer),z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z]) {
-      rotate([0,90,0]) {
-        linear_extrude(height=sheet_thickness,center=true) z_carriage_bearing_support_arm();
-      }
-    }
-  }
-
   difference() {
     body();
     holes();
@@ -1745,6 +1737,12 @@ module z_axis() {
           rotate([90,0,0]) {
             color("purple") linear_extrude(height=sheet_thickness,center=true) z_support_arm();
           }
+        }
+      }
+
+      translate([side*(z_line_bearing_thickness/2+sheet_thickness/2+spacer),z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z]) {
+        rotate([0,90,0]) {
+          linear_extrude(height=sheet_thickness,center=true) z_carriage_bearing_support_arm();
         }
       }
     }
