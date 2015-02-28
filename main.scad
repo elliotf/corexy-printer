@@ -352,23 +352,28 @@ module x_carriage() {
 
     // line path
     translate([0,top_line_pos_y,top_line_pos_z]) {
-      rotate([0,90,0]) {
-        hole(line_hole_opening,x_carriage_width+1,8);
+      rotate([bottom_top_line_angle,0,0]) {
+        rotate([0,90,0]) {
+          hole(line_hole_opening,x_carriage_width+1,8);
+        }
       }
     }
     translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
-      rotate([0,90,0]) {
-        hole(line_hole_opening,x_carriage_width+1,8);
+      rotate([bottom_top_line_angle,0,0]) {
+        rotate([0,90,0]) {
+          hole(line_hole_opening,x_carriage_width+1,8);
+        }
       }
     }
-    translate([0,top_line_pos_y-bottom_top_dist_y/2,top_line_pos_z-bottom_top_dist_z/2]) {
-      for(side=[left,right]) {
+    front_to_back_line_path_diam = bottom_top_dist_angle-line_hole_opening;
+    for(side=[left,right]) {
+      translate([(x_carriage_width/2-front_to_back_line_path_diam/2-.5)*side,top_line_pos_y-bottom_top_dist_y/2,top_line_pos_z-bottom_top_dist_z/2]) {
         rotate([bottom_top_line_angle,0,0]) {
           difference() {
             translate([side*(bottom_top_dist_angle/2-2),2,0]) {
-              cube([bottom_top_dist_angle/2+2,bottom_top_dist_angle+4,line_hole_opening*1.5],center=true);
+              cube([bottom_top_dist_angle/2+2,bottom_top_dist_angle+4,line_hole_opening],center=true);
             }
-            hole(bottom_top_dist_angle-line_hole_opening,line_hole_opening*1.6,resolution);
+            hole(front_to_back_line_path_diam,line_hole_opening+1,resolution);
           }
         }
       }
