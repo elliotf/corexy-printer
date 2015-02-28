@@ -40,7 +40,7 @@ module sides_and_top() {
         top_sheet();
       }
 
-      translate([0,-14,0]) {
+      translate([0,-12,0]) {
         rotate([0,0,180]) {
           z_bed_plate();
         }
