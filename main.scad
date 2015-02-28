@@ -1592,15 +1592,22 @@ module z_main_plate() {
 module z_support_arm() {
   angle_length = build_y*.9;
   angle_height = z_printed_portion_height*.7;
+
+  flat_bottom_len = sheet_thickness+z_bed_support_mount_depth;
+  rounded_diam = 10;
+
   difference() {
-    box_side([z_build_platform_depth,z_printed_portion_height],[3,0,0,0]);
-    hull() {
-      translate([z_build_platform_depth/2,-z_printed_portion_height/2,0]) {
-        translate([-angle_length/2,-1,0]) {
-          cube([angle_length,2,sheet_thickness+1],center=true);
+    intersection() {
+      box_side([z_build_platform_depth,z_printed_portion_height],[3,0,0,0]);
+      hull() {
+        translate([-z_build_platform_depth/2,z_printed_portion_height/2,0]) {
+          cube([flat_bottom_len*2,z_printed_portion_height*2,sheet_thickness+1],center=true);
         }
-        translate([1,angle_height/2,0]) {
-          cube([1,angle_height,sheet_thickness+1],center=true);
+        translate([z_build_platform_depth/2,z_printed_portion_height/2,0]) {
+          cube([2,10,sheet_thickness+1],center=true);
+        }
+        translate([z_build_platform_depth/2-rounded_diam/2,z_printed_portion_height/2-flat_bottom_len+rounded_diam/2,0]) {
+          hole(rounded_diam,sheet_thickness+1,resolution);
         }
       }
     }
