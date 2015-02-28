@@ -717,7 +717,24 @@ module rear_sheet() {
       translate([z_motor_pos_x,z_motor_pos_z,0]) {
         //motor_sheet_holes();
       }
+    }
 
+    height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2);
+
+    rounded_diam     = 10;
+    main_hole_width  = front_sheet_width      - motor_side*2.5;
+    main_hole_height = height_below_top_sheet - motor_side*2.5;
+
+    hull() {
+      translate([0,-side_sheet_height/2+height_below_top_sheet/2,0]) {
+        for(x=[left,right]) {
+          for(y=[front,rear]) {
+            translate([(main_hole_width/2-rounded_diam)*x,(main_hole_height/2-rounded_diam)*y,0]) {
+              hole(rounded_diam,sheet_thickness+1,resolution);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -737,13 +754,29 @@ module side_sheet() {
     box_side([side_sheet_depth,side_sheet_height],[0,3,4,3]);
   }
 
+  height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2);
+
+  echo("height_below_top_sheet: ", abs(height_below_top_sheet)+side_sheet_height/2);
+
   module holes() {
     translate([0,-sheet_pos_z+top_sheet_pos_z,0]) {
       box_holes_for_side(side_sheet_depth,4);
     }
 
-    translate([0,-sheet_pos_z+top_sheet_pos_z-sheet_thickness*1.5-opening_height/2,0]) {
-      cube([side_sheet_depth/2,opening_height,sheet_thickness+1],center=true);
+    rounded_diam     = 10;
+    main_hole_depth  = side_sheet_depth       - motor_side*2;
+    main_hole_height = height_below_top_sheet - motor_side*2.5;
+
+    hull() {
+      translate([0,-side_sheet_height/2+height_below_top_sheet/2,0]) {
+        for(x=[left,right]) {
+          for(y=[front,rear]) {
+            translate([(main_hole_depth/2-rounded_diam)*x,(main_hole_height/2-rounded_diam)*y,0]) {
+              hole(rounded_diam,sheet_thickness+1,resolution);
+            }
+          }
+        }
+      }
     }
   }
 
@@ -811,6 +844,20 @@ module bottom_sheet() {
       }
       translate([z_brace_pos_x*side,top_sheet_depth/2-z_brace_screw_dist_from_corner,0]) {
         hole(3,sheet_thickness+1,resolution/2);
+      }
+    }
+
+    rounded_diam     = 10;
+    main_hole_width = width            - motor_side*2.5;
+    main_hole_depth  = top_sheet_depth - motor_side*2.5;
+
+    hull() {
+      for(x=[left,right]) {
+        for(y=[front,rear]) {
+          translate([(main_hole_width/2-rounded_diam)*x,(main_hole_depth/2-rounded_diam)*y,0]) {
+            hole(rounded_diam,sheet_thickness+1,resolution);
+          }
+        }
       }
     }
   }
