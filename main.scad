@@ -693,8 +693,25 @@ module front_sheet() {
 }
 
 module rear_sheet() {
+  rounded_diam = bc_shoulder_width*2;
+
   module body() {
-    box_side([front_sheet_width,sheet_height],[0,4,4,4]);
+    width  = front_sheet_width + sheet_thickness*2 + bc_shoulder_width*2;
+    height = sheet_height      + sheet_thickness + bc_shoulder_width;
+    intersection() {
+      box_side([front_sheet_width,sheet_height],[0,4,4,4]);
+      translate([0,-sheet_thickness/2-bc_shoulder_width/2]) {
+        hull() {
+          for(x=[left,right]) {
+            for(y=[top,bottom]) {
+              translate([x*(width/2-rounded_diam/2),y*(height/2-rounded_diam/2),0]) {
+                accurate_circle(rounded_diam,resolution);
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   z_belt_opening_width  = z_brace_pos_x*2-z_brace_body_width;
