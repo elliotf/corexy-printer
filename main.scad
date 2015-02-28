@@ -1598,7 +1598,7 @@ module z_main_plate() {
   width                  = z_bed_support_pos_x*2-sheet_thickness;
 
   module body() {
-    cube([width,z_printed_portion_height,sheet_thickness],center=true);
+    square([width,z_printed_portion_height],center=true);
   }
 
   module holes() {
@@ -1612,7 +1612,7 @@ module z_main_plate() {
       translate([side*(width/2-z_bed_support_mount_depth-m3_nut_diam/2),0,0]) {
         for(z=[1:z_support_arm_hole_count]) {
           translate([0,z_printed_portion_height/2-z_support_arm_hole_spacing*z,0]) {
-            hole(3,sheet_thickness+1,resolution);
+            accurate_circle(3,resolution);
           }
         }
       }

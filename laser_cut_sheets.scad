@@ -14,7 +14,7 @@ module sides_and_top() {
 
       if (side == left) {
         translate([top_sheet_pos_z/2*-side,0,0]) {
-          //z_main_plate();
+          z_main_plate();
         }
       }
 
