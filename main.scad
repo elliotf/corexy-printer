@@ -1548,14 +1548,7 @@ module printed_z_portion() {
 
 module z_bed_plate() {
   support_arm_rod_dist_y = z_bearing_body_diam/2+z_build_platform_depth/2;
-
-  echo("support_arm_rod_dist_y: ", support_arm_rod_dist_y);
-  echo("support_arm_pos_y: ", z_rod_pos_y-support_arm_rod_dist_y);
-  echo("build_pos_y: ", build_pos_y);
-
-  fill_to_arm = abs(abs(z_rod_pos_y-support_arm_rod_dist_y) - abs(build_pos_y));
-
-  echo(fill_to_arm);
+  fill_to_arm            = abs(abs(z_rod_pos_y-support_arm_rod_dist_y) - abs(build_pos_y));
 
   module body() {
     rounded_diam = 10;
@@ -1565,7 +1558,7 @@ module z_bed_plate() {
         for(x=[left,right]) {
           for(y=[front,rear]) {
             translate([(z_build_platform_width/2-rounded_diam/2)*x,(depth/2-rounded_diam/2)*y,0]) {
-              hole(rounded_diam,sheet_thickness,resolution);
+              accurate_circle(rounded_diam,resolution);
             }
           }
         }
@@ -1582,7 +1575,7 @@ module z_bed_plate() {
       }
       for(y=[front,rear]) {
         translate([heatbed_hole_spacing_x/2*x,heatbed_hole_spacing_y/2*y,0]) {
-          hole(heatbed_hole_diam,sheet_thickness+1,resolution);
+          accurate_circle(heatbed_hole_diam,resolution);
         }
       }
     }

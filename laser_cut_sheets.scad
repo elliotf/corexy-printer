@@ -42,7 +42,7 @@ module sides_and_top() {
 
       translate([0,-14,0]) {
         rotate([0,0,180]) {
-          //z_bed_plate();
+          z_bed_plate();
         }
       }
     }
