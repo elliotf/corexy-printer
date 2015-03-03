@@ -28,8 +28,21 @@ module plate() {
         }
       }
 
-      translate([0,-x_rod_spacing,z_printed_portion_height/2]) {
+      translate([2,0,z_printed_portion_height/2]) {
         printed_z_portion();
+      }
+
+      translate([70,-x_rod_spacing-3,0]) {
+        rotate([0,90,0]) {
+          z_idler_top();
+        }
+      }
+      translate([-70+top_rear_brace_depth*2,-x_rod_spacing-top_rear_brace_depth,0]) {
+        rotate([0,0,180]) {
+          rotate([0,90,0]) {
+            z_idler_bottom();
+          }
+        }
       }
     }
   }

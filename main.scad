@@ -1773,6 +1773,15 @@ module z_axis() {
         }
       }
     }
+    translate([0,z_carriage_bearing_offset_y,z_printed_portion_height/2+z_carriage_bearing_offset_z]) {
+      rotate([0,90,0]) {
+        for(side=[top,bottom]) {
+          translate([z_carriage_bearing_spacing/2*side,0,0]) {
+            % z_line_bearing();
+          }
+        }
+      }
+    }
   }
 
   translate([0,z_rod_pos_y-z_bearing_body_diam/2-z_bed_support_mount_depth-sheet_thickness/2,build_base_z-z_printed_portion_height/2]) {
