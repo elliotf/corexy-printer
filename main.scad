@@ -76,15 +76,6 @@ module line_bearing_bevel(sides=[top,bottom]) {
   }
 }
 
-% for (end=[left,right]) {
-  // y rods
-  translate([y_rod_x*end,0,0]) {
-    rotate([90,0,0]) {
-      cylinder(r=y_rod_diam/2,h=y_rod_len+2,center=true,$fn=16);
-    }
-  }
-}
-
 module hotend() {
   module body() {
     height_groove_and_above = hotend_clamped_height;

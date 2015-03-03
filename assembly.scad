@@ -28,6 +28,15 @@ module x_axis() {
     }
   }
 
+  % for (end=[left,right]) {
+    // y rods
+    translate([y_rod_x*end,0,0]) {
+      rotate([90,0,0]) {
+        cylinder(r=y_rod_diam/2,h=y_rod_len+2,center=true,$fn=16);
+      }
+    }
+  }
+
   translate([x_pos,0,0]) {
     x_carriage();
   }
