@@ -82,21 +82,21 @@ z_rod_pos_y  = rear*sheet_pos_y - sheet_thickness/2 - z_rod_sheet_dist_y;
 z_rod_pos_z  = bottom_sheet_pos_z - sheet_thickness/2 + z_rod_len/2;
 
 z_side_brace_pos_x = 0;
-z_pulley_sheet_dist      = z_pulley_diam/2+belt_thickness*2+spacer*3;
-z_pulley_sheet_dist_y    = z_pulley_diam/2+belt_thickness*2+spacer*3;
-z_pulley_sheet_dist_z    = z_pulley_diam/2+belt_thickness*4+spacer*4;
-z_carriage_idler_sheet_dist_y   = z_pulley_sheet_dist + z_pulley_diam/2 + belt_thickness + z_line_bearing_diam/2;
+z_idler_sheet_dist_y            = z_line_bearing_diam/2+belt_thickness*2+spacer*3;
+z_idler_sheet_dist_z            = z_line_bearing_diam/2+belt_thickness*4+spacer*4;
+z_carriage_idler_sheet_dist_y   = z_idler_sheet_dist_y + z_line_bearing_diam/2 + belt_thickness + z_line_bearing_diam/2;
 
-z_line_bearing_to_carriage_pos_y = front*z_pulley_sheet_dist_y;
-z_line_bearing_to_carriage_pos_z = z_pulley_sheet_dist_z;
+z_line_bearing_to_carriage_pos_y = front*z_idler_sheet_dist_y;
+z_line_bearing_to_carriage_pos_z = z_idler_sheet_dist_z;
 z_line_bearing_to_top_pos_y      = front*z_line_bearing_diam/2;
 z_line_bearing_to_top_pos_z      = motor_side/2+z_line_bearing_diam/2;
 z_carriage_bearing_spacing       = (z_line_bearing_diam/2 + belt_thickness*2 + 1) *2;
 
 z_brace_screw_dist_from_corner = top_rear_brace_depth-wall_thickness-m3_nut_diam;
 z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + 5/2 + wall_thickness + z_line_bearing_inner/2;
+z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + z_line_bearing_inner/2 + wall_thickness + m3_nut_diam/2;
 z_brace_body_width             = m3_nut_diam + wall_thickness*2;
-z_brace_pos_x                  = z_pulley_height/2 + spacer + z_brace_body_width/2;
+z_brace_pos_x                  = z_line_bearing_thickness/2 + spacer*2 + z_brace_body_width/2;
 
 z_printed_portion_height    = z_bearing_len*2 + z_bearing_spacing;
 z_carriage_bearing_offset_z = -z_printed_portion_height*.4;
