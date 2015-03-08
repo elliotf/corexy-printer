@@ -284,7 +284,7 @@ module x_carriage() {
 
   line_hole_opening     = 1.1;
 
-  tuner_rotate_z = -55;
+  tuner_rotate_z = 10;
   module position_tuner() {
     translate([tuner_pos_x,tuner_pos_y,top_line_pos_z]) {
       rotate([0,0,tuner_rotate_z]) {
@@ -330,6 +330,20 @@ module x_carriage() {
             translate([0,y*(tuner_mount_depth/2-rounded_diam/2+wall_thickness*z),z*(tuner_mount_height/2-rounded_diam/2)]) {
               rotate([0,90,0]) {
                 hole(rounded_diam,tuner_mount_width,resolution);
+              }
+            }
+          }
+        }
+      }
+      // tuner mounting
+      for(side=[left,right]) {
+        mirror([1-side,0,0]) {
+          position_tuner() {
+            translate([tuner_anchor_screw_hole_pos_x,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) {
+              rotate([0,90,0]) {
+                translate([0,0,2.5]) {
+                  hole(tuner_anchor_screw_hole_diam+wall_thickness*2,3,resolution);
+                }
               }
             }
           }
@@ -394,16 +408,16 @@ module x_carriage() {
     tuner_hollow_nut_height = tuner_mount_height*.75;
     // tuner mounting
     for(side=[left,right]) {
-      translate([tuner_pos_x*side,tuner_pos_y,0]) {
-        // anchor screw
-        rotate([0,0,tuner_rotate_z*side]) {
-          translate([-tuner_body_diam/2*side,-tuner_body_diam/2,0]) {
-            rotate([0,0,tuner_rotate_z*-side]) {
-              hole(tuner_anchor_screw_hole_diam-0.2,100,8);
+      mirror([1-side,0,0]) {
+        position_tuner() {
+          translate([tuner_anchor_screw_hole_pos_x,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) rotate([0,90,0]) {
+            rotate([0,0,tuner_rotate_z]) {
+              hole(tuner_anchor_screw_hole_diam,10,8);
             }
           }
         }
-
+      }
+      translate([tuner_pos_x*side,tuner_pos_y,0]) {
         // main hole and screw hole
         translate([0,0,tuner_shoulder_pos_z]) {
           hole(tuner_shaft_screw_diam,tuner_mount_height*2+1,8);
@@ -418,10 +432,8 @@ module x_carriage() {
 
     // reinforcements
     for(z=[1,3,5]) {
-      for(x=[-6,0,6]) {
-        translate([x,tuner_pos_y+tuner_mount_depth/2+1,tuner_shoulder_pos_z-3*z]) {
-          cube([1,tuner_mount_depth+tuner_shaft_screwed_diam,1],center=true);
-        }
+      translate([0,tuner_pos_y+tuner_mount_depth/2+1,tuner_shoulder_pos_z-3*z]) {
+        cube([1,tuner_mount_depth+tuner_shaft_screwed_diam,1],center=true);
       }
     }
 
@@ -482,8 +494,8 @@ module x_carriage() {
       # hotend();
     }
 
-    translate([-x_carriage_width/2+5+extrusion_height,front*(x_bearing_diam/2+30/2+wall_thickness/2),-x_bearing_diam/3]) {
-      # cube([10,30,30],center=true);
+    translate([-x_carriage_width/2-5,front*(x_bearing_diam/2+30/2+wall_thickness/2),-x_bearing_diam/3]) {
+      % cube([10,30,30],center=true);
     }
   }
   translate([0,top_line_pos_y,top_line_pos_z]) {
