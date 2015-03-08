@@ -207,30 +207,43 @@ module motor_sheet_holes() {
   }
 }
 
+module hotend_zip_tie_holes() {
+  hotend_clearance = 0.1;
+  hotend_res = resolution;
+  above_height = hotend_height_above_groove+hotend_clearance*2;
+  translate([0,-hotend_diam/2,0]) {
+    cube([hotend_groove_diam-0.2,hotend_diam,30],center=true);
+  }
+
+  for(side=[top,bottom]) {
+    translate([0,-hotend_mount_diam/2,side*(hotend_groove_height)]) {
+      cube([hotend_mount_diam-0.2,hotend_mount_diam,hotend_groove_height],center=true);
+    }
+  }
+
+  // zip tie restraint
+  zip_tie_hole(hotend_diam + wall_thickness);
+
+  rotate([0,0,-45]) {
+    translate([hotend_diam/2-3,-hotend_diam/2,0]) {
+      cube([hotend_diam,hotend_diam,hotend_groove_height+hotend_height_above_groove*2+0.05],center=true);
+    }
+  }
+}
+
 module hotend_groove_mount_void() {
   hotend_clearance = 0.1;
   hotend_res = resolution;
   above_height = hotend_height_above_groove+hotend_clearance*2;
-  for(side=[left,right]) {
-    translate([0,(m3_nut_diam/2+filament_diam)*side,0]) {
-      rotate([0,0,60+45]) {
-        //# hole(m3_nut_diam,m3_nut_thickness*2+.5,6);
-      }
-    }
-  }
-  rotate([0,0,0]) {
-    // hole(filament_diam+0.25,20,8);
-  }
   rotate([0,0,90]) {
-    translate([0,0,-hotend_clamped_height]) {
-      hole(hotend_groove_diam+hotend_clearance,hotend_clamped_height*2,hotend_res);
+    translate([0,0,-hotend_height_above_groove-hotend_groove_height/2]) {
       translate([0,-hotend_diam/2,0]) {
-        cube([hotend_groove_diam,hotend_diam,hotend_clamped_height*2],center=true);
+        # cube([hotend_groove_diam,hotend_diam,30],center=true);
       }
     }
 
     translate([0,0,-above_height/2+hotend_clearance]) {
-      hole(hotend_diam+hotend_clearance,above_height,hotend_res);
+      # hole(hotend_groove_diam+hotend_clearance,above_height,hotend_res);
       translate([0,-hotend_diam/2,0]) {
         cube([hotend_diam,hotend_diam,above_height],center=true);
       }
@@ -253,8 +266,9 @@ module hotend_groove_mount_void() {
 module x_carriage() {
   body_side = rear;
 
+  bearing_body_wall_thickness = top_line_pos_y-x_bearing_diam/2;
   bearing_body_diam = x_bearing_diam+wall_thickness*3;
-  bearing_body_diam = top_line_pos_y*2;
+  bearing_body_diam = x_bearing_diam + bearing_body_wall_thickness*2;
 
   body_depth  = top_line_pos_y - bottom_line_pos_y;
   body_height = x_rod_spacing;
@@ -295,6 +309,9 @@ module x_carriage() {
     translate([0,bottom_line_pos_y+body_depth/2,0]) {
       cube([x_carriage_width,body_depth,body_height],center=true);
     }
+    translate([0,-x_bearing_diam/2-bearing_body_wall_thickness/2,0]) {
+      cube([x_carriage_width,bearing_body_wall_thickness,x_rod_spacing],center=true);
+    }
 
     // tuner retainer body
     hull() {
@@ -320,17 +337,35 @@ module x_carriage() {
       }
     }
 
+    // hotend mount
+    hotend_mount_height = hotend_groove_height+hotend_height_below_groove*2;
+    hull() {
+      for(side=[left,right]) {
+        translate([side*(x_carriage_width/2-0.5),hotend_y/2,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
+          rotate([0,90,0]) {
+            hole(hotend_mount_height,1,resolution);
+          }
+        }
+      }
+      translate([0,0,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
+        cube([x_carriage_width,1,hotend_mount_height],center=true);
+      }
+      translate([0,0,x_rod_spacing/2+bearing_body_diam/4]) {
+        cube([x_carriage_width,1,bearing_body_diam/2],center=true);
+      }
+      translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
+        cube([1,abs(hotend_y),hotend_groove_height],center=true);
+        hole(hotend_diam,hotend_mount_height,resolution);
+      }
+    }
+
     rounded_diam = 5;
     // conntect top bearing to tuner mount
     hull() {
       translate([0,tuner_pos_y,tuner_shoulder_pos_z-tuner_mount_height/2]) {
-        for(y=[front]) {
-          for(z=[top,bottom]) {
-            translate([0,y*(tuner_mount_depth/2-rounded_diam/2),z*(tuner_mount_height/2-rounded_diam/2)]) {
-              rotate([0,90,0]) {
-                hole(rounded_diam,tuner_mount_width,resolution);
-              }
-            }
+        translate([0,front*(tuner_mount_depth/2-rounded_diam/2),tuner_mount_height/2-rounded_diam/2]) {
+          rotate([0,90,0]) {
+            hole(rounded_diam,tuner_mount_width,resolution);
           }
         }
       }
@@ -341,49 +376,18 @@ module x_carriage() {
         }
       }
     }
-
-    // hotend mount
-    hotend_mount_width  = x_carriage_width/2 + hotend_diam/2 + wall_thickness*1.5;
-    hotend_mount_depth  = tuner_pos_y - hotend_y;
-    hotend_mount_height = hotend_clamped_height + 2;
-    translate([-x_carriage_width/2+hotend_mount_width/2,tuner_pos_y-hotend_mount_depth/4,tuner_shoulder_pos_z-hotend_mount_height/2]) {
-      cube([hotend_mount_width,hotend_mount_depth/2,hotend_mount_height],center=true);
-    }
-    hull() {
-      translate([0,hotend_y,tuner_shoulder_pos_z-hotend_mount_height/2]) {
-        translate([-x_carriage_width/2+hotend_mount_width/2,-hotend_y,0]) {
-          cube([hotend_mount_width,4,hotend_mount_height],center=true);
-        }
-        translate([-x_carriage_width/4,-hotend_y/2,0]) {
-          rotate([0,90,0]) {
-            hole(hotend_mount_height,x_carriage_width/2,resolution);
-          }
-        }
-        translate([0,0,2]) {
-          hole(hotend_diam+wall_thickness*3,hotend_mount_height+4,resolution);
-        }
-        translate([0,0,hotend_mount_height/2+4]) {
-          hole(hotend_diam,8,resolution);
-        }
-      }
-    }
   }
 
   module holes() {
-    // filament path
-    translate([0,hotend_y,0]) {
-      # hole(6.4,100,8);
-    }
-
     // hotend mount
     hotend_groove_depth = (hotend_diam - hotend_groove_diam)/2;
-    translate([0,hotend_y,tuner_shoulder_pos_z]) {
-      rotate([0,0,-45]) {
-        hotend_groove_mount_void();
+    translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
+      rotate([0,0,45]) {
+        hotend_zip_tie_holes();
       }
 
       translate([hotend_diam-hotend_groove_depth*1.5,-hotend_diam+hotend_groove_depth*1.5,-hotend_clamped_height]) {
-        cube([hotend_diam*2,hotend_diam*2,hotend_clamped_height*2+hotend_clearance],center=true);
+        //cube([hotend_diam*2,hotend_diam*2,hotend_clamped_height*2+hotend_clearance],center=true);
       }
     }
 
@@ -425,14 +429,14 @@ module x_carriage() {
     translate([0,top_line_pos_y,top_line_pos_z]) {
       rotate([bottom_top_line_angle,0,0]) {
         rotate([0,90,0]) {
-          hole(line_hole_opening,x_carriage_width+1,8);
+          # hole(line_hole_opening,x_carriage_width+1,8);
         }
       }
     }
     translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
       rotate([bottom_top_line_angle,0,0]) {
         rotate([0,90,0]) {
-          hole(line_hole_opening,x_carriage_width+1,8);
+          # hole(line_hole_opening,x_carriage_width+1,8);
         }
       }
     }
@@ -467,30 +471,19 @@ module x_carriage() {
             }
           }
         }
-
       }
     }
 
-    // bearing front opening top
-    translate([0,0,x_rod_spacing/2]) {
-      for(r=[0]) {
-        rotate([r,0,0]) {
-          translate([extrusion_height,-bearing_body_diam/4-1,-bearing_body_diam/4-1]) {
-            cube([x_carriage_width,bearing_body_diam/2+2,bearing_body_diam/2+2],center=true);
-          }
-        }
-      }
+    translate([extrusion_height,-x_bearing_diam/4,0]) {
+      cube([x_carriage_width,x_bearing_diam/2,x_rod_spacing],center=true);
     }
 
-    // bearing opening bottom
-    translate([0,0,-x_rod_spacing/2]) {
-      for(r=[40,-30]) {
-        rotate([r,0,0]) {
-          translate([extrusion_height,-bearing_body_diam/4-1,-bearing_body_diam/4-1]) {
-            cube([x_carriage_width,bearing_body_diam/2+2,bearing_body_diam/2+2],center=true);
-          }
-        }
-      }
+    translate([0,hotend_y,hotend_z]) {
+      # hotend();
+    }
+
+    translate([-x_carriage_width/2+5+extrusion_height,front*(x_bearing_diam/2+30/2+wall_thickness/2),-x_bearing_diam/3]) {
+      # cube([10,30,30],center=true);
     }
   }
   translate([0,top_line_pos_y,top_line_pos_z]) {
@@ -522,7 +515,7 @@ module x_carriage() {
   }
 
   translate([0,hotend_y,hotend_z]) {
-    % hotend();
+    //% hotend();
   }
 }
 
@@ -1805,7 +1798,7 @@ module z_axis() {
   translate([0,z_rod_pos_y,build_base_z-z_printed_portion_height/2]) {
     for(side=[left,right]) {
       mirror([1-side,0,0]) {
-        printed_z_portion();
+        //printed_z_portion();
       }
 
       // z bearings
@@ -1819,7 +1812,7 @@ module z_axis() {
       translate([z_bed_support_pos_x*side,-z_bearing_body_diam/2-z_build_platform_depth/2-0.1,0]) {
         rotate([0,0,-90]) {
           rotate([90,0,0]) {
-            color("purple") linear_extrude(height=sheet_thickness,center=true) z_support_arm();
+            //color("purple") linear_extrude(height=sheet_thickness,center=true) z_support_arm();
           }
         }
       }
