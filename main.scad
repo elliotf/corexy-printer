@@ -99,6 +99,59 @@ module line_bearing_bevel(sides=[top,bottom]) {
   }
 }
 
+module e3d_hotend() {
+  module body() {
+    hotend_mount_height    = hotend_height_above_groove + hotend_groove_height + hotend_height_below_groove;
+    hotend_heatsink_height = hotend_nozzle_to_top_fin - hotend_nozzle_to_bottom_fin;
+
+    translate([0,0,-hotend_height_above_groove/2]) {
+      hole(hotend_mount_diam,hotend_height_above_groove,resolution);
+    }
+    translate([0,0,-hotend_height_above_groove-hotend_groove_height/2]) {
+      hole(hotend_groove_diam,hotend_groove_height+1,resolution);
+    }
+    translate([0,0,-hotend_height_above_groove-hotend_groove_height-hotend_height_below_groove/2-10]) {
+      hole(hotend_mount_diam,hotend_height_below_groove+20,resolution);
+    }
+
+    num_fins      = 11;
+    fin_thickness = 1;
+    fin_spacing   = 2.5;
+
+    translate([0,0,-hotend_len+hotend_nozzle_to_bottom_fin+fin_thickness/2]) {
+      for(z=[0:10]) {
+        translate([0,0,fin_spacing*z]) {
+          hole(hotend_heatsink_diam,fin_thickness,resolution);
+        }
+      }
+    }
+
+    translate([0,0,-hotend_len]) {
+      hull() {
+        translate([0,0,0.5]) {
+          hole(.5,1,36);
+        }
+        translate([0,0,3.5]) {
+          hole(4,2,36);
+        }
+      }
+
+      translate([0,-20/2+4.5,5+11.5/2]) {
+        cube([16,20,11.5],center=true);
+      }
+    }
+  }
+
+  module holes() {
+    //hole(filament_diam,hotend_len*3,8);
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module hotend() {
   module body() {
     height_groove_and_above = hotend_clamped_height;
