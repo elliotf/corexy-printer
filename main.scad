@@ -1616,10 +1616,11 @@ module printed_z_portion() {
 module z_bed_plate() {
   support_arm_rod_dist_y = z_bearing_body_diam/2+z_build_platform_depth/2;
   fill_to_arm            = abs(abs(z_rod_pos_y-support_arm_rod_dist_y) - abs(build_pos_y));
+  depth                  = z_build_platform_depth+fill_to_arm;
+  rounded_diam           = bc_shoulder_width*2;
+  rounded_diam           = 12;
 
   module body() {
-    rounded_diam = 10;
-    depth = z_build_platform_depth+fill_to_arm;
     translate([0,fill_to_arm/2,0]) {
       hull() {
         for(x=[left,right]) {
@@ -1634,6 +1635,14 @@ module z_bed_plate() {
   }
 
   module holes() {
+    // z belt access
+    hull() {
+      for(x=[left,right]) {
+        translate([(z_rod_pos_x-z_bearing_body_diam/2-rounded_diam/2-z_bed_support_mount_depth)*x,fill_to_arm+depth/2,0]) {
+          accurate_circle(rounded_diam,resolution);
+        }
+      }
+    }
     for(x=[left,right]) {
       translate([z_bed_support_pos_x*x,fill_to_arm,0]) {
         rotate([0,0,90]) {
