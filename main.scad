@@ -99,6 +99,10 @@ module line_bearing_bevel(sides=[top,bottom]) {
   }
 }
 
+module hotend() {
+  e3d_hotend();
+}
+
 module e3d_hotend() {
   module body() {
     hotend_mount_height    = hotend_height_above_groove + hotend_groove_height + hotend_height_below_groove;
@@ -152,7 +156,7 @@ module e3d_hotend() {
   }
 }
 
-module hotend() {
+module jhead_hotend() {
   module body() {
     height_groove_and_above = hotend_clamped_height;
     height_below_groove = hotend_len - height_groove_and_above;
