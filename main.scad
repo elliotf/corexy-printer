@@ -297,20 +297,14 @@ module x_carriage() {
 
   module body() {
     // bearing holders
-    for(side=[top,bottom]) {
-      translate([0,0,x_rod_spacing/2*side]) {
-        rotate([0,90,0]) {
-          hole(bearing_body_diam,x_carriage_width,resolution);
+    hull() {
+      for(side=[top,bottom]) {
+        translate([0,0,x_rod_spacing/2*side]) {
+          rotate([0,90,0]) {
+            hole(bearing_body_diam,x_carriage_width,resolution);
+          }
         }
       }
-    }
-
-    // body between bearing holders
-    translate([0,bottom_line_pos_y+body_depth/2,0]) {
-      cube([x_carriage_width,body_depth,body_height],center=true);
-    }
-    translate([0,-x_bearing_diam/2-bearing_body_wall_thickness/2,0]) {
-      cube([x_carriage_width,bearing_body_wall_thickness,x_rod_spacing],center=true);
     }
 
     // tuner retainer body
@@ -441,14 +435,21 @@ module x_carriage() {
     translate([0,top_line_pos_y,top_line_pos_z]) {
       rotate([bottom_top_line_angle,0,0]) {
         rotate([0,90,0]) {
-          # hole(line_hole_opening,x_carriage_width+1,8);
+          hole(line_hole_opening,x_carriage_width+1,8);
         }
       }
     }
-    translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
-      rotate([bottom_top_line_angle,0,0]) {
+    hull() {
+      translate([0,-x_bearing_diam/8,0]) {
         rotate([0,90,0]) {
-          # hole(line_hole_opening,x_carriage_width+1,8);
+          hole(line_hole_opening*2,x_carriage_width+1,8);
+        }
+      }
+      translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
+        rotate([bottom_top_line_angle,0,0]) {
+          rotate([0,90,0]) {
+            hole(line_hole_opening,x_carriage_width+1,8);
+          }
         }
       }
     }
@@ -487,7 +488,7 @@ module x_carriage() {
     }
 
     translate([extrusion_height,-x_bearing_diam/4,0]) {
-      cube([x_carriage_width,x_bearing_diam/2,x_rod_spacing],center=true);
+      //cube([x_carriage_width,x_bearing_diam/2,x_rod_spacing],center=true);
     }
 
     translate([0,hotend_y,hotend_z]) {
