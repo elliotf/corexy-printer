@@ -67,13 +67,25 @@ hotend_clamped_height      = hotend_groove_height + hotend_height_above_groove;
 hotend_len_below_groove    = hotend_len - hotend_clamped_height;
 hotend_clearance   = 0.15;
 
-// e3d v6 direct
-hotend_height_above_groove = 3.7;
-hotend_groove_height = 6;
-
 // jhead
 hotend_height_above_groove = 4.8;
 hotend_groove_height = 4.6;
+
+// e3d v6
+hotend_height_above_groove = 3.7;
+hotend_groove_height = 6;
+
+// e3d v6 bowden heatsink mount
+hotend_len                 = 65;
+hotend_height_above_groove = 7;
+hotend_height_below_groove = 3;
+hotend_groove_height = 6;
+hotend_diam = 22.4;
+hotend_heatsink_diam = 22.4;
+hotend_nozzle_to_bottom_fin = 20;
+hotend_nozzle_to_top_fin = 46;
+hotend_mount_diam  = 16;
+hotend_groove_diam = 12;
 
 tuner_hole_to_shoulder = 22.5;
 wire_hole_diam = 2;
@@ -285,9 +297,12 @@ line_bearing_washer_thickness = m5_washer_thickness;
 // 623vv
 /*
 */
+line_bearing_diam = 13;
 line_bearing_diam = 12;
+line_bearing_groove_depth = 2;
 line_bearing_groove_depth = 1.7;
 line_bearing_inner = m3_diam;
+//line_bearing_thickness = 6;
 line_bearing_thickness = 4;
 line_bearing_nut_diam = m3_nut_diam;
 line_bearing_nut_thickness = m3_nut_thickness;
