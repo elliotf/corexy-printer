@@ -546,6 +546,9 @@ module x_carriage() {
         }
       }
     }
+    translate([extrusion_height,-x_bearing_diam/5,0]) {
+      cube([x_carriage_width,x_bearing_diam/4,x_rod_spacing],center=true);
+    }
 
     for(side=[top,bottom]) {
       translate([0,0,x_rod_spacing/2*side]) {
