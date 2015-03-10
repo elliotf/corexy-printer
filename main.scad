@@ -264,13 +264,17 @@ module hotend_groove_mount_void() {
 }
 
 module x_carriage() {
-  body_side = rear;
-  fan_side       = 30;
-  fan_thickness  = 10;
-  fan_pos_y = front*(x_bearing_diam/2+30/2+wall_thickness/2);
-  fan_pos_z = -x_bearing_diam/3;
-  fan_pos_z = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+fan_side/2;
-  heatsink_pos_z = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+hotend_heatsink_height/2;
+  body_side        = rear;
+  fan_side         = 30;
+  fan_diam         = fan_side-wall_thickness*2;
+  fan_screw_diam   = 2;
+  fan_screw_depth  = 12;
+  fan_thickness    = 10;
+  fan_pos_y        = front*(x_bearing_diam/2+30/2+wall_thickness/2);
+  fan_pos_z        = -x_bearing_diam/3;
+  fan_pos_z        = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+fan_side/2;
+  fan_hole_spacing = 24;
+  heatsink_pos_z   = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+hotend_heatsink_height/2;
 
   bearing_body_wall_thickness = top_line_pos_y-x_bearing_diam/2;
   bearing_body_diam = x_bearing_diam+wall_thickness*3;
@@ -354,6 +358,18 @@ module x_carriage() {
     // hotend mount
     hotend_mount_height = hotend_groove_height+hotend_height_below_groove*2;
     hull() {
+      translate([-x_carriage_width/2+1,0,x_rod_spacing/2]) {
+        rotate([0,90,0]) {
+          hole(bearing_body_diam,2,resolution);
+        }
+      }
+      translate([0,hotend_y,hotend_z-hotend_height_above_groove/2]) {
+        hole(hotend_mount_diam+wall_thickness*2,0.1,resolution);
+
+        translate([-x_carriage_width/2+hotend_groove_diam/2,hotend_groove_diam/4,0]) {
+          hole(hotend_groove_diam,0.1,resolution);
+        }
+      }
       translate([0,hotend_y,fan_pos_z]) {
         hole(hotend_diam+wall_thickness*3,fan_side,resolution);
       }
@@ -399,26 +415,45 @@ module x_carriage() {
     // hotend mount
     hotend_groove_depth = (hotend_diam - hotend_groove_diam)/2;
     translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
-      rotate([0,0,45]) {
-        //hotend_zip_tie_holes();
-      }
-
-      translate([hotend_diam-hotend_groove_depth*1.5,-hotend_diam+hotend_groove_depth*1.5,-hotend_clamped_height]) {
-        //cube([hotend_diam*2,hotend_diam*2,hotend_clamped_height*2+hotend_clearance],center=true);
-      }
+      zip_tie_hole(hotend_groove_diam+wall_thickness*3);
     }
 
-    translate([0,hotend_y,heatsink_pos_z]) {
-      hole(hotend_mount_diam,x_rod_spacing*2,resolution);
+    translate([0,hotend_y,hotend_z-hotend_len/2]) {
+      hull() {
+        for(r=[0,-60]) {
+          rotate([0,0,r]) {
+            translate([20,1,0]) {
+              cube([40,2,hotend_len+10],center=true);
+            }
+          }
+        }
+      }
+    }
+    translate([0,hotend_y,hotend_z]) {
+      hole(hotend_mount_diam,hotend_height_above_groove*2,resolution);
 
       translate([20,0,0]) {
-        cube([40,hotend_mount_diam-0.5,x_rod_spacing*2],center=true);
+        cube([40,hotend_mount_diam-0.5,hotend_height_above_groove*2],center=true);
+      }
+    }
+    translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
+      hole(hotend_groove_diam,hotend_groove_height*2,resolution);
+
+      translate([20,0,0]) {
+        cube([40,hotend_groove_diam-0.5,hotend_groove_height*2],center=true);
+      }
+    }
+    translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height-10]) {
+      hole(hotend_mount_diam,20,resolution);
+
+      translate([20,0,0]) {
+        cube([40,hotend_mount_diam-0.5,20],center=true);
       }
     }
     hull() {
       translate([-x_carriage_width/2,fan_pos_y,fan_pos_z]) {
         rotate([0,90,0]) {
-          hole(fan_side-6,fan_thickness*3,resolution);
+          hole(fan_diam,fan_thickness*3,resolution);
         }
       }
       translate([0,hotend_y,heatsink_pos_z]) {
@@ -427,6 +462,17 @@ module x_carriage() {
 
           translate([0,-10,0]) {
             cube([20,20,20],center=true);
+          }
+        }
+      }
+    }
+    translate([-x_carriage_width/2,fan_pos_y,fan_pos_z]) {
+      for(y=[front,rear]) {
+        for(z=[top,bottom]) {
+          translate([0,fan_hole_spacing/2*y,fan_hole_spacing/2*z]) {
+            rotate([0,90,0]) {
+              hole(fan_screw_diam,fan_screw_depth*2,8);
+            }
           }
         }
       }
@@ -446,7 +492,7 @@ module x_carriage() {
         position_tuner() {
           translate([tuner_anchor_screw_hole_pos_x,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) rotate([0,90,0]) {
             rotate([0,0,tuner_rotate_z]) {
-              hole(tuner_anchor_screw_hole_diam,10,8);
+              hole(tuner_anchor_screw_hole_diam,20,8);
             }
           }
         }
@@ -511,14 +557,14 @@ module x_carriage() {
       translate([0,0,x_rod_spacing/2*side]) {
         rotate([0,90,0]) {
           // bearing hole
-          hole(x_bearing_diam,x_carriage_width+1,resolution);
+          hole(x_bearing_diam,x_carriage_width+1,16);
           // beveled opening
           for(end=[left,right]) {
             hull() {
               translate([0,0,(x_carriage_width/2)*end]) {
-                hole(x_bearing_diam,3,resolution);
+                hole(x_bearing_diam,3,16);
                 translate([0,0,.5*end]) {
-                  hole(x_bearing_diam+1,1,resolution);
+                  hole(x_bearing_diam+1,1,16);
                 }
               }
             }
