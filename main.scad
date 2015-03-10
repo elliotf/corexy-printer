@@ -1851,7 +1851,7 @@ module z_axis() {
   translate([0,z_rod_pos_y,build_base_z-z_printed_portion_height/2]) {
     for(side=[left,right]) {
       mirror([1-side,0,0]) {
-        //printed_z_portion();
+        printed_z_portion();
       }
 
       // z bearings
@@ -1865,7 +1865,7 @@ module z_axis() {
       translate([z_bed_support_pos_x*side,-z_bearing_body_diam/2-z_build_platform_depth/2-0.1,0]) {
         rotate([0,0,-90]) {
           rotate([90,0,0]) {
-            //color("purple") linear_extrude(height=sheet_thickness,center=true) z_support_arm();
+            color("purple") linear_extrude(height=sheet_thickness,center=true) z_support_arm();
           }
         }
       }
