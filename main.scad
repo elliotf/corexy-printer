@@ -265,6 +265,12 @@ module hotend_groove_mount_void() {
 
 module x_carriage() {
   body_side = rear;
+  fan_side       = 30;
+  fan_thickness  = 10;
+  fan_pos_y = front*(x_bearing_diam/2+30/2+wall_thickness/2);
+  fan_pos_z = -x_bearing_diam/3;
+  fan_pos_z = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+fan_side/2;
+  heatsink_pos_z = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+hotend_heatsink_height/2;
 
   bearing_body_wall_thickness = top_line_pos_y-x_bearing_diam/2;
   bearing_body_diam = x_bearing_diam+wall_thickness*3;
@@ -348,22 +354,25 @@ module x_carriage() {
     // hotend mount
     hotend_mount_height = hotend_groove_height+hotend_height_below_groove*2;
     hull() {
-      for(side=[left,right]) {
-        translate([side*(x_carriage_width/2-0.5),hotend_y/2,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
-          rotate([0,90,0]) {
-            hole(hotend_mount_height,1,resolution);
+      translate([0,hotend_y,fan_pos_z]) {
+        hole(hotend_diam+wall_thickness*3,fan_side,resolution);
+      }
+      translate([-x_carriage_width/2+wall_thickness*2,0,fan_pos_z]) {
+        cube([wall_thickness*4,1,fan_side],center=true);
+      }
+      translate([x_carriage_width/2-1,-bearing_body_diam/4,fan_pos_z]) {
+        cube([2,bearing_body_diam/2,fan_side],center=true);
+      }
+      translate([-x_carriage_width/2+wall_thickness*2,fan_pos_y,fan_pos_z]) {
+        for(y=[front]) {
+          for(z=[top,bottom]) {
+            translate([0,(fan_side/2-rounded_diam/2)*y,(fan_side/2-rounded_diam/2)*z]) {
+              rotate([0,90,0]) {
+                hole(rounded_diam,wall_thickness*4,resolution);
+              }
+            }
           }
         }
-      }
-      translate([0,0,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
-        cube([x_carriage_width,1,hotend_mount_height],center=true);
-      }
-      translate([0,0,x_rod_spacing/2+bearing_body_diam/4]) {
-        cube([x_carriage_width,1,bearing_body_diam/2],center=true);
-      }
-      translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
-        cube([1,abs(hotend_y),hotend_groove_height],center=true);
-        hole(hotend_diam,hotend_mount_height,resolution);
       }
     }
 
@@ -391,11 +400,42 @@ module x_carriage() {
     hotend_groove_depth = (hotend_diam - hotend_groove_diam)/2;
     translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
       rotate([0,0,45]) {
-        hotend_zip_tie_holes();
+        //hotend_zip_tie_holes();
       }
 
       translate([hotend_diam-hotend_groove_depth*1.5,-hotend_diam+hotend_groove_depth*1.5,-hotend_clamped_height]) {
         //cube([hotend_diam*2,hotend_diam*2,hotend_clamped_height*2+hotend_clearance],center=true);
+      }
+    }
+
+    translate([0,hotend_y,heatsink_pos_z]) {
+      hole(hotend_mount_diam,x_rod_spacing*2,resolution);
+
+      translate([20,0,0]) {
+        cube([40,hotend_mount_diam-0.5,x_rod_spacing*2],center=true);
+      }
+    }
+    hull() {
+      translate([-x_carriage_width/2,fan_pos_y,fan_pos_z]) {
+        rotate([0,90,0]) {
+          hole(fan_side-6,fan_thickness*3,resolution);
+        }
+      }
+      translate([0,hotend_y,heatsink_pos_z]) {
+        intersection() {
+          hole(hotend_diam,1,resolution);
+
+          translate([0,-10,0]) {
+            cube([20,20,20],center=true);
+          }
+        }
+      }
+    }
+    translate([0,hotend_y,heatsink_pos_z-0.05]) {
+      hole(hotend_diam,hotend_heatsink_height+0.1,resolution);
+
+      translate([20,0,0]) {
+        cube([40,hotend_diam-1,hotend_heatsink_height+0.1],center=true);
       }
     }
 
@@ -492,11 +532,11 @@ module x_carriage() {
     }
 
     translate([0,hotend_y,hotend_z]) {
-      # hotend();
+      % hotend();
     }
 
-    translate([-x_carriage_width/2-5,front*(x_bearing_diam/2+30/2+wall_thickness/2),-x_bearing_diam/3]) {
-      % cube([10,30,30],center=true);
+    translate([-x_carriage_width/2-5,fan_pos_y,fan_pos_z]) {
+      % cube([fan_thickness,fan_side,fan_side],center=true);
     }
   }
   translate([0,top_line_pos_y,top_line_pos_z]) {
