@@ -429,6 +429,10 @@ module x_carriage() {
         }
       }
     }
+    translate([hotend_groove_diam*.8,hotend_y-hotend_groove_diam,hotend_z-hotend_len/2]) {
+      //cube([hotend_groove_diam,hotend_groove_diam*1.5,hotend_len+1],center=true);
+    }
+
     translate([0,hotend_y,hotend_z]) {
       hole(hotend_mount_diam,hotend_height_above_groove*2,resolution);
 
