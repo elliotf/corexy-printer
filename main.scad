@@ -360,14 +360,14 @@ module x_carriage() {
     hull() {
       translate([-x_carriage_width/2+1,0,x_rod_spacing/2]) {
         rotate([0,90,0]) {
-          hole(bearing_body_diam,2,resolution);
+          hole(bearing_body_diam,2,8);
         }
       }
       translate([0,hotend_y,hotend_z-hotend_height_above_groove/2]) {
-        hole(hotend_mount_diam+wall_thickness*2,0.1,resolution);
+        hole(hotend_mount_diam+wall_thickness*3,0.1,resolution);
 
-        translate([-x_carriage_width/2+hotend_groove_diam/2,hotend_groove_diam/4,0]) {
-          hole(hotend_groove_diam,0.1,resolution);
+        translate([-x_carriage_width/2+hotend_groove_diam/2,0,0]) {
+          hole(hotend_groove_diam,0.1,8);
         }
       }
       translate([0,hotend_y,fan_pos_z]) {
@@ -456,14 +456,8 @@ module x_carriage() {
           hole(fan_diam,fan_thickness*3,resolution);
         }
       }
-      translate([0,hotend_y,heatsink_pos_z]) {
-        intersection() {
-          hole(hotend_diam,1,resolution);
-
-          translate([0,-10,0]) {
-            cube([20,20,20],center=true);
-          }
-        }
+      translate([0,hotend_y,fan_pos_z]) {
+        hole(hotend_diam,1,resolution);
       }
     }
     translate([-x_carriage_width/2,fan_pos_y,fan_pos_z]) {
