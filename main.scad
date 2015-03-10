@@ -486,7 +486,7 @@ module x_carriage() {
         position_tuner() {
           translate([tuner_anchor_screw_hole_pos_x,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) rotate([0,90,0]) {
             rotate([0,0,tuner_rotate_z]) {
-              hole(tuner_anchor_screw_hole_diam,20,8);
+              hole(tuner_anchor_screw_hole_diam,12,8);
             }
           }
         }
