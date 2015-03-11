@@ -267,7 +267,7 @@ module x_carriage() {
   body_side        = rear;
   fan_side         = 30;
   fan_diam         = fan_side-wall_thickness*2;
-  fan_screw_diam   = 2;
+  fan_screw_diam   = 2.6;
   fan_screw_depth  = 12;
   fan_thickness    = 10;
   fan_pos_y        = front*(x_bearing_diam/2+30/2+wall_thickness/2);
@@ -550,8 +550,15 @@ module x_carriage() {
         }
       }
     }
-    translate([extrusion_height,-x_bearing_diam/5,0]) {
-      cube([x_carriage_width,x_bearing_diam/4,x_rod_spacing],center=true);
+    translate([extrusion_height,-1,x_rod_spacing/2+x_bearing_diam/2]) {
+      rotate([0,0,0]) {
+        cube([x_carriage_width,5,x_bearing_diam],center=true);
+      }
+    }
+    translate([extrusion_height,0,-x_rod_spacing/2-x_bearing_diam]) {
+      rotate([45,0,0]) {
+        cube([x_carriage_width,x_bearing_diam*1.5,x_bearing_diam*1.5],center=true);
+      }
     }
 
     for(side=[top,bottom]) {
