@@ -77,8 +77,8 @@ hotend_groove_height = 6;
 
 // e3d v6 bowden heatsink mount
 hotend_len                 = 65;
-hotend_height_above_groove = 7-0.1;
-hotend_height_below_groove = 3-0.1;
+hotend_height_above_groove = 7;
+hotend_height_below_groove = 3;
 hotend_groove_height = 6;
 hotend_diam = 22.4;
 hotend_heatsink_diam = 22.4;
