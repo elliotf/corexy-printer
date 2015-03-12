@@ -35,6 +35,7 @@ tuner_shoulder_pos_z = top_line_pos_z+22.5;
 
 hotend_y    = (x_bearing_diam/2 + wall_thickness + spacer + hotend_diam/2)*front;
 hotend_z    = tuner_shoulder_pos_z;
+hotend_z    = -x_rod_spacing/2-x_bearing_diam/2+hotend_dist_to_heatsink_bottom;
 
 top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
 y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2 - 7;

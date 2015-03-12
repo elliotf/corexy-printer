@@ -106,7 +106,6 @@ module hotend() {
 module e3d_hotend() {
   module body() {
     hotend_mount_height    = hotend_height_above_groove + hotend_groove_height + hotend_height_below_groove;
-    hotend_heatsink_height = hotend_nozzle_to_top_fin - hotend_nozzle_to_bottom_fin;
 
     translate([0,0,-hotend_height_above_groove/2]) {
       hole(hotend_mount_diam,hotend_height_above_groove,resolution);
@@ -122,7 +121,7 @@ module e3d_hotend() {
     fin_thickness = 1;
     fin_spacing   = 2.5;
 
-    translate([0,0,-hotend_len+hotend_nozzle_to_bottom_fin+fin_thickness/2]) {
+    translate([0,0,-hotend_dist_to_heatsink_bottom+fin_thickness/2]) {
       for(z=[0:10]) {
         translate([0,0,fin_spacing*z]) {
           hole(hotend_heatsink_diam,fin_thickness,resolution);
@@ -268,13 +267,13 @@ module x_carriage() {
   fan_side         = 30;
   fan_diam         = fan_side-wall_thickness*2;
   fan_screw_diam   = 2.6;
-  fan_screw_depth  = 12;
+  fan_screw_depth  = 7;
   fan_thickness    = 10;
   fan_pos_y        = front*(x_bearing_diam/2+30/2+wall_thickness/2);
-  fan_pos_z        = -x_bearing_diam/3;
-  fan_pos_z        = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+fan_side/2;
+  fan_pos_z        = hotend_z-hotend_dist_to_heatsink_bottom+fan_side/2;
   fan_hole_spacing = 24;
   heatsink_pos_z   = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+hotend_heatsink_height/2;
+  heatsink_pos_z   = hotend_z-hotend_dist_to_heatsink_bottom+hotend_heatsink_height/2;
 
   bearing_body_wall_thickness = top_line_pos_y-x_bearing_diam/2;
   bearing_body_diam = x_bearing_diam+wall_thickness*3;
@@ -356,7 +355,6 @@ module x_carriage() {
     }
 
     // hotend mount
-    hotend_mount_height = hotend_groove_height+hotend_height_below_groove*2;
     hull() {
       translate([-x_carriage_width/2+1,0,x_rod_spacing/2]) {
         rotate([0,90,0]) {
@@ -433,25 +431,26 @@ module x_carriage() {
       //cube([hotend_groove_diam,hotend_groove_diam*1.5,hotend_len+1],center=true);
     }
 
-    translate([0,hotend_y,hotend_z]) {
+    groove_slop = 0.1;
+    translate([0,hotend_y,hotend_z-groove_slop/2]) {
       hole(hotend_mount_diam,hotend_height_above_groove*2,resolution);
 
       translate([20,0,0]) {
-        cube([40,hotend_mount_diam-0.5,hotend_height_above_groove*2],center=true);
+        cube([40,hotend_mount_diam-0.1,hotend_height_above_groove*2],center=true);
       }
     }
     translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height/2]) {
       hole(hotend_groove_diam,hotend_groove_height*2,resolution);
 
       translate([20,0,0]) {
-        cube([40,hotend_groove_diam-0.5,hotend_groove_height*2],center=true);
+        cube([40,hotend_groove_diam-0.1,hotend_groove_height*2],center=true);
       }
     }
-    translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height-10]) {
+    translate([0,hotend_y,hotend_z-hotend_height_above_groove-hotend_groove_height-10+groove_slop/2]) {
       hole(hotend_mount_diam,20,resolution);
 
       translate([20,0,0]) {
-        cube([40,hotend_mount_diam-0.5,20],center=true);
+        cube([40,hotend_mount_diam-0.1,20],center=true);
       }
     }
     hull() {
@@ -479,7 +478,7 @@ module x_carriage() {
       hole(hotend_diam,hotend_heatsink_height+0.1,resolution);
 
       translate([20,0,0]) {
-        cube([40,hotend_diam-1,hotend_heatsink_height+0.1],center=true);
+        cube([40,hotend_diam-0.1,hotend_heatsink_height+0.1],center=true);
       }
     }
 
