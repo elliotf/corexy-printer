@@ -84,7 +84,9 @@ hotend_diam = 22.4;
 hotend_heatsink_diam = 22.4;
 hotend_nozzle_to_bottom_fin = 20;
 hotend_nozzle_to_top_fin = 46;
-hotend_heatsink_height = hotend_nozzle_to_top_fin - hotend_nozzle_to_bottom_fin;
+hotend_heatsink_height = 26;
+hotend_dist_to_heatsink_bottom = 46;
+hotend_dist_to_heatsink_top = hotend_dist_to_heatsink_bottom - hotend_heatsink_height;
 hotend_mount_diam  = 16;
 hotend_groove_diam = 12;
 
