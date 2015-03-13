@@ -95,6 +95,7 @@ z_carriage_bearing_spacing       = (z_line_bearing_diam/2 + belt_thickness*2 + 1
 z_brace_screw_dist_from_corner = top_rear_brace_depth-wall_thickness-m3_nut_diam;
 z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + 5/2 + wall_thickness + z_line_bearing_inner/2;
 z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + z_line_bearing_inner/2 + wall_thickness + m3_nut_diam/2;
+z_brace_screw_dist_from_corner = 21;
 z_brace_body_width             = m3_nut_diam + wall_thickness*2;
 z_brace_pos_x                  = z_line_bearing_thickness/2 + spacer*2 + z_brace_body_width/2;
 
