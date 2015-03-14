@@ -112,7 +112,7 @@ z_support_arm_hole_spacing  = z_printed_portion_height / (z_support_arm_hole_cou
 z_line_bearing_hole_spacing = z_line_bearing_diam/2 + belt_thickness*2 + spacer;
 
 z_motor_pos_x            = z_pulley_height + spacer + sheet_thickness; // z_line_bearing_diam/2 + belt_thickness + z_pulley_diam/2;
-z_motor_pos_y            = rear*sheet_pos_y + sheet_thickness/2 + motor_side/2;
+z_motor_pos_y            = rear*sheet_pos_y + 2 + sheet_thickness/2 + motor_side/2;
 z_motor_pos_z            = bottom_sheet_pos_z + sheet_thickness/2 + z_brace_screw_dist_from_corner + 5;
 
 xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*6 - motor_side/2;

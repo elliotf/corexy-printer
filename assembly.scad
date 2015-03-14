@@ -135,7 +135,9 @@ module assembly() {
 }
 
 translate([0,0,build_z*1-z_pos]) {
-  z_axis();
+  if (!hide_z) {
+    z_axis();
+  }
 }
 
 assembly();

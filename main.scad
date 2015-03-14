@@ -937,16 +937,19 @@ module rear_sheet() {
 
     height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2);
 
-    rounded_diam     = 10;
-    main_hole_width  = front_sheet_width      - motor_side*2.5;
-    main_hole_height = height_below_top_sheet - motor_side*2.5;
+    min_height_remaining = motor_side*2.5;
+    height_remaining     = max(min_height_remaining,height_below_top_sheet*0.5);
+    main_hole_width      = z_rod_pos_x*2-z_rod_diam;
+    main_hole_height     = max(0,height_below_top_sheet - height_remaining);
 
-    hull() {
-      translate([0,-side_sheet_height/2+height_below_top_sheet/2]) {
-        for(x=[left,right]) {
-          for(y=[front,rear]) {
-            translate([(main_hole_width/2-rounded_diam)*x,(main_hole_height/2-rounded_diam)*y]) {
-              accurate_circle(rounded_diam,resolution);
+    if (main_hole_height) {
+      hull() {
+        translate([0,-side_sheet_height/2+height_below_top_sheet/2]) {
+          for(x=[left,right]) {
+            for(y=[front,rear]) {
+              translate([(main_hole_width/2-rounded_diam/2)*x,(main_hole_height/2-rounded_diam/2)*y]) {
+                accurate_circle(rounded_diam,resolution);
+              }
             }
           }
         }
@@ -977,9 +980,9 @@ module side_sheet() {
       box_holes_for_side(side_sheet_depth,4);
     }
 
-    rounded_diam     = 10;
-    main_hole_depth  = side_sheet_depth       - motor_side*2;
-    main_hole_height = height_below_top_sheet - motor_side*2.5;
+    rounded_diam     = bc_shoulder_width*2;
+    main_hole_depth  = side_sheet_depth/2;
+    main_hole_height = height_below_top_sheet/2;
 
     hull() {
       translate([0,-side_sheet_height/2+height_below_top_sheet/2]) {
