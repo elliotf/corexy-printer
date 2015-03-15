@@ -1494,8 +1494,8 @@ module z_idler_top() {
       translate([0,-size+1,-1]) {
         cube([body_width,2,2],center=true);
       }
-      translate([0,-3,-size+1]) {
-        cube([body_width,6,2],center=true);
+      translate([0,-1,-size+1]) {
+        cube([body_width,2,2],center=true);
       }
     }
   }

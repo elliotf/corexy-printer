@@ -28,37 +28,62 @@ module plate() {
         }
       }
 
-      translate([2,10,z_printed_portion_height/2]) {
-        printed_z_portion();
-      }
-
-      translate([70,-x_rod_spacing-0,z_brace_body_width/2]) {
-        rotate([0,90,0]) {
-          z_idler_top();
-        }
-      }
-      translate([-95+top_rear_brace_depth*2,-70,z_brace_body_width/2]) {
-        rotate([0,0,180]) {
-          rotate([0,90,0]) {
-            z_idler_bottom();
-          }
+      translate([75-bearing_body_diam,bearing_body_diam,z_printed_portion_height/2]) {
+        translate([-z_rod_pos_x,0,0]) {
+          printed_z_portion();
         }
       }
     }
   }
 
-  translate([-x_bearing_diam/3,-x_rod_spacing+x_bearing_diam/2,x_carriage_width/2]) {
-    rotate([0,0,90]) {
+  translate([-75-hotend_y+hotend_diam+bearing_body_diam/2,-x_rod_spacing-bearing_body_diam*1.5,x_carriage_width/2]) {
+    rotate([0,0,-90]) {
       rotate([0,-90,0]) {
         x_carriage();
       }
     }
   }
 
-  translate([-motor_side/2+sheet_thickness,-75+z_brace_pos_x,0]) {
+  translate([-5,-75+z_motor_pos_x+4,0]) {
     rotate([0,0,90]) {
       rotate([90,0,0]) {
         z_motor_mount();
+      }
+    }
+  }
+
+  translate([2,0,z_brace_body_width/2]) {
+    rotate([0,0,90]) {
+      rotate([0,90,0]) {
+        z_idler_top();
+      }
+    }
+    translate([top_rear_brace_depth+6,-top_rear_brace_depth-6,0]) {
+      rotate([0,0,180]) {
+        mirror([1,0,0]) {
+          rotate([0,90,0]) {
+            z_idler_top();
+          }
+        }
+      }
+    }
+  }
+
+  //translate([-top_rear_brace_depth,-top_rear_brace_depth-8,z_brace_body_width/2]) {
+  translate([75-3,-75+3,z_brace_body_width/2]) {
+    rotate([0,0,180]) {
+      rotate([0,90,0]) {
+        z_idler_bottom();
+      }
+    }
+
+    translate([-top_rear_brace_depth,top_rear_brace_depth*2,0]) {
+      rotate([0,0,90]) {
+        mirror([1,0,0]) {
+          rotate([0,90,0]) {
+            z_idler_bottom();
+          }
+        }
       }
     }
   }
