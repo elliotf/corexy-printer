@@ -884,9 +884,11 @@ module rear_sheet() {
     }
   }
 
+  /*
   z_belt_opening_width  = z_brace_pos_x*2-z_brace_body_width;
   z_belt_opening_height = z_brace_screw_dist_from_corner;
   z_belt_opening_pos_z  = bottom_sheet_pos_z + sheet_thickness/2 + z_belt_opening_height/2;
+  */
 
   module holes() {
     translate([0,-sheet_pos_z]) {
@@ -1607,12 +1609,141 @@ module z_idler_bottom() {
   bridges();
 }
 
-module z_axis_stationary() {
-  z_line_bearing_diam = 10;
-  //z_belt_pulley_diam  = 10;
-  motor_pos_z         = top_sheet_pos_z-sheet_thickness/2-motor_side/2;
-  motor_pos_z         = bottom_sheet_pos_z+sheet_thickness/2+motor_side/2;
+module z_motor_mount() {
+  motor_pos_x     = left*z_motor_pos_x;
+  motor_pos_y     = z_motor_pos_y - sheet_pos_y-sheet_thickness/2;
+  motor_pos_z     = z_motor_pos_z - bottom_sheet_pos_z-sheet_thickness/2;
+  mount_thickness = 6;
+  total_width     = z_brace_pos_x*2+z_brace_body_width;
 
+  belt_opening_height = z_belt_opening_height - wall_thickness*2;
+  screw_head_diam = 6;
+  rounded_diam    = z_brace_body_width/2;
+
+  module position_motor() {
+    translate([motor_pos_x,motor_pos_y,motor_pos_z]) {
+      rotate([0,90,0]) {
+        children();
+      }
+    }
+  }
+
+  module body() {
+    hull() {
+      for(x=[left,right]) {
+        for(z=[top,bottom]) {
+          translate([(z_brace_pos_x+z_brace_body_width/2-rounded_diam/2)*x,mount_thickness/2,motor_pos_z+(motor_side/2-rounded_diam/2)*z]) {
+            rotate([90,0,0]) {
+              hole(rounded_diam,mount_thickness,resolution);
+            }
+          }
+        }
+      }
+
+      translate([0,mount_thickness/2,-sheet_thickness/2]) {
+        rotate([90,0,0]) {
+          hole(bc_screw_diam+wall_thickness*4,mount_thickness,resolution);
+        }
+      }
+    }
+
+    for(side=[top,bottom]) {
+      hull() {
+        for(x=[left,right]) {
+          for(z=[motor_pos_z+(motor_side/2-rounded_diam/2)*side,motor_pos_z+(belt_opening_height/2+rounded_diam/2)*side]) {
+            translate([x*(z_brace_pos_x+z_brace_body_width/2-rounded_diam/2),mount_thickness/2,z]) {
+              rotate([90,0,0]) {
+                hole(rounded_diam,mount_thickness,resolution);
+              }
+            }
+          }
+        }
+        translate([total_width/4*left,motor_pos_y+motor_hole_spacing/2,motor_pos_z+motor_hole_spacing/2*side]) {
+          rotate([0,90,0]) {
+            hole(screw_head_diam+wall_thickness*3,total_width/2,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    for(side=[left,right]) {
+      translate([z_brace_pos_x*side,mount_thickness/2,z_brace_screw_dist_from_corner]) {
+        rotate([-90,0,0]) {
+          hole(bc_screw_diam,mount_thickness+1,16);
+
+          translate([0,0,mount_thickness/2+20]) {
+            hole(screw_head_diam,40,16);
+          }
+        }
+      }
+      translate([0,mount_thickness/2,-sheet_thickness/2]) {
+        rotate([-90,0,0]) {
+          hole(bc_screw_diam,mount_thickness+1,16);
+
+          hull() {
+            translate([0,0,mount_thickness/2+2]) {
+              hole(screw_head_diam,4,16);
+            }
+
+            translate([0,1,motor_hole_spacing-screw_head_diam/2]) {
+              rotate([90,0,0]) {
+                hole(screw_head_diam,2,resolution);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // belt opening
+    translate([0,0,motor_pos_z]) {
+      hull() {
+        cube([z_belt_opening_width,mount_thickness*2+1,belt_opening_height],center=true);
+
+        for(x=[left,right]) {
+          for(z=[top,bottom]) {
+            translate([x*(z_belt_opening_width/2-2),-1,z*z_belt_opening_height/2]) {
+              rotate([90,0,0]) {
+                hole(4,2,resolution);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    position_motor() {
+      hole(motor_shoulder_diam+1,100,resolution);
+      for(x=[left,right]) {
+        for(y=[front,rear]) {
+          translate([motor_hole_spacing/2*x,motor_hole_spacing/2*y,0]) {
+            hole(bc_screw_diam,30,8);
+
+            translate([0,0,sheet_thickness+bc_shoulder_width+20]) {
+              hole(screw_head_diam,40,8);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  % position_motor() {
+    translate([0,0,z_motor_pos_x]) {
+      hole(z_pulley_diam,z_pulley_height,resolution);
+    }
+    motor();
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module z_axis_stationary() {
   // z rods
   for (side=[left,right]) {
     translate([z_rod_pos_x*side,z_rod_pos_y,z_rod_pos_z]) {
@@ -1620,13 +1751,8 @@ module z_axis_stationary() {
     }
   }
 
-  translate([left*z_motor_pos_x,z_motor_pos_y,z_motor_pos_z]) {
-    % rotate([0,90,0]) {
-      translate([0,0,z_motor_pos_x]) {
-        hole(z_pulley_diam,z_pulley_height,resolution);
-      }
-      motor();
-    }
+  translate([0,sheet_pos_y+sheet_thickness/2,bottom_sheet_pos_z+sheet_thickness/2]) {
+    z_motor_mount();
   }
 
   for(side=[left,right]) {
