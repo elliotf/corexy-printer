@@ -41,14 +41,14 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
+build_x = 150;
+build_y = 100;
+build_z = 0;
+
 /*
 build_x = 100;
 build_y = 100;
 build_z = 100;
-
-build_x = 100;
-build_y = 100;
-build_z = 0;
 */
 
 belt_total_thickness = 1.38;
@@ -279,11 +279,9 @@ endstop_hole_from_top = 5;
 
 // Screws, nuts
 m3_diam = 3;
-m3_head_diam = 6;
 m3_nut_diam  = 5.5;
 m3_nut_thickness  = 4;
 m3_washer_thickness  = .6;
-
 m5_diam = 5;
 m5_nut_diam = 8;
 m5_nut_thickness = 5;
@@ -420,8 +418,10 @@ psu_height = 50;
 pulley_diam = 20;
 pulley_diam = 40/approx_pi; // 32 =~ 16T GT2, 40 =~ 20T GT2
 pulley_diam = 15; // graber cars pulley
+pulley_diam = 18; // graber cars pulley from wolfjm
 pulley_height = line_bearing_diam;
 pulley_height = 13;
+pulley_height = 28; // graber cars pulley from wolfjm
 
 pulley_idler_height = pulley_height;
 pulley_idler_diam = pulley_idler_bearing_diam + min_material_thickness*2;

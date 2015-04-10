@@ -2,11 +2,15 @@ include <config.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
 
-sheet_opacity          = 0.4;
 sheet_opacity          = 1;
+sheet_opacity          = 0.4;
 
 spool_diam = 18;
 spool_len  = 25.5;
+
+bearing_body_thickness = line_bearing_thickness+spacer*2+wall_thickness*5;
+bearing_body_depth     = line_bearing_diam+spacer+wall_thickness*2;
+bearing_body_diam      = line_bearing_nut_diam+wall_thickness*3;
 
 x_rod_spacing        = y_bearing_diam + min_material_thickness * 2 + y_rod_diam;
 x_carriage_width     = 45; // lm8luu
@@ -87,18 +91,19 @@ z_idler_sheet_dist_y            = z_line_bearing_diam/2+belt_thickness*2+spacer*
 z_idler_sheet_dist_z            = z_line_bearing_diam/2+belt_thickness*4+spacer*4;
 z_carriage_idler_sheet_dist_y   = z_idler_sheet_dist_y + z_line_bearing_diam/2 + belt_thickness + z_line_bearing_diam/2;
 
-z_line_bearing_to_carriage_pos_y = front*z_idler_sheet_dist_y;
-z_line_bearing_to_carriage_pos_z = z_idler_sheet_dist_z;
-z_line_bearing_to_top_pos_y      = front*z_line_bearing_diam/2;
-z_line_bearing_to_top_pos_z      = motor_side/2+z_line_bearing_diam/2;
+z_line_bearing_dist_from_sheet   = sheet_pos_y - z_rod_pos_y - sheet_thickness/2; // - z_rod_diam/2 - 1;
 z_carriage_bearing_spacing       = (z_line_bearing_diam/2 + belt_thickness*2 + 1) *2;
 
+/*
 z_brace_screw_dist_from_corner = top_rear_brace_depth-wall_thickness-m3_nut_diam;
 z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + 5/2 + wall_thickness + z_line_bearing_inner/2;
 z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + z_line_bearing_inner/2 + wall_thickness + m3_nut_diam/2;
 z_brace_screw_dist_from_corner = 21;
 z_brace_body_width             = m3_nut_diam + wall_thickness*2;
 z_brace_pos_x                  = z_line_bearing_thickness/2 + spacer*2 + z_brace_body_width/2;
+*/
+z_line_idler_bearing_pos_x   = left*line_bearing_effective_diam;
+z_line_idler_bearing_pos_y   = sheet_pos_y - sheet_thickness/2 - z_line_bearing_dist_from_sheet;
 
 z_printed_portion_height    = z_bearing_len*2 + z_bearing_spacing;
 z_carriage_bearing_offset_z = -z_printed_portion_height*.4;
@@ -109,23 +114,19 @@ z_bed_support_mount_depth   = wall_thickness*4+m3_nut_thickness;
 z_bed_support_pos_x         = z_rod_pos_x-z_bearing_body_diam/2+z_bed_support_mount_width+sheet_thickness/2;
 z_support_arm_hole_count    = 4;
 z_support_arm_hole_spacing  = z_printed_portion_height / (z_support_arm_hole_count + 1);
-z_line_bearing_hole_spacing = z_line_bearing_diam/2 + belt_thickness*2 + spacer;
 
-z_motor_pos_x            = z_pulley_height + spacer + sheet_thickness; // z_line_bearing_diam/2 + belt_thickness + z_pulley_diam/2;
-z_motor_pos_x            = z_brace_pos_x+z_brace_body_width/2;
-z_motor_pos_y            = rear*sheet_pos_y + sheet_thickness/2 + motor_side/2 + 4;
-z_motor_pos_y            = rear*sheet_pos_y + sheet_thickness/2 + motor_side/2 + 1;
-z_motor_pos_z            = bottom_sheet_pos_z + sheet_thickness/2 + z_brace_screw_dist_from_corner + motor_shaft_diam/2 + bc_nut_diam;
+height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2);
+
+z_motor_pos_x            = left*(line_bearing_effective_diam * 1.5 + 20);
+z_motor_pos_x            = left*(line_bearing_effective_diam/2 + line_bearing_effective_diam + pulley_diam/2 + 4);
+z_motor_pos_x            = left*(line_bearing_effective_diam/2 + pulley_diam/2);
+z_motor_pos_y            = rear*sheet_pos_y + sheet_thickness/2;
+z_motor_pos_z            = top_sheet_pos_z - height_below_top_sheet/2;
 z_motor_pos_z            = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;
-z_motor_pos_z            = bottom_sheet_pos_z + motor_side/2;
 
-z_belt_opening_width  = z_brace_pos_x*2-z_brace_body_width;
-z_belt_opening_height = z_motor_hole_spacing - m3_nut_diam;
-z_belt_opening_pos_z  = z_motor_pos_z;
-
-xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*6 - motor_side/2;
+xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*3 - motor_side/2;
 xy_motor_pos_y = rear*sheet_pos_y - sheet_thickness/2;
-xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + spacer*5 + motor_side/2;
+xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + spacer*3 + motor_side/2;
 
 main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
@@ -156,10 +157,6 @@ endcap_side_screw_hole_pos_x = side_sheet_pos_x-y_rod_x;
 endcap_side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
 endcap_top_screw_hole_pos_x  = top_sheet_width/2-y_rod_x-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;
 endcap_top_screw_hole_pos_z  = top_sheet_pos_z;
-
-bearing_body_thickness = line_bearing_thickness+spacer*2+wall_thickness*5;
-bearing_body_depth     = line_bearing_diam+spacer+wall_thickness*2;
-bearing_body_diam      = line_bearing_nut_diam+wall_thickness*3;
 
 echo("X/Y/Z ROD LEN: ", x_rod_len, y_rod_len, z_rod_len);
 echo("W/D/H: ", front_sheet_width, side_sheet_depth, sheet_height);
