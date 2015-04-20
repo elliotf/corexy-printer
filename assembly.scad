@@ -1,12 +1,12 @@
 include <positions.scad>;
 include <main.scad>;
 
-hide_x = false;
 hide_x = true;
-hide_sheets = false;
+hide_x = false;
 hide_sheets = true;
-hide_ends = false;
+hide_sheets = false;
 hide_ends = true;
+hide_ends = false;
 
 module x_axis() {
   translate([0,y_pos,0]) {
@@ -63,13 +63,13 @@ module assembly() {
 
   translate([0,0,top_sheet_pos_z]) {
     color("violet", sheet_opacity) {
-      //linear_extrude(height=sheet_thickness,center=true) top_sheet();
+      linear_extrude(height=sheet_thickness,center=true) top_sheet();
     }
   }
 
   translate([0,0,bottom_sheet_pos_z]) {
     color("yellowgreen", sheet_opacity) {
-      //linear_extrude(height=sheet_thickness,center=true) bottom_sheet();
+      linear_extrude(height=sheet_thickness,center=true) bottom_sheet();
     }
   }
 
@@ -117,7 +117,7 @@ module assembly() {
         % motor();
 
         translate([0,0,2+motor_shaft_len/2]) {
-          //% hole(pulley_diam,motor_shaft_len-4,resolution);
+          % hole(pulley_diam,motor_shaft_len-4,resolution);
         }
       }
     }
