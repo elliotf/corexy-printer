@@ -951,16 +951,10 @@ module rear_sheet() {
       }
     }
     translate([z_idler_pulley_pos_x,z_idler_pulley_pos_z-sheet_pos_z]) {
-      translate([bearing_625_diam*left,0,0]) {
-        accurate_circle(3,32);
-      }
-      translate([-z_idler_pulley_pos_x*2,0,0]) {
-        accurate_circle(3,32);
-      }
-      translate([0,bearing_625_diam*bottom,0]) {
-        accurate_circle(3,32);
-      }
       accurate_circle(bearing_625_diam-2,32);
+      position_z_pulley_bearing_retaimer_mount_holes() {
+        accurate_circle(3,32);
+      }
     }
 
     hull() {
@@ -1661,11 +1655,17 @@ module z_axis_stationary() {
   }
 
   translate([z_idler_pulley_pos_x,0,z_idler_pulley_pos_z]) {
-    % translate([0,sheet_pos_y,0]) {
+    translate([0,sheet_pos_y,0]) {
       for(side=[front,rear]) {
         translate([0,(bearing_625_thickness/2+sheet_thickness/2)*side,0]) {
-          rotate([90,0,0]) {
-            bearing_625();
+          rotate([90*side,0,0]) {
+            % bearing_625();
+
+            translate([0,0,-.5]) {
+              mirror([0,1-side,0]) {
+                z_idler_pulley_bearing_retainer();
+              }
+            }
           }
         }
       }
@@ -2153,6 +2153,74 @@ module tuner() {
     body();
     holes();
   }
+}
+
+module position_z_pulley_bearing_retaimer_mount_holes() {
+  diam              = bearing_625_diam + 0.1;
+  offset            = 30;
+  for(r=[0,120,240]) {
+    rotate([0,0,offset+r]) {
+      translate([diam/2+wall_thickness+m3_nut_diam/2,0,0]) {
+        children();
+      }
+    }
+  }
+}
+
+module z_idler_pulley_bearing_retainer() {
+  diam              = bearing_625_diam + 0.1;
+  bearing_body_diam = diam + wall_thickness*2;
+  rim_thickness     = 1;
+  thickness         = bearing_625_thickness + rim_thickness;
+  nut_hole_depth    = 2;
+
+  module body() {
+    hull() {
+      hole(bearing_body_diam,thickness, resolution);
+
+      position_z_pulley_bearing_retaimer_mount_holes() {
+        hole(m3_nut_diam+wall_thickness*3,thickness,resolution);
+      }
+
+      for(coord=[[-diam*.75,0,0],[0,-diam*.75,0],[diam*.75,0,0]]) {
+        translate(coord) {
+          //hole(3+wall_thickness*2,thickness,resolution);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    translate([0,0,rim_thickness]) {
+      hole(bearing_625_diam,thickness,16);
+    }
+    hole(bearing_625_diam-2,thickness*2,resolution);
+
+    position_z_pulley_bearing_retaimer_mount_holes() {
+      hole(3,thickness+1,6);
+
+      hull() {
+        translate([0,0,-thickness/2-0.05]) {
+          hole(m3_nut_diam,(nut_hole_depth+0.05)*2,6);
+          hole(m3_nut_diam+1,0.1,6);
+        }
+      }
+    }
+  }
+
+  module bridges() {
+    position_z_pulley_bearing_retaimer_mount_holes() {
+      translate([0,0,-thickness/2+nut_hole_depth+extrusion_height/2]) {
+        hole(m3_nut_diam+0.05,extrusion_height,6);
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+  bridges();
 }
 
 module bearing_625() {
