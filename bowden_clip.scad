@@ -2,12 +2,14 @@ use <util.scad>;
 
 left            = -1;
 right           = 1;
-to_clip_diam    = 7.75; // plus a little bit of slop
-clip_rim_diam   = 10.2;   // plus a little bit of slop
+to_clip_diam    = 7.75; // plus a little bit of slop for 3mm retainer
+to_clip_diam    = 6.3; // plus a little bit of slop for 1.75 retainer
+clip_rim_diam   = 10.2;   // plus a little bit of slop for 3mm e3d retainer
+clip_rim_diam   = 7.3;   // plus a little bit of slop for 1.75 e3d retainer
 extrusion_width = 0.5;
 resolution      = 128;
 
-module bowden_clip(diam=to_clip_diam,height=1.2) {
+module bowden_clip(diam=to_clip_diam,height=1.8) {
   surround_width = extrusion_width*6;
   outer_diam     = diam + surround_width*2;
   opening_angle  = 60;
