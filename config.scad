@@ -2,7 +2,7 @@
 da6 = 1 / cos(180 / 6) / 2;
 da8 = 1 / cos(180 / 8) / 2;
 
-approx_pi = 3.14159;
+approx_pi = 3.14159265359;
 
 laser_cut_kerf = 0.06;
 
@@ -287,6 +287,10 @@ m5_nut_diam = 8;
 m5_nut_thickness = 5;
 m5_washer_thickness  = 1;
 
+bearing_625_diam      = 16;
+bearing_625_inner     = 5;
+bearing_625_thickness = 5;
+
 // Groove bearings
 // 625s
 line_bearing_diam = 15;
@@ -365,6 +369,9 @@ z_line_bearing_inner     = 3;
 z_line_bearing_thickness = 8; // F623ZZ * 2
 z_pulley_diam            = (16*2)/approx_pi;
 z_pulley_height          = 10;
+
+z_idler_pulley_diam        = (20*2)/approx_pi;
+z_idler_pulley_height      = 10;
 
 z_pulley_bearing_diam      = 10;
 z_pulley_bearing_inner     = 5;

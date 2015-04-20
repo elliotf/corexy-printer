@@ -102,7 +102,6 @@ z_brace_screw_dist_from_corner = 21;
 z_brace_body_width             = m3_nut_diam + wall_thickness*2;
 z_brace_pos_x                  = z_line_bearing_thickness/2 + spacer*2 + z_brace_body_width/2;
 */
-z_line_idler_bearing_pos_x   = left*line_bearing_effective_diam;
 z_line_idler_bearing_pos_y   = sheet_pos_y - sheet_thickness/2 - z_line_bearing_dist_from_sheet;
 
 z_printed_portion_height    = z_bearing_len*2 + z_bearing_spacing;
@@ -117,12 +116,15 @@ z_support_arm_hole_spacing  = z_printed_portion_height / (z_support_arm_hole_cou
 
 height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2);
 
-z_motor_pos_x            = left*(line_bearing_effective_diam * 1.5 + 20);
-z_motor_pos_x            = left*(line_bearing_effective_diam/2 + line_bearing_effective_diam + pulley_diam/2 + 4);
-z_motor_pos_x            = left*(line_bearing_effective_diam/2 + pulley_diam/2);
+z_belt_thickness_compensation = 1;
+
+z_motor_pos_x            = left*(z_pulley_diam/2+z_line_bearing_diam/2+z_belt_thickness_compensation);
 z_motor_pos_y            = rear*sheet_pos_y + sheet_thickness/2;
-z_motor_pos_z            = top_sheet_pos_z - height_below_top_sheet/2;
 z_motor_pos_z            = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2;
+
+z_idler_pulley_pos_x     = left*(z_idler_pulley_diam/2 + z_line_bearing_diam/2 + z_belt_thickness_compensation);
+z_idler_pulley_pos_y     = z_line_idler_bearing_pos_y;
+z_idler_pulley_pos_z     = top_sheet_pos_z-sheet_thickness/2-z_idler_pulley_diam;
 
 xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*3 - motor_side/2;
 xy_motor_pos_y = rear*sheet_pos_y - sheet_thickness/2;
