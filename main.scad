@@ -2179,13 +2179,7 @@ module z_idler_pulley_bearing_retainer() {
       hole(bearing_body_diam,thickness, resolution);
 
       position_z_pulley_bearing_retaimer_mount_holes() {
-        hole(m3_nut_diam+wall_thickness*3,thickness,resolution);
-      }
-
-      for(coord=[[-diam*.75,0,0],[0,-diam*.75,0],[diam*.75,0,0]]) {
-        translate(coord) {
-          //hole(3+wall_thickness*2,thickness,resolution);
-        }
+        hole(m3_nut_diam+wall_thickness*3,thickness,6);
       }
     }
   }
