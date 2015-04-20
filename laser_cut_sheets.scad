@@ -17,20 +17,6 @@ module sides_and_top() {
           z_main_plate();
         }
       }
-
-      if (side == right) {
-        translate([top_sheet_pos_z*-side,0,0]) {
-          for (x=[left,right]) {
-            mirror([1+x,0,0]) {
-              translate([-30,0,0]) {
-                rotate([0,0,90]) {
-                  z_carriage_bearing_support_arm();
-                }
-              }
-            }
-          }
-        }
-      }
     }
   }
 
