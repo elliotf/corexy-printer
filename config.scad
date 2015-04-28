@@ -236,12 +236,12 @@ x_rod_diam               = rod_diam;
 */
 
 // y bearings
-y_bearing_diam           = lm8uu_bearing_diam;
-y_bearing_len            = lm8uu_bearing_len;
-y_bearing_groove_spacing = lm8uu_bearing_groove_spacing;
-y_bearing_groove_width   = lm8uu_bearing_groove_width;
-y_bearing_groove_depth   = lm8uu_bearing_groove_depth;
-y_rod_diam               = lm8uu_rod_diam;
+y_bearing_diam           = lm8luu_bearing_diam;
+y_bearing_len            = lm8luu_bearing_len;
+y_bearing_groove_spacing = lm8luu_bearing_groove_spacing;
+y_bearing_groove_width   = lm8luu_bearing_groove_width;
+y_bearing_groove_depth   = lm8luu_bearing_groove_depth;
+y_rod_diam               = lm8luu_rod_diam;
 
 // if you'd like the z axis to use different rods/bearings
 z_bearing_diam           = lm8uu_bearing_diam;

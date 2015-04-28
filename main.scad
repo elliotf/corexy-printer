@@ -82,10 +82,10 @@ module bevel_lipped_hole(diam=m3_diam,height=spacer,sides=8,lip_width=1) {
   }
 }
 
-module line_bearing_bevel(sides=[top,bottom], resolution=8, hole_resolution=8) {
+module line_bearing_bevel(sides=[top,bottom], resolution=8, hole_resolution=8, spacing=line_bearing_thickness+line_bearing_washer_thickness*2) {
   difference() {
     for(side=sides) {
-      translate([0,0,(line_bearing_thickness/2+line_bearing_washer_thickness)*side]) {
+      translate([0,0,(spacing/2)*side]) {
         hull() {
           hole(line_bearing_inner+1,line_bearing_washer_thickness*2,resolution);
           translate([0,0,line_bearing_washer_thickness*side]) {
@@ -914,11 +914,10 @@ module rear_sheet() {
       }
     }
 
-    //height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2);
-
-    rounded_diam     = 10;
-    main_hole_width  = z_rod_pos_x*2;
-    main_hole_height = height_below_top_sheet - motor_side*3;
+    rounded_diam       = 10;
+    main_hole_width    = z_rod_pos_x*2;
+    material_remaining = 0;
+    main_hole_height   = max((height_below_top_sheet - motor_side*3),0);
 
     translate([0,-sheet_pos_z]) {
       translate([z_motor_pos_x,z_motor_pos_z]) {
@@ -932,13 +931,15 @@ module rear_sheet() {
       }
     }
 
-    hull() {
-      //translate([z_motor_pos_x + motor_side/2 + main_hole_width/2,-side_sheet_height/2+height_below_top_sheet/2]) {
-      translate([0,-side_sheet_height/2+height_below_top_sheet/2]) {
-        for(x=[left,right]) {
-          for(y=[front,rear]) {
-            translate([(main_hole_width/2-rounded_diam/2)*x,(main_hole_height/2-rounded_diam)*y]) {
-              accurate_circle(rounded_diam,resolution);
+    if (main_hole_height) {
+      hull() {
+        //translate([z_motor_pos_x + motor_side/2 + main_hole_width/2,-side_sheet_height/2+height_below_top_sheet/2]) {
+        translate([0,-side_sheet_height/2+height_below_top_sheet/2]) {
+          for(x=[left,right]) {
+            for(y=[front,rear]) {
+              translate([(main_hole_width/2-rounded_diam/2)*x,(main_hole_height/2-rounded_diam)*y]) {
+                accurate_circle(rounded_diam,resolution);
+              }
             }
           }
         }
@@ -1029,6 +1030,10 @@ module top_sheet() {
         accurate_circle(z_rod_diam-laser_cut_kerf*2,64);
       }
     }
+
+    translate([z_line_bearing_diam/2+1.25,z_rod_pos_y]) {
+      square([2.5,6],center=true);
+    }
   }
 
   difference() {
@@ -1069,6 +1074,10 @@ module bottom_sheet() {
           }
         }
       }
+    }
+
+    translate([z_line_bearing_diam/2+1.25,z_rod_pos_y]) {
+      square([2.5,6],center=true);
     }
   }
 
@@ -1526,7 +1535,7 @@ module z_axis_stationary() {
 }
 
 module z_carriage_bearing_support_arm() {
-  overall_height = z_bed_support_mount_depth+z_bearing_body_diam/2-0.5;
+  overall_height = z_bed_support_mount_depth+z_bearing_body_diam/2-z_line_bearing_thickness/2;
 
   echo("overall height: ", overall_height);
   echo("screw length: ", overall_height + z_line_bearing_thickness + sheet_thickness);
@@ -1540,13 +1549,27 @@ module z_carriage_bearing_support_arm() {
           }
         }
 
-        translate([0,overall_height-z_line_bearing_thickness/2,z_carriage_bearing_spacing/2*side]) {
+        translate([0,overall_height-2,z_carriage_bearing_spacing/2*side]) {
           rotate([-90,0,0]) {
-            hole(z_line_bearing_inner+wall_thickness*3,1,resolution);
+            hole(z_line_bearing_inner+wall_thickness*2,1,resolution);
+          }
+        }
+        translate([0,overall_height+z_line_bearing_thickness/2,z_carriage_bearing_spacing/2*side]) {
+          rotate([-90,0,0]) {
+            % z_line_bearing();
+          }
+        }
+      }
+    }
 
-            translate([0,0,0.5+z_line_bearing_thickness/2]) {
-              % z_line_bearing();
+    for (side=[top,bottom]) {
+      translate([0,overall_height-0.5,z_carriage_bearing_spacing/2*side]) {
+        rotate([-90,0,0]) {
+          hull() {
+            translate([0,0,-1.5]) {
+              hole(z_line_bearing_inner+wall_thickness*2,1,resolution);
             }
+            hole(z_line_bearing_inner+1,1,resolution);
           }
         }
       }
@@ -1558,6 +1581,18 @@ module z_carriage_bearing_support_arm() {
       translate([0,0,z_carriage_bearing_spacing/2*side]) {
         rotate([90,0,0]) {
           hole(3,50,16);
+        }
+      }
+    }
+
+    hull() {
+      for(side=[top,bottom]) {
+        translate([0,0,z_carriage_bearing_spacing*.1*side]) {
+          scale([1,1,.75]) {
+            rotate([90,0,0]) {
+              hole(3,50,16);
+            }
+          }
         }
       }
     }
@@ -1735,6 +1770,14 @@ module z_main_plate() {
           translate([0,z_printed_portion_height/2-z_support_arm_hole_spacing*z,0]) {
             accurate_circle(3,resolution);
           }
+        }
+      }
+    }
+
+    translate([0,z_printed_portion_height/2+z_carriage_bearing_offset_z]) {
+      for(side=[top,bottom]) {
+        translate([0,z_carriage_bearing_spacing/2*side]) {
+          accurate_circle(3,resolution);
         }
       }
     }
