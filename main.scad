@@ -633,24 +633,25 @@ module y_carriage() {
 
   module body() {
     // main body, hold x rods
+    rounded_diam = y_rod_diam+rod_slop+min_material_thickness*4;
     hull() {
       for(side=[top,bottom]) {
         translate([x_rod_clamp_len/2,0,x_rod_spacing/2*side]) {
           rotate([0,90,0]) {
-            hole(y_rod_diam+rod_slop+min_material_thickness*4,x_rod_clamp_len,resolution);
+            hole(rounded_diam,x_rod_clamp_len,resolution);
+          }
+        }
+
+        for(end=[front,rear]) {
+          translate([x_rod_clamp_len/2,end*(y_bearing_len/2-rounded_diam/2),y_bearing_diam/2*side]) {
+            rotate([0,90,0]) {
+              hole(y_rod_diam+rod_slop+min_material_thickness*4,x_rod_clamp_len,resolution);
+            }
           }
         }
       }
-      intersection() {
-        translate([y_bearing_diam/2,0,0]) {
-          cube([y_bearing_diam,y_carriage_depth*2,y_bearing_diam*2],center=true);
-        }
-        rotate([90,0,0]) {
-          hole(y_bearing_diam+min_material_thickness*8,y_carriage_depth,resolution);
-        }
-      }
       translate([x_rod_clamp_len/2,y_carriage_line_bearing_y,0]) {
-        cube([x_rod_clamp_len,line_bearing_nut_diam+min_material_thickness*4,y_carriage_height],center=true);
+        //# cube([x_rod_clamp_len,line_bearing_nut_diam+min_material_thickness*4,y_carriage_height],center=true);
       }
     }
   }
@@ -694,9 +695,14 @@ module y_carriage() {
 
     // bearing/line-related holes
     translate([line_bearing_x-line_bearing_effective_diam/2-0.4,y_carriage_line_bearing_y,0]) {
-      translate([0,0,to_front_line_z]) {
+      translate([0,-y_bearing_len,to_front_line_z]) {
         rotate([90,0,0]) {
-          hole(2,60,8);
+          # hole(2,y_bearing_len*2,8);
+        }
+      }
+      translate([0,y_bearing_len,to_rear_line_z]) {
+        rotate([90,0,0]) {
+          # hole(2,y_bearing_len*2,8);
         }
       }
       translate([0,0,return_line_z]) {
@@ -712,9 +718,6 @@ module y_carriage() {
       hull() {
         hole(line_bearing_diam + spacer*2,line_bearing_opening_height,resolution);
         // room for belt/filament
-        translate([0,line_bearing_diam/2,0]) {
-          cube([line_bearing_diam+spacer*2,line_bearing_diam+spacer*2,line_bearing_opening_height],center=true);
-        }
         translate([line_bearing_diam/2,0,0]) {
           cube([line_bearing_diam+spacer*2,line_bearing_diam+spacer*2,line_bearing_opening_height],center=true);
         }

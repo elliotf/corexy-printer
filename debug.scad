@@ -2,8 +2,7 @@ include <config.scad>;
 include <positions.scad>;
 use <main.scad>;
 
-/*
-x_carriage();
+//x_carriage();
 
 for(side=[right]) {
   translate([x_carriage_width/2+y_carriage_width+40,0,0]) {
@@ -14,14 +13,13 @@ for(side=[right]) {
 }
 
 translate([x_carriage_width/2+y_carriage_width+40,60,0]) {
-  rear_xy_endcap();
+  //rear_xy_endcap();
 }
 
 translate([x_carriage_width/2+y_carriage_width+40,-60,0]) {
-  front_xy_endcap();
+  //front_xy_endcap();
 }
-*/
 
 rotate([90,0,0]) {
-  z_carriage_bearing_support_arm();
+  //z_carriage_bearing_support_arm();
 }
