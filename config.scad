@@ -310,6 +310,14 @@ line_bearing_groove_depth = 2;
 line_bearing_groove_depth = 1.7;
 line_bearing_inner = m3_diam;
 //line_bearing_thickness = 6;
+line_bearing_nut_diam = m3_nut_diam;
+line_bearing_nut_thickness = m3_nut_thickness;
+line_bearing_washer_thickness = m3_washer_thickness;
+
+// ???
+line_bearing_diam = 13;
+line_bearing_groove_depth = 1;
+line_bearing_inner = 4;
 line_bearing_thickness = 4;
 line_bearing_nut_diam = m3_nut_diam;
 line_bearing_nut_thickness = m3_nut_thickness;
