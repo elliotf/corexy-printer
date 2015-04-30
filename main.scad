@@ -654,6 +654,23 @@ module y_carriage() {
         //# cube([x_rod_clamp_len,line_bearing_nut_diam+min_material_thickness*4,y_carriage_height],center=true);
       }
     }
+
+    clamp_tongue_thickness = (rounded_diam-2)/2;
+    for(side=[top,bottom]) {
+      translate([x_rod_clamp_len/2,0,(x_rod_spacing/2+clamp_tongue_thickness/2+1)*side]) {
+        hull() {
+          rotate([0,90,0]) {
+            hole(clamp_tongue_thickness,x_rod_clamp_len,resolution);
+          }
+
+          translate([0,y_carriage_line_bearing_y+10,0]) {
+            rotate([0,90,0]) {
+              hole(clamp_tongue_thickness,x_rod_clamp_len,resolution);
+            }
+          }
+        }
+      }
+    }
   }
 
   module holes() {
