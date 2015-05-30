@@ -1314,6 +1314,16 @@ module rear_xy_endcap() {
     }
   }
 
+  module position_clamp() {
+    translate([0,line_bearing_mount_thickness,0]) {
+      rotate([0,-20,0]) {
+        rotate([-90,0,0]) {
+          children();
+        }
+      }
+    }
+  }
+
   module mid_bearing_pos() {
     translate([-y_rod_x+return_line_x,mid_bearing_y,return_line_z]) {
       rotate([0,-high_to_low_line_angle_y,0]) {
@@ -1367,12 +1377,10 @@ module rear_xy_endcap() {
     }
     // rod clamp
     hull() {
-      translate([0,line_bearing_mount_thickness,0]) {
-        rotate([90,0,0]) {
-          hole(y_rod_diam+wall_thickness*3,line_bearing_mount_thickness*2,resolution);
-        }
+      position_clamp() {
+        hole(y_rod_diam+wall_thickness*3,line_bearing_mount_thickness*2,resolution);
         translate([y_rod_diam/2+m3_nut_diam/2,0,0]) {
-          cube([m3_nut_diam+wall_thickness*2,line_bearing_mount_thickness*2,y_rod_diam+wall_thickness*3],center=true);
+          cube([m3_nut_diam+wall_thickness*2,y_rod_diam+wall_thickness*3,line_bearing_mount_thickness*2],center=true);
         }
       }
     }
@@ -1417,18 +1425,22 @@ module rear_xy_endcap() {
     }
 
     // y rod
-    rotate([90,0,0]) {
+    position_clamp() {
       hole(y_rod_diam+0.1,line_bearing_mount_thickness*4+1,16);
-      bevel_hole(y_rod_diam+0.1,.5,16);
-    }
-    translate([y_rod_diam/2+m3_nut_diam/2,0,0]) {
-      translate([0,line_bearing_mount_thickness+extrusion_height,0]) {
-        cube([y_rod_diam*2,line_bearing_mount_thickness*2,2],center=true);
+      translate([0,0,-line_bearing_mount_thickness]) {
+        bevel_hole(y_rod_diam+0.1,.5,16);
+      }
+      translate([y_rod_diam/2+m3_nut_diam/2,0,0]) {
+        translate([0,0,extrusion_height]) {
+          cube([y_rod_diam*2,2,line_bearing_mount_thickness*2],center=true);
 
-        hole(m3_diam,y_rod_diam*2,8);
-        translate([0,0,-y_rod_diam/2-wall_thickness*1.5-m3_nut_thickness/2]) {
-          rotate([0,0,90]) {
-            hole(m3_nut_diam,m3_nut_thickness*2,6);
+          rotate([90,0,0]) {
+            hole(m3_diam,y_rod_diam*2,8);
+            translate([0,0,-y_rod_diam/2-wall_thickness*1.5-m3_nut_thickness/2]) {
+              rotate([0,0,90]) {
+                hole(m3_nut_diam,m3_nut_thickness*2,6);
+              }
+            }
           }
         }
       }
