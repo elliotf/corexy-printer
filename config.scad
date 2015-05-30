@@ -41,11 +41,11 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
-/*
-build_x = 150;
-build_y = 100;
-build_z = 0;
+build_x = 100;
+build_y = 50;
+build_z = 25;
 
+/*
 build_x = 100;
 build_y = 100;
 build_z = 100;
@@ -314,7 +314,7 @@ line_bearing_nut_diam = m3_nut_diam;
 line_bearing_nut_thickness = m3_nut_thickness;
 line_bearing_washer_thickness = m3_washer_thickness;
 
-// ???
+// 604UU
 line_bearing_diam = 13;
 line_bearing_groove_depth = 1;
 line_bearing_inner = 4;
@@ -387,6 +387,7 @@ z_pulley_bearing_thickness = 4;
 
 // Frame sheet
 sheet_thickness = 6.5;
+sheet_thickness = 5.2;
 sheet_min_width = 30;
 sheet_shoulder_width = 3; // material to have on the far side of a slot
 sheet_screw_diam = m3_diam;

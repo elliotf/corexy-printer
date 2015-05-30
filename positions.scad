@@ -126,10 +126,6 @@ z_idler_pulley_pos_x     = left*(z_idler_pulley_diam/2 + z_line_bearing_diam/2 +
 z_idler_pulley_pos_y     = z_line_idler_bearing_pos_y;
 z_idler_pulley_pos_z     = top_sheet_pos_z-sheet_thickness/2-z_idler_pulley_diam;
 
-xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*3 - motor_side/2;
-xy_motor_pos_y = rear*sheet_pos_y - sheet_thickness/2;
-xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + spacer*3 + motor_side/2;
-
 main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 main_opening_height = min((sheet_height - top_rear_brace_depth),(sheet_height*.60));
@@ -149,11 +145,17 @@ handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
 to_front_line_z           = y_carriage_line_bearing_z + line_bearing_washer_thickness/2 + line_bearing_thickness/2;
 to_rear_line_z            = y_carriage_line_bearing_z - line_bearing_washer_thickness/2 - line_bearing_thickness/2;
 return_line_z             = to_front_line_z - line_bearing_effective_diam;
+return_line_z             = top_sheet_pos_z + sheet_thickness/2 + 5;
+return_line_x             = side_sheet_pos_x - sheet_thickness/2 - 3;
+return_line_x             = y_rod_x + y_rod_diam/2;
 opposite_to_motor_line_z  = to_rear_line_z - line_bearing_effective_diam*1.5;
 
-top_line_z  = to_rear_line_z;
-mid_line_z  = return_line_z;
 xy_line_x   = y_carriage_line_bearing_x+line_bearing_effective_diam/2;
+
+xy_motor_pos_x = side_sheet_pos_x - sheet_thickness/2 - spacer*3 - motor_side;
+xy_motor_pos_x = xy_line_x - pulley_diam/2;
+xy_motor_pos_y = front*sheet_pos_y + sheet_thickness/2;
+xy_motor_pos_z = bottom_sheet_pos_z + sheet_thickness/2 + spacer*3 + motor_side/2;
 
 endcap_side_screw_hole_pos_x = side_sheet_pos_x-y_rod_x;
 endcap_side_screw_hole_pos_z = sheet_pos_z+sheet_height/2-bc_tab_from_end_dist-bc_tab_slot_pair_len/2;

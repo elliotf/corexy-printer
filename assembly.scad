@@ -1,12 +1,16 @@
 include <positions.scad>;
 include <main.scad>;
 
-hide_x = true;
-hide_x = false;
-hide_sheets = true;
-hide_sheets = false;
-hide_ends = true;
-hide_ends = false;
+show_x = false;
+show_x = true;
+show_z = true;
+show_z = false;
+show_sheets = false;
+show_sheets = true;
+show_sides  = true;
+show_sides  = false;
+show_ends = false;
+show_ends = true;
 
 module x_axis() {
   translate([0,y_pos,0]) {
@@ -30,7 +34,7 @@ module x_axis() {
     }
 
     translate([x_pos,0,0]) {
-      x_carriage();
+      //x_carriage();
     }
   }
 
@@ -45,16 +49,18 @@ module x_axis() {
 }
 
 module assembly() {
-  if (!hide_x) {
+  if (show_x) {
     x_axis();
   }
 
-  z_axis_stationary();
+  if (show_z) {
+    z_axis_stationary();
+  }
 
   translate([0,sheet_pos_y*front,sheet_pos_z]) {
     rotate([90,0,0]) {
       color("lightblue", sheet_opacity) {
-        if (!hide_sheets) {
+        if (show_sheets) {
           linear_extrude(height=sheet_thickness,center=true) front_sheet();
         }
       }
@@ -63,7 +69,7 @@ module assembly() {
 
   translate([0,0,top_sheet_pos_z]) {
     color("violet", sheet_opacity) {
-      linear_extrude(height=sheet_thickness,center=true) top_sheet();
+      //linear_extrude(height=sheet_thickness,center=true) top_sheet();
     }
   }
 
@@ -86,7 +92,7 @@ module assembly() {
       rotate([0,90*side,0]) {
         rotate([0,0,90*side]) {
           color("khaki", sheet_opacity) {
-            if (!hide_sheets) {
+            if (show_sheets && show_sides) {
               linear_extrude(height=sheet_thickness,center=true) side_sheet();
             }
           }
@@ -98,12 +104,12 @@ module assembly() {
   for(side=[left,right]) {
     mirror([1-side,0,0]) {
       translate([y_rod_x,sheet_pos_y+sheet_thickness/2,0]) {
-        if (!hide_ends) {
+        if (show_ends) {
           rear_xy_endcap();
         }
       }
       translate([y_rod_x,front*(sheet_pos_y+sheet_thickness/2),0]) {
-        if (!hide_ends) {
+        if (show_ends) {
           front_xy_endcap();
         }
       }
@@ -113,7 +119,7 @@ module assembly() {
   // xy motors
   for(side=[left,right]) {
     translate([side*(xy_motor_pos_x),xy_motor_pos_y,xy_motor_pos_z]) {
-      rotate([-90,0,0]) {
+      rotate([90,0,0]) {
         % motor();
 
         translate([0,0,2+motor_shaft_len/2]) {
@@ -134,8 +140,10 @@ module assembly() {
   }
 }
 
-translate([0,0,build_z*1-z_pos]) {
-  z_axis();
+if (show_z) {
+  translate([0,0,build_z*1-z_pos]) {
+    z_axis();
+  }
 }
 
 assembly();
