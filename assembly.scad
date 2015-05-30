@@ -1,8 +1,8 @@
 include <positions.scad>;
 include <main.scad>;
 
-show_x = false;
 show_x = true;
+show_x = false;
 show_z = true;
 show_z = false;
 show_sheets = false;

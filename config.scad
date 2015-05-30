@@ -282,10 +282,16 @@ m3_diam = 3;
 m3_nut_diam  = 5.5;
 m3_nut_thickness  = 4;
 m3_washer_thickness  = .6;
+
 m5_diam = 5;
 m5_nut_diam = 8;
 m5_nut_thickness = 5;
 m5_washer_thickness  = 1;
+
+m4_diam = 4;
+m4_nut_diam = 7;
+m4_nut_thickness = 4.5;
+m4_washer_thickness  = 1;
 
 bearing_625_diam      = 16;
 bearing_625_inner     = 5;
@@ -319,9 +325,9 @@ line_bearing_diam = 13;
 line_bearing_groove_depth = 1;
 line_bearing_inner = 4;
 line_bearing_thickness = 4;
-line_bearing_nut_diam = m3_nut_diam;
-line_bearing_nut_thickness = m3_nut_thickness;
-line_bearing_washer_thickness = m3_washer_thickness;
+line_bearing_nut_diam = m4_nut_diam;
+line_bearing_nut_thickness = m4_nut_thickness;
+line_bearing_washer_thickness = m4_washer_thickness;
 
 line_bearing_effective_diam = line_bearing_diam - (line_bearing_groove_depth*2);
 
