@@ -1147,7 +1147,7 @@ module front_xy_endcap() {
   }
 
   module to_carriage_bearing_pos() {
-    dist_to_motor_x           = abs(xy_line_x - (xy_motor_pos_x-pulley_diam/2));
+    dist_to_motor_x           = abs(xy_line_x - (xy_motor_pos_x+pulley_diam/2));
     dist_to_motor_z           = to_front_line_z - xy_motor_pos_z;
     to_carriage_bearing_angle = atan(dist_to_motor_x/dist_to_motor_z);
 
@@ -1166,7 +1166,7 @@ module front_xy_endcap() {
 
   module to_rear_bearing_pos() {
     pos_x                 = -y_rod_x+return_line_x;
-    dist_to_motor_x       = return_line_x - (xy_motor_pos_x+pulley_diam/2);
+    dist_to_motor_x       = return_line_x - (xy_motor_pos_x-pulley_diam/2);
     dist_to_motor_z       = return_line_z - xy_motor_pos_z;
     to_rear_bearing_angle = atan(dist_to_motor_x/dist_to_motor_z);
 
@@ -1218,10 +1218,16 @@ module front_xy_endcap() {
     to_carriage_bearing_pos() {
       line_bearing_body(rear);
       % line_bearing();
+      translate([sheet_height/2,0,0]) {
+        % cube([sheet_height,1,1],center=true);
+      }
     }
     to_rear_bearing_pos() {
       line_bearing_body(rear);
       % line_bearing();
+      translate([sheet_height/2,0,0]) {
+        % cube([sheet_height,1,1],center=true);
+      }
     }
   }
 
