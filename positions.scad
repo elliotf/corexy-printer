@@ -2,14 +2,15 @@ include <config.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
 
-sheet_opacity          = 1;
 sheet_opacity          = 0.4;
+sheet_opacity          = 1;
 
 spool_diam = 18;
 spool_len  = 25.5;
 
 line_bearing_mount_thickness = 5;
 bearing_body_thickness = line_bearing_thickness+spacer*2+wall_thickness*5;
+echo("bearing_body_thickness:", bearing_body_thickness);
 bearing_body_depth     = line_bearing_diam+spacer+wall_thickness*2;
 bearing_body_diam      = line_bearing_nut_diam+wall_thickness*3;
 
