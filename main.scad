@@ -921,9 +921,9 @@ module rear_sheet() {
     }
 
     rounded_diam       = 10;
-    main_hole_width    = z_rod_pos_x*2;
+    main_hole_width    = z_rod_pos_x*1.8;
     material_remaining = 0;
-    main_hole_height   = max((height_below_top_sheet - motor_side*3),0);
+    main_hole_height   = motor_side*2;
 
     translate([0,-sheet_pos_z]) {
       translate([z_motor_pos_x,z_motor_pos_z]) {
@@ -977,8 +977,8 @@ module side_sheet() {
     }
 
     rounded_diam     = 10;
-    main_hole_depth  = side_sheet_depth       - motor_side*2;
-    main_hole_height = height_below_top_sheet - motor_side*2.5;
+    main_hole_depth  = side_sheet_depth       - motor_side*3;
+    main_hole_height = height_below_top_sheet - motor_side*3;
 
     hull() {
       translate([0,-side_sheet_height/2+height_below_top_sheet/2]) {
@@ -1068,6 +1068,7 @@ module bottom_sheet() {
       */
     }
 
+    /*
     rounded_diam     = 10;
     main_hole_width = width            - motor_side*2.5;
     main_hole_depth  = top_sheet_depth - motor_side*2.5;
@@ -1081,6 +1082,7 @@ module bottom_sheet() {
         }
       }
     }
+    */
 
     translate([z_line_bearing_diam/2+1.25,z_rod_pos_y]) {
       square([2.5,6],center=true);

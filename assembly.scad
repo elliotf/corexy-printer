@@ -1,14 +1,14 @@
 include <positions.scad>;
 include <main.scad>;
 
-show_x = true;
 show_x = false;
-show_z = true;
+show_x = true;
 show_z = false;
+show_z = true;
 show_sheets = false;
 show_sheets = true;
-show_sides  = true;
 show_sides  = false;
+show_sides  = true;
 show_ends = false;
 show_ends = true;
 
@@ -69,7 +69,7 @@ module assembly() {
 
   translate([0,0,top_sheet_pos_z]) {
     color("violet", sheet_opacity) {
-      //linear_extrude(height=sheet_thickness,center=true) top_sheet();
+      linear_extrude(height=sheet_thickness,center=true) top_sheet();
     }
   }
 
