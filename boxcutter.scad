@@ -111,7 +111,7 @@ module bc_offset_tab_pair(with_hole=BC_NO_HOLES) {
 
   if(with_hole==BC_WITH_SCREW_HOLES) {
     translate([bc_tab_slot_pair_len/2,0,0])
-      accurate_circle(bc_screw_diam,8);
+      accurate_circle(bc_screw_diam,32);
   }
 }
 

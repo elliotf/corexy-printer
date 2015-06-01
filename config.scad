@@ -166,6 +166,14 @@ lm6luu_bearing_groove_width = .5;
 lm6luu_bearing_groove_depth = .2;
 lm6luu_rod_diam = 6;
 
+// graphite bearings from robotdigg
+graphite_bronze_bearing_diam = 12;
+graphite_bronze_bearing_len  = 30;
+graphite_bronze_bearing_groove_spacing = 0;
+graphite_bronze_bearing_groove_width = 0;
+graphite_bronze_bearing_groove_depth = 0;
+graphite_bronze_rod_diam = 8;
+
 bearing_diam           = lm10uu_bearing_diam;
 bearing_len            = lm10uu_bearing_len;
 bearing_groove_spacing = lm10uu_bearing_groove_spacing;
@@ -242,6 +250,14 @@ y_bearing_groove_spacing = lm8luu_bearing_groove_spacing;
 y_bearing_groove_width   = lm8luu_bearing_groove_width;
 y_bearing_groove_depth   = lm8luu_bearing_groove_depth;
 y_rod_diam               = lm8luu_rod_diam;
+
+// y bearings
+y_bearing_diam           = graphite_bronze_bearing_diam;
+y_bearing_len            = graphite_bronze_bearing_len;
+y_bearing_groove_spacing = graphite_bronze_bearing_groove_spacing;
+y_bearing_groove_width   = graphite_bronze_bearing_groove_width;
+y_bearing_groove_depth   = graphite_bronze_bearing_groove_depth;
+y_rod_diam               = graphite_bronze_rod_diam;
 
 // if you'd like the z axis to use different rods/bearings
 z_bearing_diam           = lm8uu_bearing_diam;

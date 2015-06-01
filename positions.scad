@@ -20,6 +20,7 @@ x_carriage_width     = x_bearing_len + min_material_thickness * 2;
 
 y_carriage_line_bearing_y = rod_diam/2+line_bearing_inner/2 + min_material_thickness;
 y_carriage_line_bearing_z = x_rod_spacing/2-rod_diam/2-min_material_thickness*3-line_bearing_washer_thickness*1.5-line_bearing_thickness;
+y_carriage_line_bearing_z = 0;
 y_line_bearing_from_rod   = 3;
 y_carriage_width          = y_bearing_diam/2 + min_material_thickness*2 + spacer + line_bearing_diam;
 y_carriage_depth          = (y_carriage_line_bearing_y + line_bearing_nut_diam/2 + min_material_thickness*2)*2;
@@ -144,6 +145,8 @@ handle_hole_height       = 50;
 handle_material_width    = 25;
 handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
 
+to_front_line_z           = y_carriage_line_bearing_z - line_bearing_washer_thickness/2 - line_bearing_thickness/2;
+to_rear_line_z            = y_carriage_line_bearing_z + line_bearing_washer_thickness/2 + line_bearing_thickness/2;
 to_front_line_z           = y_carriage_line_bearing_z + line_bearing_washer_thickness/2 + line_bearing_thickness/2;
 to_rear_line_z            = y_carriage_line_bearing_z - line_bearing_washer_thickness/2 - line_bearing_thickness/2;
 return_line_z             = to_front_line_z - line_bearing_effective_diam;

@@ -1,16 +1,16 @@
-include <config.scad>;
-include <positions.scad>;
-use <main.scad>;
+include <main.scad>;
 
-//x_carriage();
+translate([-x_carriage_width-5,0,0]) {
+  x_carriage();
+}
 
-for(side=[right]) {
-  translate([x_carriage_width/2+y_carriage_width+40,0,0]) {
+//for(side=[right]) {
+  //translate([x_carriage_width/2+y_carriage_width+40,0,0]) {
     mirror([1,0,0]) {
       y_carriage();
     }
-  }
-}
+  //}
+//}
 
 translate([x_carriage_width/2+y_carriage_width+40,60,0]) {
   //rear_xy_endcap();
