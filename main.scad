@@ -743,6 +743,11 @@ module y_carriage() {
       // bearing/clamp screw
       hole(line_bearing_inner+rod_slop,50,8);
 
+      // captive nut
+      translate([0,0,-total_height/2]) {
+        hole(line_bearing_nut_diam,4,6);
+      }
+
       hull() {
         hole(line_bearing_diam + spacer*2,line_bearing_opening_height,resolution);
         // room for belt/filament
