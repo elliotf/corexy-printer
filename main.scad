@@ -644,7 +644,7 @@ module y_carriage() {
     // main body, hold x rods
     hull() {
       for(side=[top,bottom]) {
-        translate([x_rod_clamp_len/2,0,x_rod_spacing/2*side]) {
+        translate([x_rod_clamp_len/2,-x_rod_diam,x_rod_spacing/2*side]) {
           rotate([0,90,0]) {
             hole(rounded_diam,x_rod_clamp_len,resolution);
           }
@@ -666,10 +666,8 @@ module y_carriage() {
           translate([y_bearing_diam/2,0,0]) {
             cube([y_bearing_diam,y_bearing_len*2,y_bearing_diam*2],center=true);
           }
-          translate([0,1,0]) {
-            rotate([90,0,0]) {
-              hole(y_bearing_diam+6,y_bearing_len,resolution);
-            }
+          rotate([90,0,0]) {
+            hole(y_bearing_diam+6,y_bearing_len,resolution);
           }
         }
       }
@@ -698,6 +696,18 @@ module y_carriage() {
 
         translate([-extrusion_height,20,0]) {
           cube([x_rod_clamp_len,40,2],center=true);
+        }
+        hull() {
+          translate([-extrusion_height,0,0]) {
+            rotate([0,90,0]) {
+              hole(2,x_rod_clamp_len,16);
+            }
+            translate([0,-x_rod_diam,0]) {
+              rotate([0,90,0]) {
+                hole(2,x_rod_clamp_len,16);
+              }
+            }
+          }
         }
       }
     }

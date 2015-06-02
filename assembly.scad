@@ -34,7 +34,7 @@ module x_axis() {
     }
 
     translate([x_pos,0,0]) {
-      //x_carriage();
+      x_carriage();
     }
   }
 

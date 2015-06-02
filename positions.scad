@@ -18,7 +18,7 @@ x_rod_spacing        = y_bearing_diam + min_material_thickness * 2 + y_rod_diam;
 x_carriage_width     = 45; // lm8luu
 x_carriage_width     = x_bearing_len + min_material_thickness * 2;
 
-y_carriage_line_bearing_y = rod_diam/2+line_bearing_inner/2 + min_material_thickness;
+y_carriage_line_bearing_y = x_rod_diam/2+line_bearing_inner/2 + min_material_thickness;
 y_carriage_line_bearing_z = x_rod_spacing/2-rod_diam/2-min_material_thickness*3-line_bearing_washer_thickness*1.5-line_bearing_thickness;
 y_carriage_line_bearing_z = 0;
 y_line_bearing_from_rod   = 3;
