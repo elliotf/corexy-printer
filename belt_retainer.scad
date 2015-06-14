@@ -19,7 +19,7 @@ module belt_teeth(height=belt_clamp_height) {
   }
 }
 
-module belt_anchor() {
+module z_belt_anchor() {
   anchor_depth        = sheet_pos_y - sheet_thickness/2 - z_rod_pos_y;
   belt_clamp_depth    = belt_width + 1 + wall_thickness*2;
   belt_clamp_x        = 0;
@@ -222,4 +222,4 @@ translate([-20,0,0]) {
   //belt_clamp_tensioner();
 }
 
-belt_anchor();
+z_belt_anchor();

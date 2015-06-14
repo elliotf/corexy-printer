@@ -2046,31 +2046,29 @@ module position_z_pulley_bearing_retaimer_mount_holes() {
 module z_idler_pulley_bearing_retainer() {
   diam              = bearing_625_diam + 0.1;
   bearing_body_diam = diam + wall_thickness*2;
-  rim_thickness     = 1;
-  thickness         = bearing_625_thickness + rim_thickness;
   nut_hole_depth    = 2;
 
   module body() {
     hull() {
-      hole(bearing_body_diam,thickness, resolution);
+      hole(bearing_body_diam,z_idler_pulley_bearing_retainer_thickness, resolution);
 
       position_z_pulley_bearing_retaimer_mount_holes() {
-        hole(m3_nut_diam+wall_thickness*3,thickness,6);
+        hole(m3_nut_diam+wall_thickness*3,z_idler_pulley_bearing_retainer_thickness,6);
       }
     }
   }
 
   module holes() {
-    translate([0,0,rim_thickness]) {
-      hole(bearing_625_diam,thickness,16);
+    translate([0,0,z_idler_pulley_bearing_retainer_rim_thickness]) {
+      hole(bearing_625_diam,z_idler_pulley_bearing_retainer_thickness,16);
     }
-    hole(bearing_625_diam-2,thickness*2,resolution);
+    hole(bearing_625_diam-2,z_idler_pulley_bearing_retainer_thickness*2,resolution);
 
     position_z_pulley_bearing_retaimer_mount_holes() {
-      hole(3,thickness+1,6);
+      hole(3,z_idler_pulley_bearing_retainer_thickness+1,6);
 
       hull() {
-        translate([0,0,-thickness/2-0.05]) {
+        translate([0,0,-z_idler_pulley_bearing_retainer_thickness/2-0.05]) {
           hole(m3_nut_diam,(nut_hole_depth+0.05)*2,6);
           hole(m3_nut_diam+1,0.1,6);
         }
@@ -2080,7 +2078,7 @@ module z_idler_pulley_bearing_retainer() {
 
   module bridges() {
     position_z_pulley_bearing_retaimer_mount_holes() {
-      translate([0,0,-thickness/2+nut_hole_depth+extrusion_height/2]) {
+      translate([0,0,-z_idler_pulley_bearing_retainer_thickness/2+nut_hole_depth+extrusion_height/2]) {
         hole(m3_nut_diam+0.05,extrusion_height,6);
       }
     }

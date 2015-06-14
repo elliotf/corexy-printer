@@ -69,7 +69,7 @@ module assembly() {
     // belt retainers
     translate([z_line_bearing_diam/2+belt_thickness/2,z_rod_pos_y,0]) {
       translate([0,0,top_sheet_pos_z-sheet_thickness/2-0.05]) {
-        belt_anchor();
+        z_belt_anchor();
       }
 
       translate([0,0,bottom_sheet_pos_z+sheet_thickness/2+belt_clamp_height]) {

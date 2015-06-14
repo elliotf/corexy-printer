@@ -18,6 +18,10 @@ m4_nut_diam = 7;
 m4_nut_thickness = 4.5;
 m4_washer_thickness  = 1;
 
+bearing_625_diam      = 16;
+bearing_625_inner     = 5;
+bearing_625_thickness = 5;
+
 approx_pi = 3.14159265359;
 
 laser_cut_kerf = 0.06;
@@ -81,6 +85,9 @@ belt_clamp_width   = m3_nut_diam + wall_thickness*2;
 belt_clamp_height  = num_teeth_to_clamp*belt_tooth_pitch;
 z_belt_anchor_height       = belt_clamp_height*1.5;
 z_belt_anchor_hole_spacing = z_belt_anchor_height/2;
+
+z_idler_pulley_bearing_retainer_rim_thickness     = 1;
+z_idler_pulley_bearing_retainer_thickness         = bearing_625_thickness + z_idler_pulley_bearing_retainer_rim_thickness;
 
 filament_diam = 3;
 
@@ -320,10 +327,6 @@ endstop_height = 8;
 endstop_hole_spacing = 10;
 endstop_hole_diam = 2;
 endstop_hole_from_top = 5;
-
-bearing_625_diam      = 16;
-bearing_625_inner     = 5;
-bearing_625_thickness = 5;
 
 // Groove bearings
 // 625s
