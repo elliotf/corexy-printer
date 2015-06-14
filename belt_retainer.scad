@@ -1,5 +1,5 @@
 include <config.scad>;
-//include <positions.scad>;
+include <positions.scad>;
 //include <boxcutter.scad>;
 use <util.scad>;
 
@@ -8,8 +8,6 @@ num_teeth_to_clamp = 7;
 belt_clamp_depth   = belt_width + m3_nut_diam + wall_thickness*1.5 + 1;
 belt_clamp_width   = m3_nut_diam + wall_thickness*2;
 belt_clamp_height  = num_teeth_to_clamp*belt_tooth_pitch;
-
-dist_from_belt_center_to_tensioner_screw = belt_width/2 + 0.5 + wall_thickness/2 + m3_nut_diam/2;
 
 echo("BELT CLAMP DIM:", belt_clamp_width, belt_clamp_depth,belt_clamp_height);
 
@@ -24,7 +22,7 @@ module vertical_belt_clamp() {
   rounded_diam = 4;
   module body() {
     hull() {
-      translate([0,-0.5-belt_width/2+belt_clamp_depth/2,0]) {
+      translate([tensioner_belt_dist_x,-0.5-belt_width/2+belt_clamp_depth/2,0]) {
         for(x=[left,right]) {
           for(y=[front,rear]) {
             translate([(belt_clamp_width/2-rounded_diam/2)*x,(belt_clamp_depth/2-rounded_diam/2)*y,0.25]) {
@@ -59,7 +57,7 @@ module vertical_belt_clamp() {
       }
 
       for(side=[bottom]) {
-        translate([0,-belt_width,side*(belt_clamp_height/2+0.5)]) {
+        translate([0,-belt_width/2+0.5,side*(belt_clamp_height/2+0.5)]) {
           hull() {
             cube([belt_thickness+1,belt_width*2+1,1],center=true);
             cube([belt_thickness,belt_width*2,2],center=true);
@@ -69,7 +67,7 @@ module vertical_belt_clamp() {
     }
 
     //translate([0,wall_thickness+3.1/2+0.5,0]) {
-    translate([0,dist_from_belt_center_to_tensioner_screw,0]) {
+    translate([tensioner_belt_dist_x,tensioner_belt_dist_y,0]) {
       rotate([0,0,90]) {
         hole(3.1,100,6);
         translate([0,0,belt_clamp_height/2]) {
