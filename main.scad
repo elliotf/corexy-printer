@@ -1844,6 +1844,55 @@ module z_support_arm() {
   }
 }
 
+module rod_clamp(diam,height=(m3_nut_diam+extrusion_width*2)) {
+  clamp_screw_x = diam/2 + 0.1 + m3_diam/2;
+  body_diam     = diam + wall_thickness*2;
+  rounded_diam  = m3_diam;
+
+  module body() {
+    hull() {
+      hole(body_diam,height,resolution);
+
+      for(side=[front,rear]) {
+        translate([clamp_screw_x+m3_nut_diam/2,side*(body_diam/2-rounded_diam/2),0]) {
+          hole(rounded_diam,height,16);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    hole(diam,height+1,16);
+
+    translate([clamp_screw_x,0,0]) {
+      rotate([90,0,0]) {
+        rotate([0,0,90]) {
+          hole(m3_diam,body_diam+1,6);
+
+          translate([0,0,body_diam/2]) {
+            hole(m3_nut_diam,2,6);
+          }
+        }
+      }
+    }
+
+    translate([body_diam/2,0,extrusion_height]) {
+      cube([body_diam,diam*.6,height],center=true);
+    }
+
+    for(side=[top,bottom]) {
+      translate([0,0,side*(height/2+extrusion_width/2)]) {
+        bevel_hole(diam,extrusion_width,16);
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module z_axis() {
   module z_build_plate() {
     difference() {
