@@ -167,7 +167,7 @@ lm6luu_bearing_groove_depth = .2;
 lm6luu_rod_diam = 6;
 
 // graphite bearings from robotdigg
-graphite_bronze_bearing_diam = 12;
+graphite_bronze_bearing_diam = 11;
 graphite_bronze_bearing_len  = 30;
 graphite_bronze_bearing_groove_spacing = 0;
 graphite_bronze_bearing_groove_width = 0;
