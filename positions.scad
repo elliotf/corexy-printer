@@ -142,7 +142,7 @@ echo("build_pos_y: ", build_pos_y);
 
 x_pos = -build_x/2+build_x*0.0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
-z_pos = build_z*1.0+0;
+z_pos = build_z*0.0+0;
 
 handle_hole_width        = 125;
 handle_hole_height       = 50;

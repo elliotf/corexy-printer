@@ -79,6 +79,8 @@ num_teeth_to_clamp = 7;
 belt_clamp_depth   = belt_width + m3_nut_diam + wall_thickness*1.5 + 1;
 belt_clamp_width   = m3_nut_diam + wall_thickness*2;
 belt_clamp_height  = num_teeth_to_clamp*belt_tooth_pitch;
+z_belt_anchor_height       = belt_clamp_height*1.5;
+z_belt_anchor_hole_spacing = z_belt_anchor_height/2;
 
 filament_diam = 3;
 
