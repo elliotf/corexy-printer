@@ -56,14 +56,14 @@ min_sheet_material = 3;
 top_of_sheet = x_rod_spacing/2;
 hotend_sheet_clearance = (hotend_z-hotend_len-top_of_sheet-sheet_thickness*2)*bottom;
 
+heatbed_and_glass_thickness = 4;
 build_pos_x = 0;
 build_pos_z = hotend_z-hotend_len-build_z/2-1;
+build_base_z = build_pos_z-build_z/2-heatbed_and_glass_thickness-sheet_thickness/2;
 
 space_between_y_rod_and_sheet = y_bearing_diam/2 + 4;
 side_sheet_pos_x = y_rod_x + space_between_y_rod_and_sheet + sheet_thickness/2;
 side_sheet_pos_y = 0;
-
-heatbed_and_glass_thickness = 4;
 
 z_axis_overhead   = sheet_thickness + heatbed_and_glass_thickness;
 z_axis_height     = z_axis_overhead + z_bearing_len*2 + z_bearing_spacing;
@@ -110,6 +110,7 @@ z_line_idler_bearing_pos_y   = sheet_pos_y - sheet_thickness/2 - z_line_bearing_
 
 z_printed_portion_height    = z_bearing_len*2 + z_bearing_spacing;
 z_carriage_bearing_offset_z = -z_printed_portion_height*.4;
+z_carriage_bearing_offset_z = -z_printed_portion_height*.5;
 z_carriage_bearing_offset_y = (sheet_pos_y - sheet_thickness/2 - z_carriage_idler_sheet_dist_y) - z_rod_pos_y;
 z_bearing_body_diam         = z_bearing_diam+wall_thickness*3;
 z_bed_support_mount_width   = wall_thickness*3+m3_nut_thickness;
@@ -139,7 +140,7 @@ echo("build_pos_y: ", build_pos_y);
 
 x_pos = -build_x/2+build_x*0.0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
-z_pos = build_z*0.0+0;
+z_pos = build_z*1.0+0;
 
 handle_hole_width        = 125;
 handle_hole_height       = 50;

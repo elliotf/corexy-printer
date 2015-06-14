@@ -53,8 +53,83 @@ module assembly() {
     x_axis();
   }
 
+  module position_for_z() {
+    translate([0,0,build_base_z-z_printed_portion_height/2+build_z*1-z_pos]) {
+      children();
+    }
+  }
+
   if (show_z) {
     z_axis_stationary();
+
+    translate([0,0,build_z*1-z_pos]) {
+      z_axis();
+    }
+
+    // belts
+    % color("black", 0.8) translate([0,z_rod_pos_y,0]) {
+      // from carriage to idler
+      hull() {
+        translate([-z_line_bearing_diam/2-belt_thickness/2,0,0]) {
+          position_for_z() {
+            translate([0,0,z_carriage_bearing_spacing/2]) {
+              cube([belt_thickness,belt_width,1],center=true);
+            }
+          }
+          translate([0,0,z_idler_pulley_pos_z]) {
+            cube([belt_thickness,belt_width,1],center=true);
+          }
+        }
+      }
+      // from carriage to motor
+      hull() {
+        translate([-z_line_bearing_diam/2-belt_thickness/2,0,0]) {
+          position_for_z() {
+            translate([0,0,-z_carriage_bearing_spacing/2]) {
+              cube([belt_thickness,belt_width,1],center=true);
+            }
+          }
+          translate([0,0,z_motor_pos_z]) {
+            cube([belt_thickness,belt_width,1],center=true);
+          }
+        }
+      }
+      // from motor to idler
+      hull() {
+        translate([z_idler_pulley_pos_x-z_idler_pulley_diam/2-belt_thickness,0,z_idler_pulley_pos_z]) {
+          cube([belt_thickness,belt_width,1],center=true);
+        }
+        translate([z_motor_pos_x-z_pulley_diam/2-belt_thickness/2,0,z_motor_pos_z]) {
+          cube([belt_thickness,belt_width,1],center=true);
+        }
+      }
+      // from carriage to top
+      hull() {
+        translate([z_line_bearing_diam/2+belt_thickness/2,0,0]) {
+          position_for_z() {
+            translate([0,0,z_carriage_bearing_spacing/2]) {
+              cube([belt_thickness,belt_width,1],center=true);
+            }
+          }
+          translate([0,0,top_sheet_pos_z-sheet_thickness]) {
+            cube([belt_thickness,belt_width,1],center=true);
+          }
+        }
+      }
+      // from carriage to bottom
+      hull() {
+        translate([z_line_bearing_diam/2+belt_thickness/2,0,0]) {
+          position_for_z() {
+            translate([0,0,-z_carriage_bearing_spacing/2]) {
+              cube([belt_thickness,belt_width,1],center=true);
+            }
+          }
+          translate([0,0,bottom_sheet_pos_z+sheet_thickness]) {
+            cube([belt_thickness,belt_width,1],center=true);
+          }
+        }
+      }
+    }
   }
 
   translate([0,sheet_pos_y*front,sheet_pos_z]) {
@@ -137,12 +212,6 @@ module assembly() {
         //handle();
       }
     }
-  }
-}
-
-if (show_z) {
-  translate([0,0,build_z*1-z_pos]) {
-    z_axis();
   }
 }
 

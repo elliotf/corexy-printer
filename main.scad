@@ -1845,8 +1845,6 @@ module z_support_arm() {
 }
 
 module z_axis() {
-  build_base_z = build_pos_z-build_z/2-heatbed_and_glass_thickness-sheet_thickness/2;
-
   module z_build_plate() {
     difference() {
       cube([heatbed_width,heatbed_depth,heatbed_thickness],center=true);
