@@ -1512,6 +1512,12 @@ module z_axis_stationary() {
   for (side=[left,right]) {
     translate([z_rod_pos_x*side,z_rod_pos_y,z_rod_pos_z]) {
       % cylinder(r=z_rod_diam/2,h=z_rod_len+0.1,center=true);
+
+      for(end=[top,bottom]) {
+        translate([0,0,end*(z_rod_len/2-sheet_thickness-rod_clamp_height/2-0.05)]) {
+          rod_clamp(z_rod_diam);
+        }
+      }
     }
   }
 
@@ -1844,7 +1850,7 @@ module z_support_arm() {
   }
 }
 
-module rod_clamp(diam,height=(m3_nut_diam+extrusion_width*2)) {
+module rod_clamp(diam,height=rod_clamp_height) {
   clamp_screw_x = diam/2 + 0.1 + m3_diam/2;
   body_diam     = diam + wall_thickness*2;
   rounded_diam  = m3_diam;

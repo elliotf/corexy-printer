@@ -2,6 +2,22 @@
 da6 = 1 / cos(180 / 6) / 2;
 da8 = 1 / cos(180 / 8) / 2;
 
+// Screws, nuts
+m3_diam = 3.1;
+m3_nut_diam  = 5.5 + 0.1;
+m3_nut_thickness  = 4;
+m3_washer_thickness  = .6;
+
+m5_diam = 5;
+m5_nut_diam = 8;
+m5_nut_thickness = 5;
+m5_washer_thickness  = 1;
+
+m4_diam = 4;
+m4_nut_diam = 7;
+m4_nut_thickness = 4.5;
+m4_washer_thickness  = 1;
+
 approx_pi = 3.14159265359;
 
 laser_cut_kerf = 0.06;
@@ -286,6 +302,8 @@ z_rod_diam               = rod_diam;
 
 rod_slop = 0.05;
 
+rod_clamp_height = m3_nut_diam + extrusion_height*4;
+
 // endstop dimensions
 endstop_len = 20;
 endstop_width = 6;
@@ -293,22 +311,6 @@ endstop_height = 8;
 endstop_hole_spacing = 10;
 endstop_hole_diam = 2;
 endstop_hole_from_top = 5;
-
-// Screws, nuts
-m3_diam = 3.1;
-m3_nut_diam  = 5.5 + 0.1;
-m3_nut_thickness  = 4;
-m3_washer_thickness  = .6;
-
-m5_diam = 5;
-m5_nut_diam = 8;
-m5_nut_thickness = 5;
-m5_washer_thickness  = 1;
-
-m4_diam = 4;
-m4_nut_diam = 7;
-m4_nut_thickness = 4.5;
-m4_washer_thickness  = 1;
 
 bearing_625_diam      = 16;
 bearing_625_inner     = 5;
