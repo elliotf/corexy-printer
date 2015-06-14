@@ -41,6 +41,7 @@ extrusion_width  = 0.5;
 extrusion_height = 0.2;
 min_material_thickness = extrusion_width*2;
 wall_thickness         = extrusion_width*4;
+rounded_diam           = 4;
 
 // material dimensions
 zip_tie_width = 3;
