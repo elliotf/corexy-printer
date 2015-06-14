@@ -123,7 +123,7 @@ height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2)
 
 z_belt_thickness_compensation = 1;
 tensioner_belt_dist_x         = m3_nut_diam*0.25;
-tensioner_belt_dist_y         = belt_width/2 + 0.5 + wall_thickness/2 + m3_nut_diam/2;
+tensioner_belt_dist_y         = front*(belt_width/2 + 0.5 + wall_thickness/2 + m3_nut_diam/2);
 
 z_motor_pos_x            = left*(z_pulley_diam/2+z_line_bearing_diam/2+z_belt_thickness_compensation);
 z_motor_pos_y            = rear*sheet_pos_y + sheet_thickness/2;

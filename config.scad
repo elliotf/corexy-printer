@@ -73,6 +73,12 @@ belt_thickness       = belt_total_thickness - belt_tooth_depth;
 belt_thickness       = 1;
 belt_width           = 6; // FIXME: make correct
 
+belt_tooth_pitch   = 2;
+num_teeth_to_clamp = 7;
+belt_clamp_depth   = belt_width + m3_nut_diam + wall_thickness*1.5 + 1;
+belt_clamp_width   = m3_nut_diam + wall_thickness*2;
+belt_clamp_height  = num_teeth_to_clamp*belt_tooth_pitch;
+
 filament_diam = 3;
 
 hotend_diam                = 16;

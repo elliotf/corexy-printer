@@ -66,6 +66,13 @@ module assembly() {
       z_axis();
     }
 
+    // belt retainers
+    translate([z_line_bearing_diam/2+belt_thickness/2,z_rod_pos_y,0]) {
+      translate([0,0,bottom_sheet_pos_z+sheet_thickness+belt_clamp_height]) {
+        belt_clamp_tensioner();
+      }
+    }
+
     // belts
     % color("black", 0.8) translate([0,z_rod_pos_y,0]) {
       // from carriage to idler

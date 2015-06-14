@@ -2,6 +2,7 @@ include <config.scad>;
 include <positions.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
+use <belt_retainer.scad>;
 
 module debug_lines() {
   color("red") % translate([20,0,0]) {
@@ -1063,10 +1064,6 @@ module top_sheet() {
         accurate_circle(z_rod_diam-laser_cut_kerf*2,64);
       }
     }
-
-    translate([z_line_bearing_diam/2+1.25,z_rod_pos_y]) {
-      square([2.5,6],center=true);
-    }
   }
 
   difference() {
@@ -1111,8 +1108,8 @@ module bottom_sheet() {
     }
     */
 
-    translate([z_line_bearing_diam/2+1.25,z_rod_pos_y]) {
-      square([2.5,6],center=true);
+    translate([z_line_bearing_diam/2+belt_thickness/2+tensioner_belt_dist_x,z_rod_pos_y+tensioner_belt_dist_y]) {
+      accurate_circle(3,64);
     }
   }
 
