@@ -53,8 +53,9 @@ build_z = 100;
 
 belt_total_thickness = 1.38;
 belt_tooth_depth     = 0.75;
-belt_thickness = belt_total_thickness - belt_tooth_depth;
-belt_width     = 6; // FIXME: make correct
+belt_thickness       = belt_total_thickness - belt_tooth_depth;
+belt_thickness       = 1;
+belt_width           = 6; // FIXME: make correct
 
 filament_diam = 3;
 
@@ -295,7 +296,7 @@ endstop_hole_from_top = 5;
 
 // Screws, nuts
 m3_diam = 3;
-m3_nut_diam  = 5.5;
+m3_nut_diam  = 5.5 + 0.1;
 m3_nut_thickness  = 4;
 m3_washer_thickness  = .6;
 
