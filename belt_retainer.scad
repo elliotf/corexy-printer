@@ -20,12 +20,11 @@ module belt_teeth(height=belt_clamp_height) {
 }
 
 module z_belt_anchor() {
-  anchor_depth        = sheet_pos_y - sheet_thickness/2 - z_rod_pos_y;
+  anchor_depth        = z_belt_to_rear_sheet_dist;
   belt_clamp_depth    = belt_width + 1 + wall_thickness*2;
   belt_clamp_x        = 0;
   belt_clamp_y        = -belt_width/2-0.5+belt_clamp_depth/2;
   anchor_width        = m3_nut_diam + wall_thickness*3;
-  rear_sheet_anchor_x = m3_nut_diam*1.5;
 
   module tooth_body() {
     translate([0,belt_clamp_y,-z_belt_anchor_height/2]) {
@@ -46,7 +45,7 @@ module z_belt_anchor() {
   }
 
   module back_plate_anchor(height=z_belt_anchor_height) {
-    translate([rear_sheet_anchor_x,anchor_depth-belt_clamp_depth/2,-height/2]) {
+    translate([z_belt_anchor_hole_belt_spacing,anchor_depth-belt_clamp_depth/2,-height/2]) {
       for(x=[left,right]) {
         for(y=[front,rear]) {
           translate([(anchor_width/2-rounded_diam/2)*x,(belt_clamp_depth/2-rounded_diam/2)*y,0]) {
@@ -75,7 +74,7 @@ module z_belt_anchor() {
     // z idler clearance
     translate([0,0,0]) {
       hull() {
-        for(x=[rear_sheet_anchor_x-anchor_width/2-rounded_diam,-20]) {
+        for(x=[z_belt_anchor_hole_belt_spacing-anchor_width/2-rounded_diam,-20]) {
           for(y=[belt_clamp_y+belt_clamp_depth/2+rounded_diam,anchor_depth*2]) {
             translate([x,y,-z_belt_anchor_height/2]) {
               hole(rounded_diam*2,z_belt_anchor_height+1,resolution);
@@ -123,7 +122,7 @@ module z_belt_anchor() {
 
     // rear sheet mounting holes
     for(side=[top,bottom]) {
-      translate([rear_sheet_anchor_x,0,-z_belt_anchor_height/2+z_belt_anchor_hole_spacing/2*side]) {
+      translate([z_belt_anchor_hole_belt_spacing,0,-z_belt_anchor_height/2+z_belt_anchor_hole_spacing/2*side]) {
         rotate([90,0,0]) {
           rotate([0,0,90]) {
             hole(m3_diam,anchor_depth*2+1,6);
@@ -218,8 +217,12 @@ module belt_clamp_tensioner() {
   }
 }
 
-translate([-20,0,0]) {
-  //belt_clamp_tensioner();
+translate([0,0,belt_clamp_height/2]) {
+  belt_clamp_tensioner();
 }
 
-z_belt_anchor();
+belt_tensioner_body();
+
+translate([30,0,0]) {
+  z_belt_anchor();
+}

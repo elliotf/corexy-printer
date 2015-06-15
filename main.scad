@@ -957,6 +957,16 @@ module rear_sheet() {
       translate([z_motor_pos_x,z_motor_pos_z]) {
         motor_sheet_holes();
       }
+
+      translate([z_line_bearing_diam/2+belt_thickness/2,0]) {
+        translate([z_belt_anchor_hole_belt_spacing,top_sheet_pos_z-sheet_thickness/2-z_belt_anchor_height/2]) {
+          for(side=[top,bottom]) {
+            translate([0,z_belt_anchor_hole_spacing/2*side]) {
+              accurate_circle(3,resolution);
+            }
+          }
+        }
+      }
     }
     translate([z_idler_pulley_pos_x,z_idler_pulley_pos_z-sheet_pos_z]) {
       accurate_circle(bearing_625_diam-2,32);
