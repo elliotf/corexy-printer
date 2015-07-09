@@ -157,6 +157,62 @@ module z_belt_anchor() {
   }
 }
 
+module belt_tensioner_body() {
+  anchor_depth        = z_belt_to_rear_sheet_dist;
+  tensioner_hole_gap  = 0.3;
+  hole_width          = belt_clamp_width + tensioner_hole_gap*2;
+  hole_depth          = belt_clamp_depth + tensioner_hole_gap*2;
+  hole_rounded        = rounded_diam + tensioner_hole_gap*2;
+  body_width          = hole_width + wall_thickness*2;
+  body_depth          = hole_depth + wall_thickness*2;
+  body_height         = belt_clamp_height;
+  body_height         = belt_clamp_height*1.25;
+  body_rounded        = wall_thickness*2;
+
+  module body() {
+    hull() {
+      translate([tensioner_belt_dist_x,0.5+belt_width/2-belt_clamp_depth/2,body_height/2]) {
+        for(x=[left,right]) {
+          for(z=[top,bottom]) {
+            translate([(body_width/2-body_rounded/2)*x,0,(body_height/2-body_rounded/2)*z]) {
+              rotate([90,0,0]) {
+                hole(body_rounded,body_depth,resolution);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    hull() {
+      translate([tensioner_belt_dist_x,0.5+belt_width/2-belt_clamp_depth/2,0]) {
+        for(x=[left,right]) {
+          for(y=[front,rear]) {
+            translate([(hole_width/2-hole_rounded/2)*x,(hole_depth/2-hole_rounded/2)*y,body_height/2]) {
+              hole(hole_rounded,body_height+1,8);
+            }
+          }
+        }
+      }
+    }
+
+    translate([z_belt_anchor_hole_spacing+m3_nut_diam/2,0,-sheet_thickness/2-bottom_sheet_pos_z+z_motor_pos_z]) {
+      rotate([90,0,0]) {
+        rotate([0,0,90]) {
+          # hole(m3_diam,anchor_depth*2,6);
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module belt_clamp_tensioner() {
   module body() {
     hull() {

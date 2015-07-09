@@ -72,8 +72,14 @@ module assembly() {
         z_belt_anchor();
       }
 
-      translate([0,0,bottom_sheet_pos_z+sheet_thickness/2+belt_clamp_height]) {
-        belt_clamp_tensioner();
+      translate([0,0,bottom_sheet_pos_z+sheet_thickness/2]) {
+        translate([0,0,belt_clamp_height]) {
+          belt_clamp_tensioner();
+        }
+
+        translate([0,0,0]) {
+          belt_tensioner_body();
+        }
       }
     }
 
