@@ -15,6 +15,7 @@ bearing_body_depth     = line_bearing_diam+spacer+wall_thickness*2;
 bearing_body_diam      = line_bearing_nut_diam+wall_thickness*3;
 
 x_rod_spacing        = y_bearing_diam + min_material_thickness * 2 + y_rod_diam;
+x_rod_spacing        = lm8luu_bearing_diam + min_material_thickness * 2 + y_rod_diam;
 x_carriage_width     = 45; // lm8luu
 x_carriage_width     = x_bearing_len + min_material_thickness * 2;
 

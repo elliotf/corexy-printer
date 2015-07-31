@@ -167,7 +167,7 @@ lm6luu_bearing_groove_depth = .2;
 lm6luu_rod_diam = 6;
 
 // graphite bearings from robotdigg
-graphite_bronze_bearing_diam = 12;
+graphite_bronze_bearing_diam = 11;
 graphite_bronze_bearing_len  = 30;
 graphite_bronze_bearing_groove_spacing = 0;
 graphite_bronze_bearing_groove_width = 0;
@@ -408,8 +408,9 @@ z_pulley_bearing_inner     = 5;
 z_pulley_bearing_thickness = 4;
 
 // Frame sheet
-sheet_thickness = 6.5;
-sheet_thickness = 5.2;
+//sheet_thickness = 6.5;
+//sheet_thickness = 5.2;
+sheet_thickness = 4.98;
 sheet_min_width = 30;
 sheet_shoulder_width = 3; // material to have on the far side of a slot
 sheet_screw_diam = m3_diam;

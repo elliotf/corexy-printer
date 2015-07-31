@@ -1004,8 +1004,8 @@ module side_sheet() {
     }
 
     rounded_diam     = 10;
-    main_hole_depth  = side_sheet_depth       - motor_side*3;
-    main_hole_height = height_below_top_sheet - motor_side*3;
+    main_hole_depth  = side_sheet_depth       - motor_side*2.5;
+    main_hole_height = height_below_top_sheet - motor_side*2.5;
 
     hull() {
       translate([0,-side_sheet_height/2+height_below_top_sheet/2]) {
@@ -1242,6 +1242,7 @@ module front_xy_endcap() {
       }
     }
 
+    /*
     to_carriage_bearing_pos() {
       line_bearing_body(rear);
       % line_bearing();
@@ -1256,6 +1257,7 @@ module front_xy_endcap() {
         % cube([sheet_height,1,1],center=true);
       }
     }
+    */
   }
 
   module holes() {
