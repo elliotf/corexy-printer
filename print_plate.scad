@@ -32,7 +32,7 @@ module plate() {
         printed_z_portion();
       }
 
-      translate([50,-x_rod_spacing-14,0]) {
+      translate([50,-x_rod_spacing-14,z_idler_pulley_bearing_retainer_thickness/2]) {
         rotate([0,0,0]) {
           z_idler_pulley_bearing_retainer();
         }
@@ -44,6 +44,16 @@ module plate() {
           }
         }
       }
+    }
+  }
+
+  translate([6,25,0]) {
+    translate([0,0,z_belt_anchor_height]) {
+      z_belt_anchor();
+    }
+
+    translate([20,13,belt_clamp_height/2]) {
+     belt_clamp_tensioner();
     }
   }
 

@@ -2,6 +2,7 @@ include <config.scad>;
 include <positions.scad>;
 include <boxcutter.scad>;
 use <util.scad>;
+use <belt_retainer.scad>;
 
 module debug_lines() {
   color("red") % translate([20,0,0]) {
@@ -956,6 +957,20 @@ module rear_sheet() {
       translate([z_motor_pos_x,z_motor_pos_z]) {
         motor_sheet_holes();
       }
+
+      translate([z_line_bearing_diam/2+belt_thickness/2,0]) {
+        translate([z_belt_anchor_hole_belt_spacing,top_sheet_pos_z-sheet_thickness/2-z_belt_anchor_height/2]) {
+          for(side=[top,bottom]) {
+            translate([0,z_belt_anchor_hole_spacing/2*side]) {
+              accurate_circle(3,resolution);
+            }
+          }
+        }
+
+        translate([z_belt_anchor_hole_spacing+m3_nut_diam/2,z_motor_pos_z]) {
+          accurate_circle(3,resolution);
+        }
+      }
     }
     translate([z_idler_pulley_pos_x,z_idler_pulley_pos_z-sheet_pos_z]) {
       accurate_circle(bearing_625_diam-2,32);
@@ -1063,10 +1078,6 @@ module top_sheet() {
         accurate_circle(z_rod_diam-laser_cut_kerf*2,64);
       }
     }
-
-    translate([z_line_bearing_diam/2+1.25,z_rod_pos_y]) {
-      square([2.5,6],center=true);
-    }
   }
 
   difference() {
@@ -1111,8 +1122,8 @@ module bottom_sheet() {
     }
     */
 
-    translate([z_line_bearing_diam/2+1.25,z_rod_pos_y]) {
-      square([2.5,6],center=true);
+    translate([z_line_bearing_diam/2+belt_thickness/2+tensioner_belt_dist_x,z_rod_pos_y+tensioner_belt_dist_y]) {
+      accurate_circle(3,64);
     }
   }
 
@@ -1514,6 +1525,12 @@ module z_axis_stationary() {
   for (side=[left,right]) {
     translate([z_rod_pos_x*side,z_rod_pos_y,z_rod_pos_z]) {
       % cylinder(r=z_rod_diam/2,h=z_rod_len+0.1,center=true);
+
+      for(end=[top,bottom]) {
+        translate([0,0,end*(z_rod_len/2-sheet_thickness-rod_clamp_height/2-0.05)]) {
+          rod_clamp(z_rod_diam);
+        }
+      }
     }
   }
 
@@ -1846,9 +1863,56 @@ module z_support_arm() {
   }
 }
 
-module z_axis() {
-  build_base_z = build_pos_z-build_z/2-heatbed_and_glass_thickness-sheet_thickness/2;
+module rod_clamp(diam,height=rod_clamp_height) {
+  clamp_screw_x = diam/2 + 0.1 + m3_diam/2;
+  body_diam     = diam + wall_thickness*2;
+  rounded_diam  = m3_diam;
 
+  module body() {
+    hull() {
+      hole(body_diam,height,resolution);
+
+      for(side=[front,rear]) {
+        translate([clamp_screw_x+m3_nut_diam/2,side*(body_diam/2-rounded_diam/2),0]) {
+          hole(rounded_diam,height,16);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    hole(diam,height+1,16);
+
+    translate([clamp_screw_x,0,0]) {
+      rotate([90,0,0]) {
+        rotate([0,0,90]) {
+          hole(m3_diam,body_diam+1,6);
+
+          translate([0,0,body_diam/2]) {
+            hole(m3_nut_diam,2,6);
+          }
+        }
+      }
+    }
+
+    translate([body_diam/2,0,extrusion_height]) {
+      cube([body_diam,diam*.6,height],center=true);
+    }
+
+    for(side=[top,bottom]) {
+      translate([0,0,side*(height/2+extrusion_width/2)]) {
+        bevel_hole(diam,extrusion_width,16);
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module z_axis() {
   module z_build_plate() {
     difference() {
       cube([heatbed_width,heatbed_depth,heatbed_thickness],center=true);
@@ -1998,31 +2062,29 @@ module position_z_pulley_bearing_retaimer_mount_holes() {
 module z_idler_pulley_bearing_retainer() {
   diam              = bearing_625_diam + 0.1;
   bearing_body_diam = diam + wall_thickness*2;
-  rim_thickness     = 1;
-  thickness         = bearing_625_thickness + rim_thickness;
   nut_hole_depth    = 2;
 
   module body() {
     hull() {
-      hole(bearing_body_diam,thickness, resolution);
+      hole(bearing_body_diam,z_idler_pulley_bearing_retainer_thickness, resolution);
 
       position_z_pulley_bearing_retaimer_mount_holes() {
-        hole(m3_nut_diam+wall_thickness*3,thickness,6);
+        hole(m3_nut_diam+wall_thickness*3,z_idler_pulley_bearing_retainer_thickness,6);
       }
     }
   }
 
   module holes() {
-    translate([0,0,rim_thickness]) {
-      hole(bearing_625_diam,thickness,16);
+    translate([0,0,z_idler_pulley_bearing_retainer_rim_thickness]) {
+      hole(bearing_625_diam,z_idler_pulley_bearing_retainer_thickness,16);
     }
-    hole(bearing_625_diam-2,thickness*2,resolution);
+    hole(bearing_625_diam-2,z_idler_pulley_bearing_retainer_thickness*2,resolution);
 
     position_z_pulley_bearing_retaimer_mount_holes() {
-      hole(3,thickness+1,6);
+      hole(3,z_idler_pulley_bearing_retainer_thickness+1,6);
 
       hull() {
-        translate([0,0,-thickness/2-0.05]) {
+        translate([0,0,-z_idler_pulley_bearing_retainer_thickness/2-0.05]) {
           hole(m3_nut_diam,(nut_hole_depth+0.05)*2,6);
           hole(m3_nut_diam+1,0.1,6);
         }
@@ -2032,7 +2094,7 @@ module z_idler_pulley_bearing_retainer() {
 
   module bridges() {
     position_z_pulley_bearing_retaimer_mount_holes() {
-      translate([0,0,-thickness/2+nut_hole_depth+extrusion_height/2]) {
+      translate([0,0,-z_idler_pulley_bearing_retainer_thickness/2+nut_hole_depth+extrusion_height/2]) {
         hole(m3_nut_diam+0.05,extrusion_height,6);
       }
     }
