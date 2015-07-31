@@ -61,7 +61,7 @@ module front_back_and_other() {
       }
     }
     translate([right*(front_sheet_width/2+sheet_thickness*2),0,0]) {
-      rotate([0,0,180]) {
+      rotate([0,180,180]) {
         rear_sheet();
       }
     }
