@@ -1253,7 +1253,6 @@ module front_xy_endcap() {
       }
     }
 
-    /*
     to_carriage_bearing_pos() {
       line_bearing_body(rear);
       % line_bearing();
@@ -1268,7 +1267,6 @@ module front_xy_endcap() {
         % cube([sheet_height,1,1],center=true);
       }
     }
-    */
   }
 
   module holes() {
