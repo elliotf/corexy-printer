@@ -230,6 +230,16 @@ module assembly() {
       }
     }
   }
+
+  // spool mount
+  //for(side=[left,right]) {
+  for(side=[z_motor_side]) {
+    translate([side*(side_sheet_pos_x-sheet_thickness/2-20),sheet_pos_y + sheet_thickness/2 + filament_spool_mount_spacer + filament_spool_width/2,z_motor_pos_z+filament_spool_outer_diam/2]) {
+      rotate([90,0,0]) {
+        % filament_spool();
+      }
+    }
+  }
 }
 
 assembly();

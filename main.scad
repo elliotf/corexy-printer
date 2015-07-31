@@ -2111,3 +2111,23 @@ module bearing_625() {
     hole(bearing_625_inner,bearing_625_thickness+1,resolution);
   }
 }
+
+module filament_spool() {
+  module body() {
+    for(side=[left,right]) {
+      translate([0,0,filament_spool_width/2*side]) {
+        hole(filament_spool_outer_diam,4, resolution);
+      }
+      hole(filament_spool_core_diam,filament_spool_width, resolution);
+    }
+  }
+
+  module holes() {
+    hole(filament_spool_inner_diam,filament_spool_width*2,resolution);
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}

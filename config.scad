@@ -26,6 +26,12 @@ approx_pi = 3.14159265359;
 
 laser_cut_kerf = 0.06;
 
+filament_spool_mount_spacer = 4;
+filament_spool_inner_diam   = 53;
+filament_spool_core_diam    = 93;
+filament_spool_outer_diam   = 200;
+filament_spool_width        = 71;
+
 // make coordinates more communicative
 left    = -1;
 right   = 1;
