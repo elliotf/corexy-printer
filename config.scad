@@ -415,7 +415,8 @@ z_line_bearing_thickness = 8; // F623ZZ * 2
 z_pulley_diam            = (16*2)/approx_pi;
 z_pulley_height          = 10;
 
-z_idler_pulley_diam        = (20*2)/approx_pi;
+z_idler_pulley_diam        = (20*2)/approx_pi; // 20T GT2
+z_idler_pulley_diam        = (16*2)/approx_pi; // 16T GT2
 z_idler_pulley_height      = 10;
 
 z_pulley_bearing_diam      = 10;

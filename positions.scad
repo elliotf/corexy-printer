@@ -125,7 +125,7 @@ z_belt_thickness_compensation = 1;
 tensioner_belt_dist_x         = m3_nut_diam*0.25;
 tensioner_belt_dist_y         = front*(belt_width/2 + 0.5 + wall_thickness/2 + m3_nut_diam/2);
 
-z_motor_side             = right;
+z_motor_side             = left;
 
 z_motor_pos_x            = z_motor_side*(z_pulley_diam/2+z_line_bearing_diam/2+z_belt_thickness_compensation);
 z_motor_pos_y            = rear*sheet_pos_y + sheet_thickness/2;
@@ -133,7 +133,7 @@ z_motor_pos_z            = bottom_sheet_pos_z + sheet_thickness/2 + motor_side/2
 
 z_idler_pulley_pos_x     = z_motor_side*(z_idler_pulley_diam/2 + z_line_bearing_diam/2 + z_belt_thickness_compensation);
 z_idler_pulley_pos_y     = z_line_idler_bearing_pos_y;
-z_idler_pulley_pos_z     = top_sheet_pos_z-sheet_thickness/2-z_idler_pulley_diam;
+z_idler_pulley_pos_z     = top_sheet_pos_z-sheet_thickness/2-bearing_625_diam;
 
 main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;

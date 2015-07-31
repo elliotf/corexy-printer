@@ -113,7 +113,7 @@ module assembly() {
       }
       // from motor to idler
       hull() {
-        translate([(z_idler_pulley_pos_x+(z_idler_pulley_diam/2+belt_thickness)*z_motor_side),0,z_idler_pulley_pos_z]) {
+        translate([(z_idler_pulley_pos_x+(z_idler_pulley_diam/2+belt_thickness/2)*z_motor_side),0,z_idler_pulley_pos_z]) {
           cube([belt_thickness,belt_width,1],center=true);
         }
         translate([z_motor_pos_x+(z_pulley_diam/2+belt_thickness/2)*z_motor_side,0,z_motor_pos_z]) {
