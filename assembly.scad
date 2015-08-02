@@ -94,7 +94,7 @@ module assembly() {
     % color("black", 0.8) translate([0,z_rod_pos_y,0]) {
       // from carriage to idler
       hull() {
-        translate([-z_line_bearing_diam/2-belt_thickness/2,0,0]) {
+        translate([z_motor_side*(z_line_bearing_diam/2+belt_thickness/2),0,0]) {
           position_for_z() {
             translate([0,0,z_carriage_bearing_spacing/2]) {
               cube([belt_thickness,belt_width,1],center=true);
@@ -107,7 +107,7 @@ module assembly() {
       }
       // from carriage to motor
       hull() {
-        translate([-z_line_bearing_diam/2-belt_thickness/2,0,0]) {
+        translate([z_motor_side*(z_line_bearing_diam/2+belt_thickness/2),0,0]) {
           position_for_z() {
             translate([0,0,-z_carriage_bearing_spacing/2]) {
               cube([belt_thickness,belt_width,1],center=true);
@@ -240,7 +240,7 @@ module assembly() {
 
   // spool mount
   //for(side=[left,right]) {
-  for(side=[z_motor_side]) {
+  for(side=[-z_motor_side]) {
     translate([side*(side_sheet_pos_x-sheet_thickness/2-20),sheet_pos_y + sheet_thickness/2 + filament_spool_mount_spacer + filament_spool_width/2,z_motor_pos_z+filament_spool_outer_diam/2]) {
       rotate([90,0,0]) {
         % filament_spool();
