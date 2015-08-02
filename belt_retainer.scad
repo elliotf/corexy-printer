@@ -21,121 +21,37 @@ module belt_teeth(height=belt_clamp_height) {
 
 module z_belt_anchor() {
   anchor_depth        = z_belt_to_rear_sheet_dist;
-  belt_clamp_depth    = belt_width + 1 + wall_thickness*2;
-  belt_clamp_x        = 0;
-  belt_clamp_y        = -belt_width/2-0.5+belt_clamp_depth/2;
+  belt_clamp_depth    = belt_width*2 + 1;
+  belt_clamp_y        = belt_width/2-0.5;
   anchor_width        = m3_nut_diam + wall_thickness*3;
+  rounded_diam        = 2;
 
-  module tooth_body() {
-    translate([0,belt_clamp_y,-z_belt_anchor_height/2]) {
-      hull() {
-        for(x=[left,right]) {
-          for(y=[front,rear]) {
-            translate([(belt_clamp_width/2-rounded_diam/2)*x,(belt_clamp_depth/2-rounded_diam/2)*y,0]) {
-              hole(rounded_diam,z_belt_anchor_height,resolution);
-            }
-          }
-        }
-      }
-
-      translate([belt_clamp_width/2,belt_clamp_depth/2,0]) {
-        cube([belt_clamp_width*1.5,belt_clamp_depth,z_belt_anchor_height],center=true);
-      }
-    }
-  }
-
-  module back_plate_anchor(height=z_belt_anchor_height) {
-    translate([z_belt_anchor_hole_belt_spacing,anchor_depth-belt_clamp_depth/2,-height/2]) {
-      for(x=[left,right]) {
-        for(y=[front,rear]) {
-          translate([(anchor_width/2-rounded_diam/2)*x,(belt_clamp_depth/2-rounded_diam/2)*y,0]) {
-            hole(rounded_diam,height,resolution);
-          }
-        }
-      }
-    }
-  }
+  brace_side_x      = -z_motor_side*(z_belt_clamp_width/2);
+  carriage_side_x   = z_motor_side*(anchor_width/2);
+  body_sheet_side_y = belt_width/2 + 0.5 + extrusion_width*6;
+  body_bed_side_y   = tensioner_belt_dist_y - m3_nut_diam/2 - wall_thickness;
 
   module body() {
-    tooth_body();
-
     hull() {
-      back_plate_anchor();
+      for(x=[carriage_side_x-z_motor_side*rounded_diam/2,brace_side_x+z_motor_side*rounded_diam/2]) {
+        for(y=[body_sheet_side_y-rounded_diam/2,body_bed_side_y+rounded_diam/2]) {
+          translate([x,y,-z_belt_anchor_height/2]) {
+            hole(rounded_diam-1,z_belt_anchor_height,resolution);
+          }
+          translate([x,y,-z_belt_anchor_height/2+0.6]) {
+            hole(rounded_diam,z_belt_anchor_height-0.6,resolution);
+          }
+        }
+      }
     }
   }
 
   module holes() {
-    //% cube([belt_thickness,belt_width,z_belt_anchor_height+2],center=true);
-
     translate([0,-belt_width+0.5,-z_belt_anchor_height/2]) {
       belt_teeth(z_belt_anchor_height);
     }
 
-    // z idler clearance
-    translate([0,0,0]) {
-      hull() {
-        for(x=[z_belt_anchor_hole_belt_spacing-anchor_width/2-rounded_diam,-20]) {
-          for(y=[belt_clamp_y+belt_clamp_depth/2+rounded_diam,anchor_depth*2]) {
-            translate([x,y,-z_belt_anchor_height/2]) {
-              hole(rounded_diam*2,z_belt_anchor_height+1,resolution);
-            }
-          }
-        }
-      }
-    }
-
-    // fancy roundedness
-    translate([0,0,0]) {
-      hull() {
-        for(x=[belt_clamp_width/2+rounded_diam/2,20]) {
-          for(y=[anchor_depth-belt_clamp_depth-rounded_diam/2,-20]) {
-            translate([x,y,-z_belt_anchor_height/2]) {
-              hole(rounded_diam,z_belt_anchor_height+1,resolution);
-            }
-          }
-        }
-      }
-    }
-
-    // zip tie hole
-    translate([belt_clamp_x,belt_clamp_y,-z_belt_anchor_height/2]) {
-      translate([belt_clamp_width/2+zip_tie_thickness/2,0,0]) {
-        cube([zip_tie_thickness,belt_clamp_depth-rounded_diam+0.05,zip_tie_width],center=true);
-      }
-      translate([0,belt_clamp_depth/2+zip_tie_thickness/2,0]) {
-        cube([belt_clamp_width-rounded_diam+0.05,zip_tie_thickness,zip_tie_width],center=true);
-      }
-      translate([belt_clamp_width/2-rounded_diam/2,belt_clamp_depth/2-rounded_diam/2,0]) {
-        intersection() {
-          rotate_extrude() {
-            translate([rounded_diam/2+zip_tie_thickness/2,0,0]) {
-              square([zip_tie_thickness,zip_tie_width],center=true);
-            }
-          }
-
-          translate([10,10,0]) {
-            cube([20,20,20],center=true);
-          }
-        }
-      }
-    }
-
-    // rear sheet mounting holes
-    for(side=[top,bottom]) {
-      translate([z_belt_anchor_hole_belt_spacing,0,-z_belt_anchor_height/2+z_belt_anchor_hole_spacing/2*side]) {
-        rotate([90,0,0]) {
-          rotate([0,0,90]) {
-            hole(m3_diam,anchor_depth*2+1,6);
-
-            translate([0,0,extrusion_width*4]) {
-              hole(m3_nut_diam,anchor_depth*2,6);
-            }
-          }
-        }
-      }
-    }
-
-    // flange in case the first layer is squished
+    // flange belt opening in case the first layer is squished
     translate([0,-belt_width/2+0.5,-z_belt_anchor_height-0.5]) {
       hull() {
         cube([belt_thickness+1,belt_width*2+1,1],center=true);
@@ -143,10 +59,21 @@ module z_belt_anchor() {
       }
     }
 
-    // flange the corner to avoid interference with sheet corner
-    translate([0,anchor_depth,0]) {
-      rotate([-50,0,0]) {
-        cube([40,10,extrusion_width*3],center=true);
+    // easier to slide belt in
+    hull() {
+      translate([0,body_bed_side_y-1,-z_belt_anchor_height/2]) {
+        cube([1,2*(m3_nut_diam+wall_thickness*2),z_belt_anchor_height+1],center=true);
+        cube([3,2*(wall_thickness*2+m3_diam+1),z_belt_anchor_height+1],center=true);
+      }
+    }
+
+    // mount to z_brace
+    for(side=[top,bottom]) {
+      translate([carriage_side_x,tensioner_belt_dist_y,-z_belt_anchor_height/2+z_belt_anchor_hole_spacing/2*side]) {
+        rotate([0,90,0]) {
+          hole(m3_diam, 40, 6);
+          hole(m3_nut_diam, 2, 6);
+        }
       }
     }
   }
@@ -194,14 +121,6 @@ module belt_tensioner_body() {
               hole(hole_rounded,body_height+1,8);
             }
           }
-        }
-      }
-    }
-
-    translate([z_belt_anchor_hole_spacing+m3_nut_diam/2,0,-sheet_thickness/2-bottom_sheet_pos_z+z_motor_pos_z]) {
-      rotate([90,0,0]) {
-        rotate([0,0,90]) {
-          # hole(m3_diam,anchor_depth*2,6);
         }
       }
     }

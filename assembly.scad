@@ -61,13 +61,20 @@ module assembly() {
 
   if (show_z) {
     z_axis_stationary();
+    translate([z_brace_sheet_pos_x,z_brace_sheet_pos_y,z_brace_sheet_pos_z]) {
+      rotate([0,-90,0]) {
+        color("lightblue") linear_extrude(height=sheet_thickness,center=true) {
+          z_brace_sheet();
+        }
+      }
+    }
 
     translate([0,0,build_z*1-z_pos]) {
       z_axis();
     }
 
     // belt retainers
-    translate([z_line_bearing_diam/2+belt_thickness/2,z_rod_pos_y,0]) {
+    translate([-z_motor_side*(z_line_bearing_diam/2+belt_thickness/2),z_rod_pos_y,0]) {
       translate([0,0,top_sheet_pos_z-sheet_thickness/2-0.05]) {
         z_belt_anchor();
       }
@@ -122,7 +129,7 @@ module assembly() {
       }
       // from carriage to top
       hull() {
-        translate([z_line_bearing_diam/2+belt_thickness/2,0,0]) {
+        translate([z_belt_carriage_to_anchor_pos_x,0,0]) {
           position_for_z() {
             translate([0,0,z_carriage_bearing_spacing/2]) {
               cube([belt_thickness,belt_width,1],center=true);
@@ -135,7 +142,7 @@ module assembly() {
       }
       // from carriage to bottom
       hull() {
-        translate([z_line_bearing_diam/2+belt_thickness/2,0,0]) {
+        translate([z_belt_carriage_to_anchor_pos_x,0,0]) {
           position_for_z() {
             translate([0,0,-z_carriage_bearing_spacing/2]) {
               cube([belt_thickness,belt_width,1],center=true);

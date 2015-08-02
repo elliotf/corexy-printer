@@ -68,6 +68,8 @@ build_x = 150;
 build_y = 150;
 build_z = 150;
 
+z_belt_clamp_width = 14;
+
 /*
 build_x = 100;
 build_y = 50;

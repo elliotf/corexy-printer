@@ -28,7 +28,9 @@ y_carriage_depth          = (y_carriage_line_bearing_y + line_bearing_nut_diam/2
 y_carriage_height         = x_rod_spacing+rod_diam+min_material_thickness*4;
 y_carriage_space          = y_carriage_line_bearing_y*2+line_bearing_diam;
 
-x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*2 + bearing_diam + 15; // fill out 24x18 sheet
+x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*2 + bearing_diam + 20; // fill out 24x18 sheet
+
+echo("y carriage width : ", y_carriage_width);
 
 bottom_line_pos_y = y_carriage_line_bearing_y-line_bearing_effective_diam/2;
 bottom_line_pos_z = y_carriage_line_bearing_z-(line_bearing_washer_thickness/2+line_bearing_thickness/2);
@@ -45,7 +47,7 @@ hotend_y    = (x_bearing_diam/2 + wall_thickness + spacer + hotend_diam/2)*front
 hotend_z    = tuner_shoulder_pos_z;
 hotend_z    = -x_rod_spacing/2-x_bearing_diam/2+hotend_dist_to_heatsink_bottom;
 
-top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2;
+top_rear_brace_depth = z_motor_shaft_len - belt_width/2 + z_bearing_diam/2 + 2;
 y_rod_len       = hotend_diam/2 + build_y + hotend_diam/2 + abs(hotend_y) + top_rear_brace_depth + sheet_thickness*2 - 7;
 y_rod_x         = x_rod_len/2 - y_bearing_diam/2;
 
@@ -98,14 +100,6 @@ z_carriage_idler_sheet_dist_y   = z_idler_sheet_dist_y + z_line_bearing_diam/2 +
 z_line_bearing_dist_from_sheet   = sheet_pos_y - z_rod_pos_y - sheet_thickness/2; // - z_rod_diam/2 - 1;
 z_carriage_bearing_spacing       = (z_line_bearing_diam/2 + belt_thickness*2 + 1) *2;
 
-/*
-z_brace_screw_dist_from_corner = top_rear_brace_depth-wall_thickness-m3_nut_diam;
-z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + 5/2 + wall_thickness + z_line_bearing_inner/2;
-z_brace_screw_dist_from_corner = z_line_bearing_to_carriage_pos_z + z_line_bearing_inner/2 + wall_thickness + m3_nut_diam/2;
-z_brace_screw_dist_from_corner = 21;
-z_brace_body_width             = m3_nut_diam + wall_thickness*2;
-z_brace_pos_x                  = z_line_bearing_thickness/2 + spacer*2 + z_brace_body_width/2;
-*/
 z_line_idler_bearing_pos_y   = sheet_pos_y - sheet_thickness/2 - z_line_bearing_dist_from_sheet;
 
 z_printed_portion_height    = z_bearing_len*2 + z_bearing_spacing;
@@ -122,7 +116,8 @@ z_support_arm_hole_spacing  = z_printed_portion_height / (z_support_arm_hole_cou
 height_below_top_sheet = abs(-sheet_pos_z+top_sheet_pos_z + side_sheet_height/2);
 
 z_belt_thickness_compensation = 1;
-tensioner_belt_dist_x         = m3_nut_diam*0.25;
+tensioner_belt_dist_x         = z_motor_side*m3_nut_diam*0.25;
+tensioner_belt_dist_x         = 0;
 tensioner_belt_dist_y         = front*(belt_width/2 + 0.5 + wall_thickness/2 + m3_nut_diam/2);
 
 z_motor_side             = left;
@@ -135,14 +130,22 @@ z_idler_pulley_pos_x     = z_motor_side*(z_idler_pulley_diam/2 + z_line_bearing_
 z_idler_pulley_pos_y     = z_line_idler_bearing_pos_y;
 z_idler_pulley_pos_z     = top_sheet_pos_z-sheet_thickness/2-bearing_625_diam;
 
-main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25;
+z_belt_carriage_to_anchor_pos_x = -z_motor_side*(z_line_bearing_diam/2+belt_thickness/2);
+z_belt_carriage_to_motor_pos_x  =  z_motor_side*(z_line_bearing_diam/2+belt_thickness/2);
+
+z_brace_height           = top_sheet_pos_z - bottom_sheet_pos_z - sheet_thickness;
+z_brace_sheet_pos_x      = z_belt_carriage_to_anchor_pos_x + -z_motor_side*(z_belt_clamp_width/2+sheet_thickness/2);
+z_brace_sheet_pos_y      = sheet_pos_y - sheet_thickness/2;
+z_brace_sheet_pos_z      = z_rod_pos_z;
+
+main_opening_width  = y_rod_x*2 - y_carriage_width*2 - x_carriage_width*.25 - 10;
 main_opening_depth  = top_sheet_depth - top_rear_brace_depth;
 main_opening_height = min((sheet_height - top_rear_brace_depth),(sheet_height*.60));
 
 build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build_y/2;
 echo("build_pos_y: ", build_pos_y);
 
-x_pos = -build_x/2+build_x*0.0;
+x_pos = -build_x/2+build_x*1.0;
 y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*1.0;
 z_pos = build_z*0.0+0;
 

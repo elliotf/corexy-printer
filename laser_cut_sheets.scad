@@ -26,7 +26,7 @@ module sides_and_top() {
         top_sheet();
       }
 
-      translate([0,-12,0]) {
+      translate([0,-11,0]) {
         rotate([0,0,180]) {
           z_bed_plate();
         }
@@ -52,7 +52,7 @@ module front_back_and_other() {
 
       for(side=[left,right]) {
         mirror([1-side,0,0]) {
-          translate([z_printed_portion_height/2+sheet_thickness+1,-side_sheet_height/2+main_opening_height-z_build_platform_depth/2-5,0]) {
+          translate([z_printed_portion_height/2+sheet_thickness+2,-side_sheet_height/2+main_opening_height-z_build_platform_depth*.75,0]) {
             rotate([0,0,90]) {
               z_support_arm();
             }
@@ -61,8 +61,16 @@ module front_back_and_other() {
       }
     }
     translate([right*(front_sheet_width/2+sheet_thickness*2),0,0]) {
-      rotate([0,180,180]) {
-        rear_sheet();
+      translate([0,sheet_thickness+bc_shoulder_width,0]) {
+        rotate([0,180,0]) {
+          rear_sheet();
+        }
+      }
+
+      translate([0,-sheet_height/2-top_rear_brace_depth-5]) {
+        rotate([0,0,180]) {
+          z_brace_sheet();
+        }
       }
     }
   }
