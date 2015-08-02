@@ -1,6 +1,9 @@
 include <main.scad>;
+use <belt_retainer.scad>;
 
-rod_clamp(z_rod_diam);
+//rod_clamp(z_rod_diam);
+
+belt_clamp_tensioner();
 
 translate([-x_carriage_width-5,0,0]) {
   //x_carriage();
