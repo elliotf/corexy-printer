@@ -1044,7 +1044,7 @@ module top_sheet() {
     hole_diam = 6*2;
     front_y   = front*top_sheet_depth/2;
 
-    front_opening_width = main_opening_width - 12;
+    front_opening_width = main_opening_width - sheet_thickness*2;
 
     hull() {
       for(x=[left,right]) {
@@ -1059,15 +1059,10 @@ module top_sheet() {
       }
     }
     translate([0,front*(top_sheet_depth/2)]) {
-      square([front_opening_width-6*2,sheet_thickness*4],center=true);
+      square([front_opening_width-sheet_thickness*2,sheet_thickness*4],center=true);
     }
 
     for(side=[left,right]) {
-      /*
-      translate([z_brace_pos_x*side,top_sheet_depth/2-z_brace_screw_dist_from_corner]) {
-        accurate_circle(3,resolution/2);
-      }
-      */
       translate([z_rod_pos_x*side,z_rod_pos_y]) {
         accurate_circle(z_rod_diam-laser_cut_kerf*2,64);
       }
@@ -1761,6 +1756,7 @@ module z_bed_plate() {
     }
 
     // make it fit inside the top sheet for cutting
+    /*
     for(side=[left,right]) {
       translate([z_build_platform_width/2*side,fill_to_arm+depth/2,0]) {
         rotate([0,0,45]) {
@@ -1768,6 +1764,7 @@ module z_bed_plate() {
         }
       }
     }
+    */
   }
 
   difference() {
