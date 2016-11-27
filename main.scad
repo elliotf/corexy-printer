@@ -45,15 +45,19 @@ module line_bearing() {
   res = 64;
 
   module body() {
-    for(side=[top,bottom]) {
-      hull() {
-        translate([0,0,-side*(line_bearing_thickness/4)]) {
-          hole(line_bearing_effective_diam,line_bearing_thickness/2,res);
-        }
-        translate([0,0,-side*(line_bearing_thickness/2-0.05)]) {
-          hole(line_bearing_diam,0.1,res);
+    if (line_bearing_groove_depth) {
+      for(side=[top,bottom]) {
+        hull() {
+          translate([0,0,-side*(line_bearing_thickness/4)]) {
+            hole(line_bearing_effective_diam,line_bearing_thickness/2,res);
+          }
+          translate([0,0,-side*(line_bearing_thickness/2-0.05)]) {
+            hole(line_bearing_diam,0.1,res);
+          }
         }
       }
+    } else {
+      hole(line_bearing_diam,line_bearing_thickness,res);
     }
   }
 
@@ -609,14 +613,14 @@ module x_carriage() {
   for(side=[left,right]) {
     mirror([1+side,0,0]) {
       position_tuner() {
-        % tuner();
+        //% tuner();
       }
     }
   }
 
   difference() {
-    body();
-    holes();
+    //body();
+    //holes();
   }
 
   % for(side=[top,bottom]) {
@@ -765,6 +769,14 @@ module y_carriage() {
     }
   }
 
+  translate([line_bearing_x,y_carriage_line_bearing_y,y_carriage_line_bearing_z]) {
+    for (side=[top,bottom]) {
+      translate([0,0,(line_bearing_thickness/2+line_bearing_washer_thickness/2)*side]) {
+        % line_bearing();
+      }
+    }
+  }
+
   module bridges() {
     for(side=[top,bottom]) {
       translate([line_bearing_x,y_carriage_line_bearing_y,y_carriage_line_bearing_z+side*(line_bearing_washer_thickness/2+line_bearing_thickness/2)]) {
@@ -774,10 +786,10 @@ module y_carriage() {
   }
 
   difference() {
-    body();
-    holes();
+    //body();
+    //holes();
   }
-  bridges();
+  //bridges();
 
   translate([0,0,0]) {
     rotate([90,0,0]) {

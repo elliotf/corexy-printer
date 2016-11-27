@@ -80,6 +80,10 @@ build_y = 100;
 build_z = 100;
 */
 
+build_x = 20;
+build_y = 20;
+build_z = 20;
+
 belt_total_thickness = 1.38;
 belt_tooth_depth     = 0.75;
 belt_thickness       = belt_total_thickness - belt_tooth_depth;
@@ -367,6 +371,15 @@ line_bearing_thickness = 4;
 line_bearing_nut_diam = m4_nut_diam;
 line_bearing_nut_thickness = m4_nut_thickness;
 line_bearing_washer_thickness = m4_washer_thickness;
+
+// 623v for belts
+line_bearing_diam = 10;
+line_bearing_groove_depth = 0;
+line_bearing_inner = 3;
+line_bearing_thickness = 8;
+line_bearing_nut_diam = m3_nut_diam;
+line_bearing_nut_thickness = m3_nut_thickness;
+line_bearing_washer_thickness = m3_washer_thickness;
 
 line_bearing_effective_diam = line_bearing_diam - (line_bearing_groove_depth*2);
 
