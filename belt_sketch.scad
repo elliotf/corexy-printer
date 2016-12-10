@@ -8,13 +8,14 @@ belt_width           = 6;
 dimensions           = 150;
 side_len             = dimensions+motor_side;
 spacer               = 1;
-motor_pos_x          = side_len/2;
 motor_pos_y          = side_len/2*front;
 belt_idler_diam      = 10;
 belt_idler_thickness = 8;
 belt_idler_dist      = belt_idler_thickness+spacer;
-motor_pos_z          = -belt_idler_thickness-sheet_thickness-spacer;
-belt_pos_x           = motor_pos_x-motor_hole_spacing/2+z_pulley_diam/2 - belt_thickness/2;
+motor_pos_z          = -sheet_thickness;
+belt_pos_x           = side_len/2+z_pulley_diam - belt_thickness/2;
+motor_pos_x          = belt_pos_x + belt_thickness/2 + z_pulley_diam/2;
+
 
 z_motor_pos_x = 0;
 
@@ -22,12 +23,13 @@ module assembly() {
   z_motor_pos_y = -motor_pos_y;
   z_motor_pos_z = -dimensions;
   for(side=[left,right]) {
-    translate([motor_pos_x*side,-motor_pos_y,motor_pos_z-1]) {
+    translate([(belt_pos_x+belt_thickness/2+z_pulley_diam/2)*side,motor_pos_y,motor_pos_z]) {
     //translate([motor_side*0.6*side,-motor_pos_y,motor_pos_z-1]) {
       % motor();
     }
   }
 
+  /*
   % translate([0,z_motor_pos_y,z_motor_pos_z]) {
     motor();
 
@@ -35,17 +37,22 @@ module assembly() {
       hole(8, dimensions, resolution);
     }
   }
+  */
 
-  //translate([0,0,motor_pos_z+sheet_thickness/2]) {
-  translate([0,0,belt_idler_thickness+10+sheet_thickness/2]) {
-    //% color("lightgreen", 0.5) belt_top_sheet();
+  translate([0,0,-sheet_thickness/2]) {
+    % color("lightgreen", 0.5) belt_top_sheet();
+  }
+
+  translate([0,-motor_side/2,0]) {
+    % cube([dimensions,dimensions,1],center=true);
   }
 
   colors = ["orange", 0, "lightblue"];
   for(side=[left,right]) {
   //for(side=[right]) {
     //translate([0,0,(0.5+belt_idler_thickness/2)*side]) {
-    translate([0,0,belt_idler_dist/2*side]) {
+    //translate([0,0,belt_idler_dist/2*side]) {
+    translate([0,0,spacer+belt_idler_thickness/2]) {
       mirror([1-side,0,0]) {
         color(colors[1-side]) belt_path(side);
       }
@@ -54,7 +61,7 @@ module assembly() {
 }
 
 module belt_top_sheet() {
-  total_width   = side_len+motor_side;
+  total_width   = motor_pos_x*2+motor_side;
   total_depth   = side_len+motor_side;
   opening_width = total_width-motor_side*2;
   opening_depth = total_depth-motor_side;
@@ -68,15 +75,23 @@ module belt_top_sheet() {
 }
 
 module belt_path(side) {
-  rear_belt_pos_y = -motor_pos_y;//+(1-side)*(belt_thickness*2);
-  rear_belt_pos_y = -motor_pos_y-motor_hole_spacing/2;//+(1-side)*(belt_thickness*2);
+  should_adjust_z      = (1+side)/2;
+  should_adjust_y      = -side+should_adjust_z;
+  rear_belt_pos_y      = side_len/2+belt_idler_diam;//+(1-side)*(belt_thickness*2);
+  rear_idler_pos_y     = rear_belt_pos_y-belt_idler_diam/2-belt_thickness/2;
   belt_idler_z_spacing = 0; //belt_idler_dist;
-  rear_pulley_pos_y = rear_belt_pos_y - belt_thickness/2 - z_pulley_diam/2;
-  y_idler_pos_x    = belt_pos_x - belt_thickness/2 - z_pulley_diam/2;
+  y_idler_pos_x        = belt_pos_x - belt_idler_diam/2 - belt_thickness/2;
+  y_idler_pos_y        = spacer+belt_thickness+belt_idler_diam/2;
+  far_rear_idler_pos_y = rear_belt_pos_y + belt_idler_diam/2;
+  far_rear_belt_pos_y  = far_rear_idler_pos_y + belt_idler_diam/2 + belt_thickness/2;
+  far_rear_idler_pos_z = should_adjust_z*belt_idler_thickness*1;
+
+  function get_rear_belt_pos_y() = (should_adjust_y) ? far_rear_belt_pos_y + 1 : rear_belt_pos_y;
+  function get_rear_idler_pos_y() = (should_adjust_y) ? far_rear_idler_pos_y + 1 : rear_idler_pos_y;
 
   // x carriage to motor y idler
   hull() {
-    translate([0,belt_idler_diam/2+belt_thickness/2,0]) {
+    translate([0,front*y_idler_pos_y+belt_idler_diam/2+belt_thickness/2,0]) {
       translate([belt_pos_x-belt_idler_diam/2,0,0]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
@@ -87,15 +102,15 @@ module belt_path(side) {
   }
 
   // y carriage to motor
+  translate([y_idler_pos_x,front*y_idler_pos_y,0]) {
+    hole(belt_idler_diam, belt_idler_thickness, resolution);
+  }
   translate([belt_pos_x,0,0]) {
-    translate([-belt_thickness/2-belt_idler_diam/2,0,0]) {
-      hole(belt_idler_diam, belt_idler_thickness, resolution);
-    }
     hull() {
       translate([0,motor_pos_y,0]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
-      translate([0,0,0]) {
+      translate([0,front*y_idler_pos_y,0]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
     }
@@ -106,73 +121,57 @@ module belt_path(side) {
   }
   // motor to rear
   hull() {
-    translate([z_pulley_diam/2+belt_thickness/2,0,]) {
+    translate([z_pulley_diam/2+belt_thickness/2,0,0]) {
       translate([belt_pos_x+z_pulley_diam/2,motor_pos_y,0]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
-      translate([motor_pos_x,-motor_pos_y,0]) {
+      translate([motor_pos_x,far_rear_idler_pos_y,far_rear_idler_pos_z]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
     }
   }
 
-  // motor rear idler
-  //translate([motor_pos_x,rear_belt_pos_y,0]) {
-  translate([motor_pos_x,-motor_pos_y,0]) {
-    hole(belt_idler_diam, belt_idler_thickness, resolution);
-  }
-
-  hull() {
-    translate([0,0,0]) {
-      translate([belt_pos_x,rear_belt_pos_y,0]) {
-        cube([belt_thickness,belt_thickness,belt_width],center=true);
-      }
-      translate([motor_pos_x-belt_thickness/2-belt_idler_diam/2,-motor_pos_y,-belt_idler_z_spacing]) {
-        cube([belt_thickness,belt_thickness,belt_width],center=true);
-      }
-    }
-  }
-
-  translate([y_idler_pos_x,rear_belt_pos_y,0]) {
+  translate([motor_pos_x,far_rear_idler_pos_y,far_rear_idler_pos_z]) {
     hole(belt_idler_diam, belt_idler_thickness, resolution);
   }
 
   // across the rear
   hull() {
-    translate([0,z_pulley_diam/2+belt_thickness/2,0]) {
-      translate([y_idler_pos_x,rear_pulley_pos_y-belt_idler_diam/2,0]) {
+    translate([0,0,0]) {
+      translate([motor_pos_x,far_rear_belt_pos_y,far_rear_idler_pos_z]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
-      translate([-belt_pos_x+belt_thickness/2+belt_idler_diam/2,rear_belt_pos_y,-belt_idler_z_spacing]) {
-        cube([belt_thickness,belt_thickness,belt_width],center=true);
+      translate([-y_idler_pos_x,get_rear_belt_pos_y(),-belt_idler_z_spacing]) {
+        # cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
     }
   }
 
-  // far rear idler
-  translate([-belt_pos_x+belt_thickness/2+belt_idler_diam/2,rear_belt_pos_y,-belt_idler_z_spacing]) {
+  // far side rear idler
+  translate([-belt_pos_x+belt_thickness/2+belt_idler_diam/2,get_rear_idler_pos_y(),-belt_idler_z_spacing]) {
     hole(belt_idler_diam, belt_idler_thickness, resolution);
   }
 
   // far side rear to y carriage
   translate([-belt_pos_x,0,-belt_idler_z_spacing]) {
     hull() {
-      translate([0,rear_belt_pos_y,0]) {
+      translate([0,get_rear_idler_pos_y(),0]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
-      translate([0,0,0]) {
+      translate([0,y_idler_pos_y,0]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
     }
+  }
 
-    translate([belt_thickness/2+belt_idler_diam/2,0,0]) {
-      hole(belt_idler_diam, belt_idler_thickness, resolution);
-    }
+  // y idler to x carriage
+  translate([-y_idler_pos_x,rear*y_idler_pos_y,0]) {
+    hole(belt_idler_diam, belt_idler_thickness, resolution);
   }
 
   // far side to x carriage
   hull() {
-    translate([0,-belt_idler_diam/2-belt_thickness/2,-belt_idler_z_spacing]) {
+    translate([0,rear*y_idler_pos_y-belt_idler_diam/2-belt_thickness/2,0]) {
       translate([-belt_pos_x+belt_idler_diam/2,0,0]) {
         cube([belt_thickness,belt_thickness,belt_width],center=true);
       }
