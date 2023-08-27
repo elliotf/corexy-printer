@@ -1,0 +1,6 @@
+[submodule "aluminum/tiny-m"]
+	path = aluminum/tiny-m
+	url = git@github.com:gsl12/Tiny-M.git
+[submodule "aluminum/voron-zero"]
+	path = aluminum/voron-zero
+	url = https://github.com/VoronDesign/Voron-0.git
