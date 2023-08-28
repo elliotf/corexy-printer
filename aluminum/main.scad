@@ -2,194 +2,24 @@ use <NopSCADlib/lib.scad>;
 include <config.scad>;
 use <z-assembly.scad>;
 use <toolhead.scad>;
+use <xy-gantry.scad>;
+use <xy-tensioner.scad>;
 
-//show_top = true;
-show_top = false;
+show_top = true;
+//show_top = false;
 
 idler_stack_height = 33;
 
-module front_idler_bottom(side) {
-  front_idler_generic(side,bottom);
-}
-
-module front_idler_top(side) {
-  front_idler_generic(side,top);
-}
-
-module front_idler_generic(side,bevel_side) {
-  idler_stack_height = 33;
-  side_index = side+1; // 0 and 2
-  bevel_index = bevel_side+1; // 1 and 3
-
-  belt_pos_z = [
-    xy_belt_lower_dist_from_extrusion,
-    0,
-    xy_belt_upper_dist_from_extrusion,
-  ];
-
-  flat_pos_z = [
-    0, 0, idler_stack_height
-  ];
-
-  height = abs(flat_pos_z[bevel_index]-belt_pos_z[side_index]) - xy_idler_width/2 - bevel_height;
-
-  module profile(inset_by=0) {
-    body_width = 14-inset_by;
-    hull() {
-      translate([0,xy_belt_idler_dist_from_end,0]) {
-        accurate_circle(body_width,resolution);
-      }
-      translate([0,2,0]) {
-        rounded_square(body_width,4-inset_by,2-inset_by);
-      }
-    }
-  }
-
-  module body() {
-    bevel_amount = 0.6;
-    hull() {
-      linear_extrude(height=height-bevel_amount,center=true,convexity=3) {
-        profile();
-      }
-      linear_extrude(height=height,center=true,convexity=3) {
-        profile(bevel_amount);
-      }
-    }
-    tolerance = 0.2;
-    nut_slot_depth = 2.5-tolerance;
-    nut_slot_width = 5.7-tolerance;
-    screw_slot_width = 3-tolerance;
-    screw_slot_depth = 1.1+nut_slot_depth;
-
-    hull() {
-      rounded_cube(screw_slot_width-bevel_amount,2*screw_slot_depth-bevel_amount,height,2-bevel_amount);
-      rounded_cube(screw_slot_width,2*screw_slot_depth,height-bevel_amount,2);
-    }
-    translate([0,-screw_slot_depth+nut_slot_depth/2-tolerance/2,0]) {
-      hull() {
-        rounded_cube(nut_slot_width-bevel_amount,nut_slot_depth-bevel_amount,height,2-bevel_amount);
-        rounded_cube(nut_slot_width,nut_slot_depth,height-bevel_amount,2);
-      }
-    }
-    translate([0,0,0]) {
-    }
-    mirror([0,0,bevel_index]) {
-      translate([0,xy_belt_idler_dist_from_end,height/2+bevel_height]) {
-        bevel(xy_idler_bevel_large,xy_idler_bevel_small,bevel_height+0.1);
-      }
-    }
-  }
-
-  module holes() {
-    translate([0,xy_belt_idler_dist_from_end,0]) {
-      hole(xy_idler_id+0.3,idler_stack_height*2,resolution);
-    }
-  }
-
-  translate([0,0,flat_pos_z[bevel_index]-(height/2*bevel_side)]) {
-    difference() {
-      body();
-      holes();
-    }
-  }
-}
-
-module front_idler_base(height=1,bevel_side) {
-  module profile(inset_by=0) {
-    body_width = 14-inset_by;
-    hull() {
-      translate([0,xy_belt_idler_dist_from_end,0]) {
-        accurate_circle(body_width,resolution);
-      }
-      translate([0,2,0]) {
-        rounded_square(body_width,4-inset_by,2-inset_by);
-      }
-    }
-  }
-
-  module body() {
-    bevel_amount = 0.6;
-    hull() {
-      linear_extrude(height=height-bevel_amount,center=true,convexity=3) {
-        profile();
-      }
-      linear_extrude(height=height,center=true,convexity=3) {
-        profile(bevel_amount);
-      }
-    }
-  }
-
-  module holes() {
-    translate([0,xy_belt_idler_dist_from_end,0]) {
-      hole(xy_idler_id+0.3,idler_stack_height*2,resolution);
-    }
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
-module old_front_idler_bottom(side) {
-  index = side+1;
-  heights = [xy_belt_lower_dist_from_extrusion,0,xy_belt_upper_dist_from_extrusion];
-  height = heights[index] - xy_idler_width/2 - bevel_height;
-
-  module body() {
-    translate([0,0,height/2]) {
-      front_idler_base(height);
-      translate([0,xy_belt_idler_dist_from_end,height/2+bevel_height]) {
-        bevel(xy_idler_bevel_large,xy_idler_bevel_small,bevel_height);
-      }
-    }
-  }
-
-  module holes() {
-    translate([0,xy_belt_idler_dist_from_end,0]) {
-      hole(xy_idler_id+0.3,idler_stack_height*2,resolution);
-    }
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
-module old_front_idler_top(side) {
-  index = side+1;
-  pos = [xy_belt_lower_dist_from_extrusion,0,xy_belt_upper_dist_from_extrusion];
-  height = idler_stack_height - pos[index] - xy_idler_width/2 - bevel_height;
-
-  module body() {
-    translate([0,0,idler_stack_height-height/2]) {
-      front_idler_base(height);
-      translate([0,0,-height/2]) {
-        rotate([0,0,0]) {
-        }
-      }
-    }
-  }
-
-  module holes() {
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
 module assembly(pos_x=0, pos_y=0, pos_z=0) {
-
   //xy_belt_y_carriage_idler_outer_pos_y = 157.5-spar_main_len/2+xy_belt_idler_dist_from_end-build_volume_y+pos_y-extrusion_side;
-  xy_belt_y_carriage_idler_outer_pos_y = rear_support_pos_y-extrusion_side/2-13-build_volume_y+pos_y;
+  xy_belt_y_carriage_idler_outer_pos_y = rear_support_pos_y-extrusion_side/2-13-build_volume_y+pos_y+fudge_x_rail_back;
   //xy_belt_y_carriage_idler_inner_pos_y = 146.12-spar_main_len/2+xy_belt_idler_dist_from_end-build_volume_y+pos_y-extrusion_side;
-  xy_belt_y_carriage_idler_inner_pos_y = rear_support_pos_y-extrusion_side/2-24.38-build_volume_y+pos_y;
+  xy_belt_y_carriage_idler_inner_pos_y = rear_support_pos_y-extrusion_side/2-24.38-build_volume_y+pos_y+fudge_x_rail_back;
   //xy_belt_x_carriage_anchor_pos_y = 152.3-spar_main_len/2+xy_belt_idler_dist_from_end-build_volume_y+pos_y-extrusion_side;
-  xy_belt_x_carriage_anchor_pos_y = rear_support_pos_y-extrusion_side/2-18.2-build_volume_y+pos_y;
-  x_carriage_pos_x = -build_volume_x/2+pos_x;
+  xy_belt_x_carriage_anchor_pos_y = rear_support_pos_y-extrusion_side/2-18.2-build_volume_y+pos_y+fudge_x_rail_back;
+  //x_carriage_pos_x = -build_volume_x/2+pos_x;
+  //x_carriage_pos_x = -x_rail_len/2+carriage_length(x_carriage_type)/2+pos_x;
+  x_carriage_pos_x = -x_rail_len/2+carriage_length(MGN7H_carriage)/2+pos_x;
 
   for(x=[left,right]) {
     for(y=[front,rear]) {
@@ -268,10 +98,11 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
       [start_anchor_x_for[mirrored],xy_belt_x_carriage_anchor_pos_y,0],
       [right*(xy_belt_idler_outer_pos_x),xy_belt_y_carriage_idler_outer_pos_y,f623_2x_idler],
       [right*(xy_belt_idler_outer_pos_x),rear*xy_belt_idler_rear_left_pos_y,f623_2x_idler],
+      //[right*(xy_belt_idler_extra_pos_x),xy_belt_idler_extra_pos_y,f623_2x_idler], // corner cutting idler
       [right*(xy_motor_pos_x),rear*(xy_motor_pos_y),GT2x16_pulley],
       [right*(xy_belt_idler_rear_pos_x),rear*(spar_main_len/2+extrusion_side-xy_belt_idler_dist_from_end),f623_2x_idler], // 180deg return to opposite side
       [left*(xy_belt_idler_rear_pos_x),rear*(spar_main_len/2+extrusion_side-xy_belt_idler_dist_from_end),f623_2x_idler],
-      [left*(xy_belt_idler_extra_pos_x),xy_belt_idler_extra_pos_y,f623_2x_idler], // corner cutting idler
+      //[left*(xy_belt_idler_extra_pos_x),xy_belt_idler_extra_pos_y,f623_2x_idler], // corner cutting idler
       [left*(xy_belt_idler_outer_pos_x),rear*xy_belt_idler_rear_left_pos_y,f623_2x_idler],
       [left*(xy_belt_idler_outer_pos_x),front*(spar_main_len/2-xy_belt_idler_dist_from_end),f623_2x_idler], // front idler
       [left*(xy_belt_idler_inner_pos_x),xy_belt_y_carriage_idler_inner_pos_y,f623_2x_idler],
@@ -324,7 +155,7 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
 
   position_x_axis() {
     translate([0,y_rail_pos_y+y_rail_length/2-carriage_length(yz_carriage_type)/2-build_volume_y+pos_y,0]) {
-      translate([0,carriage_length(yz_carriage_type/2)-extrusion_side/2,carriage_width(yz_carriage_type)/2+x_extrusion_dist_from_y_extrusion_z]) {
+      translate([0,fudge_x_rail_back+carriage_length(yz_carriage_type/2)-extrusion_side/2,carriage_width(yz_carriage_type)/2+x_extrusion_dist_from_y_extrusion_z]) {
         translate([0,0,extrusion_side/2]) {
           rotate([0,90,0]) {
             extrusion_makerbeam_xl(spar_main_len);
@@ -376,14 +207,15 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
     //fudge = 0;
     //y_pos = rear_support_pos_y-extrusion_side/2+fudge;
     //translate([0,y_pos,xy_pos_z-extrusion_side/2-build_volume_z]) {
-    translate([0,y_pos,z_rail_top_pos_z-carriage_length(yz_carriage_type)/2-pos_z]) {
+    //translate([0,y_pos,z_rail_top_pos_z-carriage_length(yz_carriage_type)/2-pos_z]) {
+    translate([0,y_pos,z_rail_top_pos_z-pos_z]) {
       children();
     }
   }
 
   position_bed() {
     plate_thickness = 6.150;
-    translate([0,-build_volume_y/2+z_support_beam_rear_bed_offset_y+10,carriage_length(yz_carriage_type)/2-plate_thickness/2]) {
+    translate([0,-build_volume_y/2+z_support_beam_rear_bed_offset_y+4.5,carriage_length(yz_carriage_type)/2-plate_thickness/2]) {
       color("#777") difference() {
         cube([build_volume_x,build_volume_y,plate_thickness],center=true);
 
@@ -437,14 +269,15 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
     //  rotate([-90,0,0]) {
     // horizontally
     /*
+    */
     translate([-spar_main_len/2+20+psu_length(psu_type)/2,rear_support_pos_y+extrusion_side/2+3,bottom_pos_z+psu_center_z]) {
       rotate([-90,0,0]) {
         rotate([0,0,180]) {
-          children();
+          //children();
         }
       }
     }
-    */
+    /*
     translate([-spar_main_len/2+psu_width(psu_type)/2,spar_main_len/2-psu_length(psu_type)/2,bottom_pos_z-extrusion_side/2]) {
       rotate([0,0,-90]) {
         rotate([180,0,0]) {
@@ -452,6 +285,7 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
         }
       }
     }
+    */
   }
 
   position_psu() {
@@ -530,6 +364,22 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
         rotate([0,0,90]) {
           rotate([0,180,0]) {
             // NEMA(xy_motor);
+          }
+        }
+      }
+    }
+    for(x=[left,right]) {
+      mirror([x-1,0,0]) {
+        translate([0,0,xy_motor_pos_z+ab_plate_thickness/2]) {
+          color("#7a7") ab_motor_plate(bottom);
+
+          translate([xy_motor_pos_x-xy_motor_adjust_range*0,xy_motor_pos_y,ab_plate_thickness/2+0.1]) {
+            //xy_tensioner_body(16);
+          }
+        }
+        translate([0,0,xy_pos_z+extrusion_side/2+ab_plate_thickness+ab_plate_space_between_z+top_ab_plate_thickness/2+0.1]) {
+          rotate([0,180,0]) {
+            color("#77a") ab_motor_plate(top);
           }
         }
       }

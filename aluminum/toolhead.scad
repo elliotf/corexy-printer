@@ -1,6 +1,9 @@
 use <lumpyscad/lib.scad>;
 
 module dragon_burner() {
+  translate([0,-16.61-11.2,0]) {
+    color("red") hole(0.4,300,128);
+  }
   translate([0,-16.61,5.7]) {
     translate([0,-11.2,0]) {
       translate([0,0,0]) {
@@ -41,10 +44,10 @@ module dragon_burner() {
 }
 
 module mini_stealthburner() {
+  translate([0,-13.6-13.7,9]) {
+    color("red") hole(0.4,300,128);
+  }
   translate([0,-13.6,9]) {
-    translate([0,-13.7,0]) {
-      color("red") hole(1.5,300,128);
-    }
     rotate([90,0,0]) {
       translate([0,0,0]) {
         rotate([0,0,0]) {
@@ -79,8 +82,8 @@ module mini_stealthburner() {
 }
 
 module toolhead() {
-  // dragon_burner();
-  mini_stealthburner();
+  dragon_burner();
+  //mini_stealthburner();
 }
 
 toolhead();
