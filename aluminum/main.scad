@@ -5,8 +5,8 @@ use <toolhead.scad>;
 use <xy-gantry.scad>;
 use <xy-tensioner.scad>;
 
-show_top = true;
-//show_top = false;
+//show_top = true;
+show_top = false;
 
 idler_stack_height = 33;
 
@@ -270,14 +270,13 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
     // horizontally
     /*
     */
-    translate([-spar_main_len/2+20+psu_length(psu_type)/2,rear_support_pos_y+extrusion_side/2+3,bottom_pos_z+psu_center_z]) {
+    translate([-spar_main_len/2+4+psu_width(psu_type)/2,rear_support_pos_y+extrusion_side/2+3,bottom_pos_z+psu_center_z]) {
       rotate([-90,0,0]) {
-        rotate([0,0,180]) {
-          //children();
+        rotate([0,0,-90]) {
+          children();
         }
       }
     }
-    /*
     translate([-spar_main_len/2+psu_width(psu_type)/2,spar_main_len/2-psu_length(psu_type)/2,bottom_pos_z-extrusion_side/2]) {
       rotate([0,0,-90]) {
         rotate([180,0,0]) {
@@ -285,7 +284,6 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
         }
       }
     }
-    */
   }
 
   position_psu() {
@@ -296,9 +294,25 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
     //translate([-spar_main_len/2+mcu_breathing_room+pcb_length(BTT_SKR_V1_4_TURBO)/2,corner_pos_y-mcu_breathing_room-pcb_length(BTT_SKR_V1_4_TURBO)/2,bottom_pos_z-extrusion_side/2-5]) {
     //mcu_breathing_room = 0;
     mcu_breathing_room = 5;
-    translate([-spar_main_len/2+mcu_breathing_room+pcb_width(BTT_SKR_V1_4_TURBO)/2,rear_support_pos_y-extrusion_side/2-mcu_breathing_room-pcb_length(BTT_SKR_V1_4_TURBO)/2,bottom_pos_z-extrusion_side/2]) {
+    mcu_type = BTT_SKR_V1_4_TURBO;
+    translate([-spar_main_len/2+mcu_breathing_room+pcb_width(mcu_type)/2,rear_support_pos_y-extrusion_side/2-mcu_breathing_room-pcb_length(mcu_type)/2,bottom_pos_z-extrusion_side/2]) {
       rotate([0,0,90]) {
         rotate([0,180,0]) {
+          //children();
+        }
+      }
+    }
+    // bottom front
+    translate([0,front*corner_pos_y+pcb_length(mcu_type)/2,bottom_pos_z-extrusion_side/2]) {
+      rotate([0,0,90]) {
+        rotate([0,180,0]) {
+          children();
+        }
+      }
+    }
+    translate([corner_pos_x-extrusion_side/2-pcb_width(mcu_type)/2,rear_support_pos_y+extrusion_side/2+3,bottom_pos_z+extrusion_side/2+pcb_length(mcu_type)/2+20]) {
+      rotate([-90,0,0]) {
+        rotate([0,0,-90]) {
           children();
         }
       }
@@ -306,7 +320,7 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
   }
 
   position_mcu() {
-    //% pcb(BTT_SKR_V1_4_TURBO);
+    % pcb(BTT_SKR_V1_4_TURBO);
   }
 
   module position_z_assembly() {

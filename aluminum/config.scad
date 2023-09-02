@@ -1,6 +1,10 @@
 include <NopSCADlib/lib.scad>;
 include <lumpyscad/lib.scad>; 
 
+// TODO: make sure these are accurate
+bottom_cover_hole_spacing = 196.9;
+bottom_cover_side = 212.993;
+
 pi_approx = 3.141592;
 bevel_height = 0.8;
 
@@ -26,6 +30,8 @@ yz_carriage_type = MGN7H_carriage;
 m3_nut_height = 4.5;
 m3_nut_diam = 5.7;
 m3_loose_diam = 3.4;
+m3_heatset_diam = 5;
+m3_heatset_len = 4;
 
 
 rounded_diam = 3;
@@ -35,7 +41,7 @@ sizes = [
     [
       200, //spar_main_len             
       //300, //spar_vertical_len         
-      350, //spar_vertical_len         
+      340, //spar_vertical_len         
       50,   //spar_vertical_added_space 
       200, //spar_zed_len              
       200, //spar_bed_across_len       
@@ -68,6 +74,9 @@ sizes = [
       200, // build_volume_x
       200, // build_volume_y
       200, // build_volume_z
+      // 200, // build_volume_x
+      // 200, // build_volume_y
+      // 200, // build_volume_z
     ],
     [
       NEMA17_47, // XY motor
