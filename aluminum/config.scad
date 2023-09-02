@@ -30,6 +30,7 @@ yz_carriage_type = MGN7H_carriage;
 m3_nut_height = 4.5;
 m3_nut_diam = 5.7;
 m3_loose_diam = 3.4;
+m3_head_diam = 6;
 m3_heatset_diam = 5;
 m3_heatset_len = 4;
 
@@ -40,9 +41,10 @@ sizes = [
   [
     [
       200, //spar_main_len             
-      //300, //spar_vertical_len         
-      340, //spar_vertical_len         
-      50,   //spar_vertical_added_space 
+      //340, //spar_vertical_len         
+      //50,   //spar_vertical_added_space 
+      400, //spar_vertical_len         
+      0,   //spar_vertical_added_space 
       200, //spar_zed_len              
       200, //spar_bed_across_len       
       100, //spar_bed_depth_len        
@@ -122,7 +124,8 @@ front_rear_extrusion_length = spar_main_len*scale_by;
 side_extrusion_length = spar_main_len*scale_by;
 corner_extrusion_length = spar_vertical_len*scale_by;
 
-bottom_pos_z = 45+extrusion_side/2;
+//bottom_pos_z = 45+extrusion_side/2;
+bottom_pos_z = 37.2+extrusion_side/2;
 
 corner_pos_x = side_extrusion_length/2+extrusion_side/2;
 corner_pos_y = front_rear_extrusion_length/2+extrusion_side/2;
@@ -133,15 +136,15 @@ top_pos_z = corner_pos_z+corner_extrusion_length/2-extrusion_side/2 + spar_verti
 echo("top_pos_z-bottom_pos_z+extrusion_side: ", top_pos_z-bottom_pos_z+extrusion_side);
 xy_pos_z = bottom_pos_z+z_support_extrusion_length+extrusion_side;
 
-xy_motor_space_behind = 2;
-xy_motor_space_in_front = 0.2;
+xy_motor_space_behind = 1;
+xy_motor_space_in_front = 0.1;
 
 depth_to_engage_slot_nuts = 4.5;
 
 ab_screw_length = 35;
 ab_plate_thickness = 7.5;
 ab_plate_space_between_z = 33-7.5*2;
-ab_pod_room_for_belts = xy_motor_space_behind+1;
+ab_pod_room_for_belts = 3;
 xy_tensioner_tolerance_z = 0.2;
 xy_tensioner_body_height = ab_plate_space_between_z-xy_tensioner_tolerance_z;
 xy_tensioner_screw_offset_z = 5;

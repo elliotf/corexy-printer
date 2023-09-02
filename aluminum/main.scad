@@ -2,11 +2,17 @@ use <NopSCADlib/lib.scad>;
 include <config.scad>;
 use <z-assembly.scad>;
 use <toolhead.scad>;
+use <v0-parts.scad>;
 use <xy-gantry.scad>;
 use <xy-tensioner.scad>;
 
-//show_top = true;
-show_top = false;
+// Ideas
+//
+// use DIN933 (hex-head bolt) for things
+// * https://www.fasteners.eu/standards/DIN/933/
+// * as a shaft with the head tucked into extrusion slot for tensioning Z axis belts
+
+show_top = (0) ? true : false;
 
 idler_stack_height = 33;
 
@@ -184,6 +190,12 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
           }
         }
       }
+      translate([0,0,0]) {
+        translate([corner_pos_x-extrusion_side/2-carriage_height(yz_carriage_type),0,0]) {
+          xy_carriage_right_upper();
+          xy_carriage_right_lower();
+        }
+      }
     }
   }
 
@@ -324,8 +336,10 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
   }
 
   module position_z_assembly() {
-    translate([z_support_beam_rear_x_offset,rear_support_pos_y,0]) {
-      children();
+    mirror([1,0,0]) {
+      translate([z_support_beam_rear_x_offset,rear_support_pos_y,0]) {
+        children();
+      }
     }
 
     mirrored = 1;
@@ -393,7 +407,7 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
         }
         translate([0,0,xy_pos_z+extrusion_side/2+ab_plate_thickness+ab_plate_space_between_z+top_ab_plate_thickness/2+0.1]) {
           rotate([0,180,0]) {
-            color("#77a") ab_motor_plate(top);
+            //color("#77a") ab_motor_plate(top);
           }
         }
       }
