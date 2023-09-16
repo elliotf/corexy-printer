@@ -1,6 +1,9 @@
 include <NopSCADlib/lib.scad>;
 include <lumpyscad/lib.scad>; 
 
+echo("carriage_length(MGN9C_carriage: ", carriage_length(MGN9C_carriage));
+echo("carriage_length(MGN7H_carriage: ", carriage_length(MGN7H_carriage));
+
 // TODO: make sure these are accurate
 bottom_cover_hole_spacing = 196.9;
 bottom_cover_side = 212.993;
@@ -11,16 +14,16 @@ bevel_height = 0.8;
 extrude_width = 0.4;
 extrude_height = 0.2;
 
-size = 0; // Voron Zero size
+size = 1; // Voron Zero size
 //size = 1; // ~200mm build volume cubed
 
 //scale_by = 0.7;
 scale_by = 1;
 
-x_rail_type = MGN7;
-x_carriage_type = MGN7H_carriage;
-//x_rail_type = MGN9;
-//x_carriage_type = MGN9C_carriage;
+//x_rail_type = MGN7;
+//x_carriage_type = MGN7H_carriage;
+x_rail_type = MGN9;
+x_carriage_type = MGN9C_carriage;
 
 yz_rail_type = MGN7;
 yz_carriage_type = MGN7H_carriage;
@@ -73,15 +76,16 @@ sizes = [
       175, //spar_bed_depth_len        
     ],
     [
-      200, // build_volume_x
-      200, // build_volume_y
-      200, // build_volume_z
-      // 200, // build_volume_x
-      // 200, // build_volume_y
-      // 200, // build_volume_z
+      220, // build_volume_x
+      220, // build_volume_y
+      220, // build_volume_z
+      //200, // build_volume_x
+      //200, // build_volume_y
+      //200, // build_volume_z
     ],
     [
-      NEMA17_47, // XY motor
+      NEMA14_52, // XY motor
+      //NEMA17_47, // XY motor
     ],
     [
       250, // x rail length
@@ -216,6 +220,9 @@ z_support_side_pos_y = rear_support_pos_y-extrusion_side/2-carriage_height(yz_ca
 x_rail_len = sizes[size][3][0]*scale_by;
 y_rail_length = sizes[size][3][1]*scale_by;
 //y_rail_length = 250*scale_by;
+
+max_travel_x = x_rail_len-carriage_length(x_carriage_type);
+max_travel_y = y_rail_length-carriage_length(yz_carriage_type);
 
 y_rail_pos_y = rear_support_pos_y-extrusion_side/2-y_rail_length/2;
 

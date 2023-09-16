@@ -24,8 +24,7 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
   //xy_belt_x_carriage_anchor_pos_y = 152.3-spar_main_len/2+xy_belt_idler_dist_from_end-build_volume_y+pos_y-extrusion_side;
   xy_belt_x_carriage_anchor_pos_y = rear_support_pos_y-extrusion_side/2-18.2-build_volume_y+pos_y+fudge_x_rail_back;
   //x_carriage_pos_x = -build_volume_x/2+pos_x;
-  //x_carriage_pos_x = -x_rail_len/2+carriage_length(x_carriage_type)/2+pos_x;
-  x_carriage_pos_x = -x_rail_len/2+carriage_length(MGN7H_carriage)/2+pos_x;
+  x_carriage_pos_x = -x_rail_len/2+carriage_length(x_carriage_type)/2+pos_x;
 
   for(x=[left,right]) {
     for(y=[front,rear]) {
@@ -160,7 +159,8 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
   }
 
   position_x_axis() {
-    translate([0,y_rail_pos_y+y_rail_length/2-carriage_length(yz_carriage_type)/2-build_volume_y+pos_y,0]) {
+    //translate([0,y_rail_pos_y+y_rail_length/2-carriage_length(yz_carriage_type)/2-build_volume_y+pos_y,0]) {
+    translate([0,y_rail_pos_y-y_rail_length/2+carriage_length(yz_carriage_type)/2+pos_y,0]) {
       translate([0,fudge_x_rail_back+carriage_length(yz_carriage_type/2)-extrusion_side/2,carriage_width(yz_carriage_type)/2+x_extrusion_dist_from_y_extrusion_z]) {
         translate([0,0,extrusion_side/2]) {
           rotate([0,90,0]) {
