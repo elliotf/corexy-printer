@@ -2,6 +2,8 @@
 da6 = 1 / cos(180 / 6) / 2;
 da8 = 1 / cos(180 / 8) / 2;
 
+pi = 3.14159;
+
 // Screws, nuts
 m3_diam = 3.1;
 m3_nut_diam  = 5.5 + 0.1;
@@ -17,6 +19,10 @@ m4_diam = 4;
 m4_nut_diam = 7;
 m4_nut_thickness = 4.5;
 m4_washer_thickness  = 1;
+
+bearing_623_diam      = 10;
+bearing_623_inner     = 3;
+bearing_623_thickness = 4;
 
 bearing_625_diam      = 16;
 bearing_625_inner     = 5;
@@ -80,10 +86,6 @@ build_y = 100;
 build_z = 100;
 */
 
-build_x = 20;
-build_y = 20;
-build_z = 20;
-
 belt_total_thickness = 1.38;
 belt_tooth_depth     = 0.75;
 belt_thickness       = belt_total_thickness - belt_tooth_depth;
@@ -143,9 +145,9 @@ tuner_thin_len_past_hole = 5;
 tuner_thin_len = tuner_hole_to_shoulder + tuner_thin_len_past_hole;
 tuner_thin_pos = tuner_hole_to_shoulder/2-tuner_thin_len_past_hole/2;
 
-thick_diam = 10;
-thick_len = 10;
-thick_pos = tuner_hole_to_shoulder-thick_len+thick_len/2;
+tuner_thick_diam = 10;
+tuner_thick_len = 10;
+tuner_thick_pos = tuner_hole_to_shoulder-tuner_thick_len+tuner_thick_len/2;
 
 tuner_body_diam = 15;
 tuner_body_thickness = 9;
@@ -278,6 +280,13 @@ x_bearing_groove_width   = lm6luu_bearing_groove_width;
 x_bearing_groove_depth   = lm6luu_bearing_groove_depth;
 x_rod_diam               = lm6luu_rod_diam;
 
+x_bearing_diam           = graphite_bronze_bearing_diam;
+x_bearing_len            = graphite_bronze_bearing_len;
+x_bearing_groove_spacing = graphite_bronze_bearing_groove_spacing;
+x_bearing_groove_width   = graphite_bronze_bearing_groove_width;
+x_bearing_groove_depth   = graphite_bronze_bearing_groove_depth;
+x_rod_diam               = graphite_bronze_rod_diam;
+
 /*
 // if you'd like the x axis to use the default rods/bearings
 x_bearing_diam           = bearing_diam;
@@ -371,15 +380,6 @@ line_bearing_thickness = 4;
 line_bearing_nut_diam = m4_nut_diam;
 line_bearing_nut_thickness = m4_nut_thickness;
 line_bearing_washer_thickness = m4_washer_thickness;
-
-// 623v for belts
-line_bearing_diam = 10;
-line_bearing_groove_depth = 0;
-line_bearing_inner = 3;
-line_bearing_thickness = 8;
-line_bearing_nut_diam = m3_nut_diam;
-line_bearing_nut_thickness = m3_nut_thickness;
-line_bearing_washer_thickness = m3_washer_thickness;
 
 line_bearing_effective_diam = line_bearing_diam - (line_bearing_groove_depth*2);
 

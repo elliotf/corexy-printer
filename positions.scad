@@ -33,15 +33,20 @@ x_rod_len            = build_x + x_carriage_width + y_carriage_width*2 + spacer*
 echo("y carriage width : ", y_carriage_width);
 
 bottom_line_pos_y = y_carriage_line_bearing_y-line_bearing_effective_diam/2;
+bottom_line_pos_y = y_carriage_line_bearing_y+line_bearing_effective_diam/2;
 bottom_line_pos_z = y_carriage_line_bearing_z-(line_bearing_washer_thickness/2+line_bearing_thickness/2);
 bottom_line_pos_z = y_carriage_line_bearing_z-(line_bearing_washer_thickness/2+line_bearing_thickness/2);
 
 top_line_pos_y = bottom_line_pos_y + line_bearing_effective_diam;
+top_line_pos_y = bottom_line_pos_y - line_bearing_effective_diam;
 top_line_pos_z = bottom_line_pos_z + line_bearing_thickness + line_bearing_washer_thickness;
 
+max_line_y = max(top_line_pos_y, bottom_line_pos_y);
+min_line_y = max(top_line_pos_y, bottom_line_pos_y);
+
 tuner_pos_x          = 9.5;
-tuner_pos_y          = top_line_pos_y+2.5;
-tuner_shoulder_pos_z = top_line_pos_z+22.5;
+tuner_pos_y          = max_line_y+2.5;
+tuner_shoulder_pos_z = max_line_y+22.5;
 
 hotend_y    = (x_bearing_diam/2 + wall_thickness + spacer + hotend_diam/2)*front;
 hotend_z    = tuner_shoulder_pos_z;
@@ -146,18 +151,18 @@ build_pos_y = main_opening_depth - top_sheet_depth/2 - hotend_diam/2 - 5 - build
 echo("build_pos_y: ", build_pos_y);
 
 x_pos = -build_x/2+build_x*1.0;
-y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*0.5;
-z_pos = build_z*0.0+0;
+y_pos = (build_pos_y-build_y/2-hotend_y)+build_y*0.0;
+z_pos = build_z*1.0+0;
 
 handle_hole_width        = 125;
 handle_hole_height       = 50;
 handle_material_width    = 25;
 handle_attachment_height = top_of_sheet - top_sheet_pos_z - sheet_thickness;
 
-to_front_line_z           = y_carriage_line_bearing_z - line_bearing_washer_thickness/2 - line_bearing_thickness/2;
-to_rear_line_z            = y_carriage_line_bearing_z + line_bearing_washer_thickness/2 + line_bearing_thickness/2;
 to_front_line_z           = y_carriage_line_bearing_z + line_bearing_washer_thickness/2 + line_bearing_thickness/2;
+to_front_line_z           = y_carriage_line_bearing_z - line_bearing_washer_thickness/2 - line_bearing_thickness/2;
 to_rear_line_z            = y_carriage_line_bearing_z - line_bearing_washer_thickness/2 - line_bearing_thickness/2;
+to_rear_line_z            = y_carriage_line_bearing_z + line_bearing_washer_thickness/2 + line_bearing_thickness/2;
 return_line_z             = to_front_line_z - line_bearing_effective_diam;
 return_line_z             = top_sheet_pos_z + sheet_thickness/2 + 5;
 return_line_x             = side_sheet_pos_x - sheet_thickness/2 - 3;

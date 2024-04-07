@@ -14,16 +14,16 @@ bevel_height = 0.8;
 extrude_width = 0.4;
 extrude_height = 0.2;
 
-size = 1; // Voron Zero size
-//size = 1; // ~200mm build volume cubed
+//size = 0; // Voron Zero size
+size = 1; // ~200mm build volume cubed
 
 //scale_by = 0.7;
 scale_by = 1;
 
-//x_rail_type = MGN7;
-//x_carriage_type = MGN7H_carriage;
-x_rail_type = MGN9;
-x_carriage_type = MGN9C_carriage;
+x_rail_type = MGN7;
+x_carriage_type = MGN7H_carriage;
+//x_rail_type = MGN9;
+//x_carriage_type = MGN9C_carriage;
 
 yz_rail_type = MGN7;
 yz_carriage_type = MGN7H_carriage;
@@ -65,6 +65,33 @@ sizes = [
       150, // y rail length
       150, // z rail length
     ]
+  ],
+  [
+    [
+      300, //spar_main_len             
+      500, //spar_vertical_len         
+      0,   //spar_vertical_added_space 
+      300, //spar_zed_len              
+      300, //spar_bed_across_len       
+      175, //spar_bed_depth_len        
+    ],
+    [
+      220, // build_volume_x
+      220, // build_volume_y
+      220, // build_volume_z
+      //200, // build_volume_x
+      //200, // build_volume_y
+      //200, // build_volume_z
+    ],
+    [
+      NEMA14_52, // XY motor
+      //NEMA17_47, // XY motor
+    ],
+    [
+      250, // x rail length
+      250, // y rail length
+      250, // z rail length
+    ],
   ],
   [
     [
@@ -145,6 +172,14 @@ xy_motor_space_in_front = 0.1;
 
 depth_to_engage_slot_nuts = 4.5;
 
+fudge_x_rail_back = 0;
+xy_idler_type = f623_2x_idler;
+xy_idler_id = pulley_bore(xy_idler_type);
+xy_idler_od = pulley_od(xy_idler_type);
+xy_idler_width = pulley_height(xy_idler_type);
+xy_idler_bevel_small = xy_idler_id+extrude_width*2*2;
+xy_idler_bevel_large = xy_idler_id+extrude_width*2*2+bevel_height*2;
+
 ab_screw_length = 35;
 ab_plate_thickness = 7.5;
 ab_plate_space_between_z = 33-7.5*2;
@@ -159,7 +194,7 @@ xy_tensioner_wall_gap = 1;
 xy_tensioner_wall_width = 8;
 //top_ab_plate_thickness = 6;
 top_ab_plate_thickness = ab_screw_length-depth_to_engage_slot_nuts-ab_plate_thickness-ab_plate_space_between_z;
-ab_pod_depth = xy_motor_side-15+xy_motor_space_behind+xy_motor_space_in_front;
+ab_pod_depth = 36-extrusion_side;
 ab_pod_stack_height = ab_plate_thickness+ab_plate_space_between_z+top_ab_plate_thickness;
 rear_support_pos_y = side_extrusion_length/2-ab_pod_depth-extrusion_side/2;
 rear_support_pos_z = xy_pos_z;
@@ -171,23 +206,16 @@ xy_motor_pos_y = rear_support_pos_y+xy_motor_side/2+extrusion_side/2+xy_motor_sp
 xy_motor_pos_z = rear_support_pos_z+extrusion_side/2;
 xy_motor_hole_spacing = NEMA_holes(xy_motor)[1]-NEMA_holes(xy_motor)[0];
 
-fudge_x_rail_back = 2;
-xy_idler_type = f623_2x_idler;
-xy_idler_id = pulley_bore(xy_idler_type);
-xy_idler_od = pulley_od(xy_idler_type);
-xy_idler_width = pulley_height(xy_idler_type);
-xy_idler_bevel_small = xy_idler_id+extrude_width*2*2;
-xy_idler_bevel_large = xy_idler_id+extrude_width*2*2+bevel_height*2;
 xy_belt_idler_outer_pos_x = spar_main_len/2+extrusion_side-7.5;
 xy_belt_idler_dist_from_end = 7.5;
 xy_belt_carriage_inner_dist_to_outside = 18.880;
 xy_belt_idler_inner_pos_x = spar_main_len/2+extrusion_side-xy_belt_carriage_inner_dist_to_outside;
 //xy_belt_rear_corner_cut_dist_x = spar_main_len/2-xy_motor_pos_x-xy_motor_side/2-8;
 //xy_belt_idler_rear_pos_x = spar_main_len/2-xy_belt_rear_corner_cut_dist_x;
+xy_belt_idler_rear_left_pos_y = corner_pos_y-extrusion_side/2-xy_belt_idler_dist_from_end;
 xy_belt_idler_rear_pos_x = xy_motor_pos_x+xy_motor_side/2+xy_idler_od/2+1;
 xy_belt_idler_rear_pos_y = corner_pos_y + extrusion_side/2 - xy_belt_idler_dist_from_end;
 //xy_belt_idler_rear_left_pos_y = spar_main_len/2-xy_belt_idler_dist_from_end;
-xy_belt_idler_rear_left_pos_y = rear_support_pos_y+xy_idler_od/2+4;
 //xy_belt_idler_extra_pos_x = spar_main_len/2-9;
 //xy_belt_idler_extra_pos_y = xy_motor_pos_y-8; // corner cutting idler
 
@@ -222,7 +250,9 @@ y_rail_length = sizes[size][3][1]*scale_by;
 //y_rail_length = 250*scale_by;
 
 max_travel_x = x_rail_len-carriage_length(x_carriage_type);
+echo("max_travel_x: ", max_travel_x);
 max_travel_y = y_rail_length-carriage_length(yz_carriage_type);
+echo("max_travel_y: ", max_travel_y);
 
 y_rail_pos_y = rear_support_pos_y-extrusion_side/2-y_rail_length/2;
 

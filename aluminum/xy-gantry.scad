@@ -165,6 +165,143 @@ module ab_motor_plate(top_or_bottom=bottom) {
     hull() {
       for(p=main_pos) {
         translate(p) {
+          //accurate_circle(rounded_diam-inset_by*2,resolution);
+        }
+      }
+    }
+  }
+
+  module position_idlers() {
+    translate([xy_belt_idler_rear_pos_x,xy_belt_idler_rear_pos_y,0]) {
+      children();
+    }
+    translate([corner_pos_x,xy_belt_idler_rear_left_pos_y,0]) {
+      children();
+    }
+  }
+
+  module anchor_body_profile(inset_by=0) {
+    anchor_pos = [
+      [near_right_pos_x-rounded_diam/2,near_rear_pos_y-rounded_diam/2],
+      [far_right_pos_x-rounded_diam/2,near_rear_pos_y-rounded_diam/2],
+      [near_right_pos_x-rounded_diam/2,front_pos_y+rounded_diam/2],
+    ];
+
+    hull() {
+      for(p=anchor_pos ) {
+        translate(p) {
+          //accurate_circle(rounded_diam-inset_by*2,resolution);
+        }
+      }
+      translate([corner_pos_x,xy_belt_idler_rear_left_pos_y,0]) {
+        //accurate_circle(xy_belt_idler_dist_from_end*2-inset_by*2,resolution);
+      }
+    }
+  }
+
+  module hole_profile() {
+    translate([xy_motor_pos_x-xy_motor_adjust_range,xy_motor_pos_y,0]) {
+      hull() {
+        accurate_circle(xy_motor_hole_spacing-frame_screw_hole_meat_diam,resolution);
+        translate([xy_motor_adjust_range,0,0]) {
+          accurate_circle(xy_motor_hole_spacing-frame_screw_hole_meat_diam,resolution);
+        }
+      }
+      for(x=[left,right],y=[front,rear]) {
+        translate([x*xy_motor_hole_spacing/2,y*xy_motor_hole_spacing/2,0]) {
+          hull() {
+            accurate_circle(3.4,resolution);
+            translate([xy_motor_adjust_range,0,0]) {
+              accurate_circle(3.4,resolution);
+            }
+          }
+        }
+      }
+    }
+    translate([corner_pos_x,corner_pos_y,0]) {
+      square([extrusion_side,extrusion_side],center=true);
+      translate([-extrusion_side/2,extrusion_side/2,0]) {
+        rotate([0,0,180]) {
+          round_corner_filler_profile(rounded_diam);
+        }
+      }
+      translate([extrusion_side/2,-extrusion_side/2,0]) {
+        rotate([0,0,180]) {
+          round_corner_filler_profile(rounded_diam);
+        }
+      }
+      translate([-extrusion_side/2,-extrusion_side/2,0]) {
+        hull() {
+          accurate_circle(rounded_diam/2,resolution);
+          translate([rounded_diam/2,rounded_diam/2,0]) {
+            accurate_circle(rounded_diam,resolution);
+          }
+        }
+      }
+    }
+    // xy_belt_idler_rear_pos_x = xy_motor_pos_x+xy_motor_side/2+xy_idler_od/2+1;
+    translate([xy_belt_idler_rear_pos_x,xy_belt_idler_rear_pos_y,0]) {
+      accurate_circle(3.4,resolution);
+    }
+    translate([corner_pos_x,xy_belt_idler_rear_left_pos_y,0]) {
+      accurate_circle(3.4,resolution);
+    }
+  }
+
+  module body() {
+  }
+
+  module holes() {
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module old_ab_motor_plate(top_or_bottom=bottom) {
+  side_index = top_or_bottom+1;
+
+  heights=[ab_plate_thickness, 0, top_ab_plate_thickness];
+  height=heights[side_index];
+
+  frame_screw_hole_diam = 3.3;
+  frame_screw_hole_meat_diam = frame_screw_hole_diam + extrude_width*3*2*2;
+
+  left_pos_x = xy_motor_pos_x-xy_motor_side/2-xy_motor_adjust_range-xy_tensioner_wall_gap-xy_tensioner_wall_width;
+  near_right_pos_x = spar_main_len/2;
+  far_right_pos_x = corner_pos_x+extrusion_side/2;
+  front_pos_y = rear_support_pos_y-frame_screw_hole_meat_diam/2;
+  far_rear_pos_y = corner_pos_y+extrusion_side/2;
+  near_rear_pos_y = spar_main_len/2;
+
+  screw_length = 35;
+
+  bevel_height = 0.3;
+
+  screw_offset_wall_height = xy_tensioner_screw_offset_z/2-top_or_bottom*xy_tensioner_screw_offset_z/2;
+  overall_height = height+(ab_plate_space_between_z-xy_tensioner_screw_offset_z)/2+screw_offset_wall_height;
+
+  xy_tensioner_wall_max_pos_y = far_rear_pos_y-ab_pod_room_for_belts-xy_motor_pos_y;
+  xy_tensioner_wall_mid_pos_y = xy_tensioner_screw_opening_max/2;
+  xy_tensioner_wall_min_pos_y = xy_tensioner_screw_opening_min/2;
+  xy_tensioner_wall_wide_depth = xy_tensioner_wall_max_pos_y-xy_tensioner_wall_min_pos_y;
+  xy_tensioner_wall_narrow_depth = xy_tensioner_wall_max_pos_y-xy_tensioner_wall_mid_pos_y;
+
+  xy_tensioner_wall_screw_spacing_y = xy_tensioner_wall_mid_pos_y*2+xy_tensioner_wall_narrow_depth;
+
+  module main_body_profile(inset_by=0) {
+    main_pos = [
+      [left_pos_x+rounded_diam/2,front_pos_y+rounded_diam/2],
+      [left_pos_x+rounded_diam/2,far_rear_pos_y-rounded_diam/2],
+      [near_right_pos_x-rounded_diam/2,far_rear_pos_y-rounded_diam/2],
+      [near_right_pos_x-rounded_diam/2,front_pos_y+rounded_diam/2],
+    ];
+
+    hull() {
+      for(p=main_pos) {
+        translate(p) {
           accurate_circle(rounded_diam-inset_by*2,resolution);
         }
       }

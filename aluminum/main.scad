@@ -18,11 +18,16 @@ idler_stack_height = 33;
 
 module assembly(pos_x=0, pos_y=0, pos_z=0) {
   //xy_belt_y_carriage_idler_outer_pos_y = 157.5-spar_main_len/2+xy_belt_idler_dist_from_end-build_volume_y+pos_y-extrusion_side;
+  base_x_rail_pos = y_rail_pos_y-y_rail_length/2+carriage_length(yz_carriage_type)/2+pos_y+extrusion_side/2;
+  old_xy_belt_y_carriage_idler_outer_pos_y = rear_support_pos_y-extrusion_side/2-13   -build_volume_y+pos_y+fudge_x_rail_back;
   xy_belt_y_carriage_idler_outer_pos_y = rear_support_pos_y-extrusion_side/2-13-build_volume_y+pos_y+fudge_x_rail_back;
   //xy_belt_y_carriage_idler_inner_pos_y = 146.12-spar_main_len/2+xy_belt_idler_dist_from_end-build_volume_y+pos_y-extrusion_side;
-  xy_belt_y_carriage_idler_inner_pos_y = rear_support_pos_y-extrusion_side/2-24.38-build_volume_y+pos_y+fudge_x_rail_back;
+  //xy_belt_y_carriage_idler_inner_pos_y = rear_support_pos_y-extrusion_side/2-24.38-build_volume_y+pos_y+fudge_x_rail_back;
+  old_xy_belt_y_carriage_idler_inner_pos_y = rear_support_pos_y-extrusion_side/2-24.38-build_volume_y+pos_y+fudge_x_rail_back;
+  xy_belt_y_carriage_idler_inner_pos_y = base_x_rail_pos-extrusion_side/2;
   //xy_belt_x_carriage_anchor_pos_y = 152.3-spar_main_len/2+xy_belt_idler_dist_from_end-build_volume_y+pos_y-extrusion_side;
-  xy_belt_x_carriage_anchor_pos_y = rear_support_pos_y-extrusion_side/2-18.2-build_volume_y+pos_y+fudge_x_rail_back;
+  //xy_belt_x_carriage_anchor_pos_y = rear_support_pos_y-extrusion_side/2-18.2-build_volume_y+pos_y+fudge_x_rail_back;
+  xy_belt_x_carriage_anchor_pos_y = rear_support_pos_y-extrusion_side/2-16.2-build_volume_y+pos_y+fudge_x_rail_back;
   //x_carriage_pos_x = -build_volume_x/2+pos_x;
   x_carriage_pos_x = -x_rail_len/2+carriage_length(x_carriage_type)/2+pos_x;
 
@@ -99,14 +104,24 @@ module assembly(pos_x=0, pos_y=0, pos_z=0) {
     start_anchor_x_for = [anchor_x+1,0,-anchor_x+1];
     end_anchor_x_for = [anchor_x-1,0,-anchor_x-1];
 
+    diag_points = [
+      [left*(xy_belt_idler_inner_pos_x),old_xy_belt_y_carriage_idler_inner_pos_y],
+      [left*(xy_belt_idler_outer_pos_x),old_xy_belt_y_carriage_idler_outer_pos_y],
+    ];
+    for(p = diag_points) {
+      translate(p) {
+        % debug_axes(2);
+      }
+    }
+
     belt_points = [
       [start_anchor_x_for[mirrored],xy_belt_x_carriage_anchor_pos_y,0],
       [right*(xy_belt_idler_outer_pos_x),xy_belt_y_carriage_idler_outer_pos_y,f623_2x_idler],
       [right*(xy_belt_idler_outer_pos_x),rear*xy_belt_idler_rear_left_pos_y,f623_2x_idler],
       //[right*(xy_belt_idler_extra_pos_x),xy_belt_idler_extra_pos_y,f623_2x_idler], // corner cutting idler
-      [right*(xy_motor_pos_x),rear*(xy_motor_pos_y),GT2x16_pulley],
-      [right*(xy_belt_idler_rear_pos_x),rear*(spar_main_len/2+extrusion_side-xy_belt_idler_dist_from_end),f623_2x_idler], // 180deg return to opposite side
-      [left*(xy_belt_idler_rear_pos_x),rear*(spar_main_len/2+extrusion_side-xy_belt_idler_dist_from_end),f623_2x_idler],
+      //[right*(xy_motor_pos_x),rear*(xy_motor_pos_y),GT2x16_pulley],
+      //[right*(xy_belt_idler_rear_pos_x),rear*(spar_main_len/2+extrusion_side-xy_belt_idler_dist_from_end),f623_2x_idler], // 180deg return to opposite side
+      //[left*(xy_belt_idler_rear_pos_x),rear*(spar_main_len/2+extrusion_side-xy_belt_idler_dist_from_end),f623_2x_idler],
       //[left*(xy_belt_idler_extra_pos_x),xy_belt_idler_extra_pos_y,f623_2x_idler], // corner cutting idler
       [left*(xy_belt_idler_outer_pos_x),rear*xy_belt_idler_rear_left_pos_y,f623_2x_idler],
       [left*(xy_belt_idler_outer_pos_x),front*(spar_main_len/2-xy_belt_idler_dist_from_end),f623_2x_idler], // front idler

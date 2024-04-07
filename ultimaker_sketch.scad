@@ -18,33 +18,54 @@ motor_pos_z          = -belt_idler_dist*1.5-sheet_thickness;
 belt_pos_x           = side_len/2+z_pulley_diam - belt_thickness/2;
 motor_pos_x          = belt_pos_x + belt_thickness/2 + z_pulley_diam/2;
 
-
 z_motor_pos_x = 0;
+
+xy_carriage_width = 12 + 2;
+xy_rod_diam   = 8;
+xy_rod_length = dimensions+xy_carriage_width+sheet_thickness*2+3;
+rod_dist      = dimensions;
+belt_pulley_teeth = 20;
+belt_pulley_pitch = 2;
+belt_pulley_diam  = (belt_pulley_teeth*belt_pulley_pitch)/2/pi;
+xy_sheet_pos      = xy_rod_length/2 - sheet_thickness/2;
+xy_motor_pos          = xy_sheet_pos+sheet_thickness/2;
+xy_motor_pos_from_end = rod_dist/2-motor_side/2;
+xy_motor_rod_dist_z   = -motor_hole_spacing/2-bearing_623_diam-belt_pulley_diam;
 
 module assembly() {
   z_motor_pos_y = -motor_pos_y;
   z_motor_pos_z = -dimensions;
+
+  sheet_sides = xy_sheet_pos*2+sheet_thickness;
+
+  colors = ["orange", 0, "lightblue"];
+
+  for(side=[front,rear]) {
+  }
+
   for(side=[left,right]) {
-    translate([(belt_pos_x+belt_thickness/2+z_pulley_diam/2)*side,motor_pos_y,motor_pos_z]) {
-    //translate([motor_side*0.6*side,-motor_pos_y,motor_pos_z-1]) {
-      % motor();
+    translate([xy_sheet_pos,0,0]) {
+      % cube([sheet_thickness,sheet_sides,motor_side*4],center=true);
     }
   }
 
-  translate([0,0,motor_pos_z+sheet_thickness/2]) {
-    % color("lightgreen", 0.5) belt_top_sheet();
-  }
+  axis();
+}
 
-  translate([0,-motor_side/2,0]) {
-    //% cube([dimensions,dimensions,1],center=true);
-  }
+assembly();
 
-  colors = ["orange", 0, "lightblue"];
+module axis() {
   for(side=[left,right]) {
-    translate([0,0,belt_idler_dist/2*side]) {
-      mirror([1-side,0,0]) {
-        color(colors[1-side]) belt_path(side);
+    translate([side*rod_dist/2,0,0]) {
+      rotate([90,0,0]) {
+        hole(xy_rod_diam, xy_rod_length, resolution);
       }
+    }
+  }
+
+  translate([xy_motor_pos,xy_motor_pos_from_end,xy_motor_rod_dist_z]) {
+    rotate([0,-90,0]) {
+      motor();
     }
   }
 }
@@ -165,8 +186,6 @@ module belt_path(side) {
     }
   }
 }
-
-assembly();
 
 module motor() {
   difference() {

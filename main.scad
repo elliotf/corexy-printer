@@ -45,19 +45,15 @@ module line_bearing() {
   res = 64;
 
   module body() {
-    if (line_bearing_groove_depth) {
-      for(side=[top,bottom]) {
-        hull() {
-          translate([0,0,-side*(line_bearing_thickness/4)]) {
-            hole(line_bearing_effective_diam,line_bearing_thickness/2,res);
-          }
-          translate([0,0,-side*(line_bearing_thickness/2-0.05)]) {
-            hole(line_bearing_diam,0.1,res);
-          }
+    for(side=[top,bottom]) {
+      hull() {
+        translate([0,0,-side*(line_bearing_thickness/4)]) {
+          hole(line_bearing_effective_diam,line_bearing_thickness/2,res);
+        }
+        translate([0,0,-side*(line_bearing_thickness/2-0.05)]) {
+          hole(line_bearing_diam,0.1,res);
         }
       }
-    } else {
-      hole(line_bearing_diam,line_bearing_thickness,res);
     }
   }
 
@@ -273,6 +269,254 @@ module hotend_groove_mount_void() {
   }
 }
 
+module new_x_carriage() {
+  body_side        = rear;
+  fan_side         = 30;
+  fan_diam         = fan_side-wall_thickness*2;
+  fan_screw_diam   = 2.6;
+  fan_screw_depth  = 7;
+  fan_thickness    = 10;
+  fan_pos_y        = front*(x_bearing_diam/2+30/2+wall_thickness/2);
+  fan_pos_z        = hotend_z-hotend_dist_to_heatsink_bottom+fan_side/2;
+  fan_hole_spacing = 24;
+  heatsink_pos_z   = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+hotend_heatsink_height/2;
+  heatsink_pos_z   = hotend_z-hotend_dist_to_heatsink_bottom+hotend_heatsink_height/2;
+
+  line_hole_opening     = 1.1;
+
+  bearing_body_wall_thickness = wall_thickness*2;
+  bearing_body_diam = x_bearing_diam+wall_thickness*3;
+  bearing_body_diam = x_bearing_diam + bearing_body_wall_thickness*2;
+
+  body_depth  = max_line_y - min_line_y;
+  body_height = x_rod_spacing;
+
+  front_hole_position_y = top_line_pos_y - line_hole_opening/2;
+  front_hole_position_z = top_line_pos_z;
+  rear_hole_position_y  = bottom_line_pos_y + line_hole_opening/2;
+  rear_hole_position_z  = bottom_line_pos_z;
+
+  max_line_y = max(front_hole_position_y, rear_hole_position_y);
+  min_line_y = min(front_hole_position_y, rear_hole_position_y);
+
+  /*
+  tuner_mount_width  = x_carriage_width;
+  tuner_mount_depth  = tuner_shaft_screwed_diam+wall_thickness*3;
+  tuner_mount_height = tuner_shaft_screwed_len;
+  */
+
+  bottom_top_dist_z     = top_line_pos_z - bottom_line_pos_z;
+  bottom_top_dist_z     = top_line_pos_z - bottom_line_pos_z;
+  bottom_top_dist_y     = min_line_y - max_line_y;
+  bottom_top_dist_angle = sqrt(pow(bottom_top_dist_z,2)+pow(bottom_top_dist_y,2));
+  bottom_top_line_angle = atan2(bottom_top_dist_z,bottom_top_dist_y);
+
+  tuner_rotate_z = 10;
+  module position_tuner() {
+    translate([tuner_pos_x,tuner_pos_y,top_line_pos_z]) {
+      rotate([0,0,tuner_rotate_z]) {
+        rotate([0,90,0]) {
+          children();
+        }
+      }
+    }
+  }
+
+  module body() {
+    // bearing holders
+    hull() {
+      for(side=[top,bottom]) {
+        translate([0,0,x_rod_spacing/2*side]) {
+          rotate([0,90,0]) {
+            hole(bearing_body_diam,x_carriage_width,resolution);
+          }
+        }
+      }
+      translate([0,rear_hole_position_y,rear_hole_position_z]) {
+        rotate([0,90,0]) {
+          hole(line_hole_opening+1,x_carriage_width,resolution);
+        }
+      }
+    }
+
+    // tuner retainer body
+    hull() {
+      /*
+      translate([0,tuner_pos_y,tuner_shoulder_pos_z-tuner_mount_height/2]) {
+        for(y=[front]) {
+          for(z=[top,bottom]) {
+            translate([0,y*(tuner_mount_depth/2-rounded_diam/2),z*(tuner_mount_height/2-rounded_diam/2)]) {
+              rotate([0,90,0]) {
+                hole(rounded_diam,tuner_mount_width,resolution);
+              }
+            }
+          }
+        }
+        for(y=[rear]) {
+          for(z=[top,bottom]) {
+            translate([0,y*(tuner_mount_depth/2-rounded_diam/2+wall_thickness*z),z*(tuner_mount_height/2-rounded_diam/2)]) {
+              rotate([0,90,0]) {
+                hole(rounded_diam,tuner_mount_width,resolution);
+              }
+            }
+          }
+        }
+      }
+      */
+      // tuner mounting
+      /*
+      for(side=[left,right]) {
+        mirror([1-side,0,0]) {
+          position_tuner() {
+            translate([tuner_anchor_screw_hole_pos_x,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) {
+              rotate([0,90,0]) {
+                translate([0,0,2.5]) {
+                  hole(tuner_anchor_screw_hole_diam+wall_thickness*2,3,resolution);
+                }
+              }
+            }
+          }
+        }
+      }
+      */
+    }
+  }
+
+  module holes() {
+    /*
+    tuner_hollow_nut_height = tuner_mount_height*.75;
+    // tuner mounting
+    for(side=[left,right]) {
+      mirror([1-side,0,0]) {
+        position_tuner() {
+          translate([tuner_anchor_screw_hole_pos_x,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) rotate([0,90,0]) {
+            rotate([0,0,tuner_rotate_z]) {
+              hole(tuner_anchor_screw_hole_diam,12,8);
+            }
+          }
+        }
+      }
+      translate([tuner_pos_x*side,tuner_pos_y,0]) {
+        // main hole and screw hole
+        translate([0,0,tuner_shoulder_pos_z]) {
+          hole(tuner_shaft_screw_diam,tuner_mount_height*2+1,8);
+          hole(tuner_shaft_screwed_diam,21,8);
+
+          translate([0,0,-tuner_mount_height-tuner_hollow_nut_height/2]) {
+            hole(tuner_nut_max_diam,tuner_hollow_nut_height,resolution);
+          }
+        }
+      }
+    }
+    */
+
+    // line path
+    translate([0,rear_hole_position_y,rear_hole_position_z]) {
+      rotate([bottom_top_line_angle,0,0]) {
+        rotate([0,90,0]) {
+          //% hole(line_hole_opening,x_carriage_width+1,8);
+        }
+      }
+    }
+    hull() {
+      translate([0,-x_bearing_diam/8,0]) {
+        rotate([0,90,0]) {
+          hole(line_hole_opening*2,x_carriage_width+1,8);
+        }
+      }
+      translate([0,front_hole_position_y,front_hole_position_z]) {
+        rotate([bottom_top_line_angle,0,0]) {
+          rotate([0,90,0]) {
+            hole(line_hole_opening,x_carriage_width+1,8);
+          }
+        }
+      }
+    }
+    front_to_back_line_path_diam = bottom_top_dist_angle-line_hole_opening;
+    translate([0,front_hole_position_y,front_hole_position_z]) {
+      rotate([bottom_top_line_angle,0,0]) {
+        translate([0,-front_to_back_line_path_diam/2-line_hole_opening/2,0]) {
+          difference() {
+            translate([0,-1,0]) {
+              cube([x_carriage_width+1,bottom_top_dist_angle+2,line_hole_opening],center=true);
+            }
+            hull() {
+              for(side=[left,right]) {
+                translate([side*(x_carriage_width/2-bottom_top_dist_angle/2),0,0]) {
+                  hole(front_to_back_line_path_diam,line_hole_opening+1,resolution);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    for(side=[top,bottom]) {
+      translate([0,0,x_rod_spacing/2*side]) {
+        rotate([0,90,0]) {
+          // bearing hole
+          hole(x_bearing_diam,x_carriage_width+1,16);
+          // beveled opening
+          for(end=[left,right]) {
+            hull() {
+              translate([0,0,(x_carriage_width/2)*end]) {
+                hole(x_bearing_diam,3,16);
+                translate([0,0,.5*end]) {
+                  hole(x_bearing_diam+1,1,16);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    translate([extrusion_height,-x_bearing_diam/4,0]) {
+      //cube([x_carriage_width,x_bearing_diam/2,x_rod_spacing],center=true);
+    }
+
+    translate([0,hotend_y,hotend_z]) {
+      % hotend();
+    }
+
+    translate([-x_carriage_width/2-5,fan_pos_y,fan_pos_z]) {
+      % cube([fan_thickness,fan_side,fan_side],center=true);
+    }
+  }
+  translate([0,top_line_pos_y,top_line_pos_z]) {
+    //color("green") % cube([x_carriage_width+60,0.8,0.8],center=true);
+  }
+  translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
+    //color("red") % cube([x_carriage_width+60,0.8,0.8],center=true);
+  }
+
+  for(side=[left,right]) {
+    mirror([1+side,0,0]) {
+      position_tuner() {
+        //% tuner();
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+
+  % for(side=[top,bottom]) {
+    translate([0,0,x_rod_spacing/2*side]) {
+      rotate([0,90,0]) {
+        cylinder(r=x_bearing_diam/2,h=x_bearing_len,center=true);
+      }
+    }
+  }
+
+  translate([0,hotend_y,hotend_z]) {
+    //% hotend();
+  }
+}
+
 module x_carriage() {
   body_side        = rear;
   fan_side         = 30;
@@ -286,11 +530,14 @@ module x_carriage() {
   heatsink_pos_z   = hotend_z-hotend_len+hotend_nozzle_to_bottom_fin+hotend_heatsink_height/2;
   heatsink_pos_z   = hotend_z-hotend_dist_to_heatsink_bottom+hotend_heatsink_height/2;
 
-  bearing_body_wall_thickness = top_line_pos_y-x_bearing_diam/2;
+  max_line_y = max(top_line_pos_y, bottom_line_pos_y);
+  min_line_y = max(top_line_pos_y, bottom_line_pos_y);
+
+  bearing_body_wall_thickness = max_line_y-x_bearing_diam/2;
   bearing_body_diam = x_bearing_diam+wall_thickness*3;
   bearing_body_diam = x_bearing_diam + bearing_body_wall_thickness*2;
 
-  body_depth  = top_line_pos_y - bottom_line_pos_y;
+  body_depth  = max_line_y - min_line_y;
   body_height = x_rod_spacing;
 
   tuner_mount_width  = x_carriage_width;
@@ -529,25 +776,28 @@ module x_carriage() {
     translate([0,top_line_pos_y,top_line_pos_z]) {
       rotate([bottom_top_line_angle,0,0]) {
         rotate([0,90,0]) {
-          hole(line_hole_opening,x_carriage_width+1,8);
+          # hole(line_hole_opening,x_carriage_width+1,8);
         }
       }
     }
+    /*
     hull() {
       translate([0,-x_bearing_diam/8,0]) {
         rotate([0,90,0]) {
-          hole(line_hole_opening*2,x_carriage_width+1,8);
+          # hole(line_hole_opening*2,x_carriage_width+1,8);
         }
       }
       translate([0,bottom_line_pos_y,bottom_line_pos_z]) {
         rotate([bottom_top_line_angle,0,0]) {
           rotate([0,90,0]) {
-            hole(line_hole_opening,x_carriage_width+1,8);
+            # hole(line_hole_opening,x_carriage_width+1,8);
           }
         }
       }
     }
+    */
     front_to_back_line_path_diam = bottom_top_dist_angle-line_hole_opening;
+    /*
     for(side=[left,right]) {
       translate([(x_carriage_width/2-front_to_back_line_path_diam/2-.5)*side,top_line_pos_y-bottom_top_dist_y/2,top_line_pos_z-bottom_top_dist_z/2]) {
         rotate([bottom_top_line_angle,0,0]) {
@@ -560,6 +810,7 @@ module x_carriage() {
         }
       }
     }
+    */
     translate([extrusion_height,-1,x_rod_spacing/2+x_bearing_diam/2]) {
       rotate([0,0,0]) {
         cube([x_carriage_width,5,x_bearing_diam],center=true);
@@ -613,14 +864,14 @@ module x_carriage() {
   for(side=[left,right]) {
     mirror([1+side,0,0]) {
       position_tuner() {
-        //% tuner();
+        % tuner();
       }
     }
   }
 
   difference() {
-    //body();
-    //holes();
+    body();
+    holes();
   }
 
   % for(side=[top,bottom]) {
@@ -641,6 +892,8 @@ module y_carriage() {
   line_bearing_opening_height = line_bearing_thickness*2+line_bearing_washer_thickness*3;
   rod_hole_diam               = x_rod_diam + rod_slop;
   x_rod_clamp_len             = y_carriage_width;
+
+  //debug_axes();
 
   rounded_diam = y_rod_diam+rod_slop+min_material_thickness*4;
   total_height = x_rod_spacing + rounded_diam;
@@ -769,14 +1022,6 @@ module y_carriage() {
     }
   }
 
-  translate([line_bearing_x,y_carriage_line_bearing_y,y_carriage_line_bearing_z]) {
-    for (side=[top,bottom]) {
-      translate([0,0,(line_bearing_thickness/2+line_bearing_washer_thickness/2)*side]) {
-        % line_bearing();
-      }
-    }
-  }
-
   module bridges() {
     for(side=[top,bottom]) {
       translate([line_bearing_x,y_carriage_line_bearing_y,y_carriage_line_bearing_z+side*(line_bearing_washer_thickness/2+line_bearing_thickness/2)]) {
@@ -786,10 +1031,10 @@ module y_carriage() {
   }
 
   difference() {
-    //body();
-    //holes();
+    body();
+    holes();
   }
-  //bridges();
+  bridges();
 
   translate([0,0,0]) {
     rotate([90,0,0]) {
@@ -1358,6 +1603,10 @@ module rear_xy_endcap(side) {
         }
       }
     }
+  }
+
+  translate([0,0,0]) {
+    //debug_axes();
   }
 
   module body() {
@@ -2006,15 +2255,15 @@ module tuner() {
   adjuster_paddle_thickness = adjuster_tuner_thin_diam;
 
   module body() {
-    //% translate([-tuner_hole_to_shoulder/2,-thick_diam,0]) rotate([0,90,0]) cylinder(r=tuner_thin_diam/4,h=tuner_hole_to_shoulder,center=true);
+    //% translate([-tuner_hole_to_shoulder/2,-tuner_thick_diam,0]) rotate([0,90,0]) cylinder(r=tuner_thin_diam/4,h=tuner_hole_to_shoulder,center=true);
 
     // thin shaft
     translate([-tuner_thin_pos,0,0]) rotate([0,90,0])
       hole(tuner_thin_diam,tuner_thin_len,resolution);
 
     // thick shaft (area to clamp)
-    translate([-thick_pos,0,0]) rotate([0,90,0])
-      hole(thick_diam,thick_len,resolution);
+    translate([-tuner_thick_pos,0,0]) rotate([0,90,0])
+      hole(tuner_thick_diam,tuner_thick_len,resolution);
 
     // body
     translate([tuner_body_pos,0,0]) {
@@ -2034,7 +2283,7 @@ module tuner() {
         translate([0,tuner_anchor_screw_hole_pos_y,tuner_anchor_screw_hole_pos_z]) rotate([0,90,0])
           hole(tuner_anchor_screw_hole_diam+tuner_anchor_screw_hole_width*2,tuner_anchor_screw_hole_thickness,resolution);
         rotate([0,90,0])
-          hole(thick_diam,tuner_anchor_screw_hole_thickness);
+          hole(tuner_thick_diam,tuner_anchor_screw_hole_thickness);
       }
     }
 
@@ -2045,12 +2294,14 @@ module tuner() {
         translate([0,0,+adjuster_len/2-.5]) hole(adjuster_tuner_thin_diam,1,resolution);
       }
       // paddle, representing space taken when rotated
+      /*
       hull() {
         //translate([0,0,adjuster_paddle_len/2]) cylinder(r=adjuster_paddle_width/2,h=1,center=true);
         //translate([0,0,1]) cylinder(r=adjuster_paddle_thickness/2,h=1,center=true);
         translate([0,0,adjuster_paddle_len-.5]) cube([adjuster_paddle_width,adjuster_paddle_thickness,1],center=true);
         translate([0,0,adjuster_len/2]) cube([adjuster_paddle_thickness,adjuster_paddle_thickness,1],center=true);
       }
+      */
     }
   }
 

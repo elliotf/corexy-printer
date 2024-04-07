@@ -3,14 +3,14 @@ include <main.scad>;
 
 show_x = false;
 show_x = true;
-show_z = true;
 show_z = false;
+show_z = true;
 show_sheets = true;
 show_sheets = false;
-show_sides  = false;
 show_sides  = true;
-show_ends = true;
+show_sides  = false;
 show_ends = false;
+show_ends = true;
 
 module x_axis() {
   translate([0,y_pos,0]) {
@@ -34,7 +34,8 @@ module x_axis() {
     }
 
     translate([x_pos,0,0]) {
-      x_carriage(); }
+      x_carriage();
+    }
   }
 
   % for (end=[left,right]) {
@@ -180,7 +181,7 @@ module assembly() {
   translate([0,sheet_pos_y*rear,sheet_pos_z]) {
     color("lightgreen", sheet_opacity) {
       rotate([90,0,0]) {
-        //linear_extrude(height=sheet_thickness,center=true) rear_sheet();
+        linear_extrude(height=sheet_thickness,center=true) rear_sheet();
       }
     }
   }
@@ -218,7 +219,7 @@ module assembly() {
   for(side=[left,right]) {
     translate([side*(xy_motor_pos_x),xy_motor_pos_y,xy_motor_pos_z]) {
       rotate([90,0,0]) {
-        //% motor();
+        % motor();
 
         translate([0,0,2+motor_shaft_len/2]) {
           % hole(pulley_diam,motor_shaft_len-4,resolution);
