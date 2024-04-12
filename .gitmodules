@@ -4,3 +4,9 @@
 [submodule "aluminum/voron-zero"]
 	path = aluminum/voron-zero
 	url = https://github.com/VoronDesign/Voron-0.git
+[submodule "chirpy-voron"]
+	path = chirpy-voron
+	url = https://github.com/chirpy2605/voron.git
+[submodule "Pandoras_Box"]
+	path = Pandoras_Box
+	url = https://github.com/MasturMynd/Pandoras_Box.git
