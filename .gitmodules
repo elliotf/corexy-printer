@@ -10,3 +10,6 @@
 [submodule "Pandoras_Box"]
 	path = Pandoras_Box
 	url = https://github.com/MasturMynd/Pandoras_Box.git
+[submodule "slideswipe"]
+	path = slideswipe
+	url = https://github.com/chestwood96/SlideSwipe.git
