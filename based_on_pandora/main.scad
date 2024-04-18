@@ -15,6 +15,9 @@ m3_through_hole_diam = 3.4;
 m3_thread_into_plastic_diam = 2.8;
 m3_head_diam = 6; // very loose
 
+m5_through_hole_diam = 5.4;
+m5_thread_into_plastic_diam = 4.8;
+
 extrude_width = 0.4;
 extrude_height = 0.2;
 wall_thickness = extrude_width*3;
