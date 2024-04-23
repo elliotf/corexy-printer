@@ -1,10 +1,10 @@
 include <lumpyscad/lib.scad>; 
 
 module toolhead() {
-  translate([0,-16.61-11.2,0]) {
+  translate([0,-29,0]) {
     % color("red") hole(0.4,300,128);
   }
-  translate([0,-16.61,21.29]) {
+  translate([0,-17.7,21.29]) {
     translate([0,-11.2,0]) {
       translate([0,0,0]) {
         rotate([0,0,0]) {

@@ -23,6 +23,7 @@ extrude_height = 0.2;
 wall_thickness = extrude_width*3;
 extrusion_side = 15;
 belt_width = 6;
+belt_thickness = 1.5; // FIXME ?
 panel_thickness = 3;
 
 belt_idler_od = 10; // F623
@@ -30,7 +31,6 @@ belt_idler_spacer_id = m3_through_hole_diam;
 belt_idler_spacer_od = belt_idler_spacer_id+2*(extrude_width*2*2);
 belt_idler_spacer_length = 9; // f623*2 + 2*0.5 shim
 belt_idler_stack_height = belt_idler_spacer_length*2;
-echo("belt_idler_spacer_od: ", belt_idler_spacer_od);
 
 sizes = [
   [
@@ -38,7 +38,7 @@ sizes = [
     [
       [MGN9H_carriage,MGN9,300], // X axis
       [MGN7H_carriage,MGN7,250], // Y axis
-      [MGN7H_carriage,MGN7,250], // Z axis
+      [MGN7H_carriage,MGN7,225], // Z axis
     ],
     [NEMA17_47,NEMA17_47,NEMA17_27,300],
     //[NEMA14_52,NEMA17_47,NEMA17_27,300], // untested
@@ -47,11 +47,11 @@ sizes = [
       LRS_150_24,
     ],
     [
-      [235,220,6],
+      [235,235,6],
     ],
   ],
   [
-    [450,250,200,150], // extrusion_lengths
+    [500,250,200,150], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,250], // X axis
       [MGN7H_carriage,MGN7,200], // Y axis
@@ -68,7 +68,7 @@ sizes = [
     ],
   ],
   [
-    [400,200,150,100], // extrusion_lengths
+    [500,200,150,100], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,200], // X axis
       [MGN7H_carriage,MGN7,150], // Y axis
@@ -126,8 +126,14 @@ extrusion_vertical_spacing_y = extrusion_vertical_spacing_x;
 
 extrusion_vertical_pos_z = bottom_pos_z+extrusion_vertical_length/2;
 
+z_carriage = printer_config[1][z][0];
+z_rail = printer_config[1][z][1];
+z_rail_length = printer_config[1][z][2];
+
 top_pos_z = extrusion_vertical_length;
-gantry_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length-extrusion_side/2;
+//gantry_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length-extrusion_side/2;
+gantry_pos_z = z_rail_length+54;
+echo("gantry_pos_z: ", gantry_pos_z);
 
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
 
@@ -191,10 +197,6 @@ xy_carriage_base_thickness = 4;
 xy_carriage_top_thickness = 6;
 x_extrusion_above_y_carriage = xy_carriage_base_thickness+1.4;
 
-z_carriage = printer_config[1][z][0];
-z_rail = printer_config[1][z][1];
-z_rail_length = printer_config[1][z][2];
-
 belt_idler_flange_thickness = 1;
 belt_idler_shim_thickness = 0.5;
 xy_bottom_belt_above_carriage_base = belt_idler_flange_thickness+belt_idler_shim_thickness+belt_width/2; // flange + 0.5mm shim
@@ -217,7 +219,6 @@ motor_xy_adjustment_amount = 5;
 xy_bottom_of_belt_idler_stack = xy_belt_center_pos_z-xy_belt_spacing/2-belt_width/2-belt_idler_flange_thickness-belt_idler_shim_thickness;
 xy_motor_plate_thickness = xy_bottom_of_belt_idler_stack-motor_xy_pos_z;
 ab_pod_lower_thickness = xy_bottom_of_belt_idler_stack-gantry_pos_z-extrusion_side/2;
-echo("ab_pod_lower_thickness: ", ab_pod_lower_thickness);
 //ab_pod_upper_thickness = xy_motor_plate_thickness;
 ab_pod_upper_thickness = 6;
 
@@ -226,7 +227,8 @@ ab_pod_upper_thickness = 6;
 //rear_z_offset_x = left*5;
 rear_z_offset_x = left*0;
 
-nozzle_x_extrusion_dist_y = 27.35;
+//nozzle_x_extrusion_dist_y = 27.35;
+nozzle_x_extrusion_dist_y = 29;
 nozzle_x_extrusion_dist_z = 42;
 
 center_brace_anchor_length = 24;
@@ -274,8 +276,6 @@ module assembly(pct_x,pct_y,pct_z) {
   pos_y = pct_y*build_volume[y];
   pos_z = pct_z*build_volume[z];
 
-  echo("gantry_pos_z: ", gantry_pos_z);
-
   y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
 
   //for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
@@ -312,7 +312,6 @@ module assembly(pct_x,pct_y,pct_z) {
     rounded_diam = 2;
     max_width = 50;
     center_brace_width = min(max_width,2*(motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length)-0.2);
-    echo("center_brace_width: ", center_brace_width);
 
     top_of_vertical_brace = bottom_pos_z+extrusion_side+extrusion_main_length;
 
@@ -412,15 +411,25 @@ module assembly(pct_x,pct_y,pct_z) {
   module position_mcu() {
     //type = BTT_SKR_MINI_E3_V2_0; // only four steppers, would need two
     type = BTT_SKR_V1_4_TURBO;
+    // stacked below PSU
     translate([0,0,extrusion_side-psu_height-8]) {
       rotate([0,0,-90]) {
         rotate([180,0,0]) {
+          //% pcb(type);
+        }
+      }
+    }
+    translate([pcb_width(type)/2+10,0,0]) {
+      rotate([0,0,-90]) {
+        rotate([180,0,0]) {
+          % color("blue", 0.3) cube([64,90,20],center=true);
+          % color("blue", 0.3) cube([90,64,20],center=true);
           % pcb(type);
         }
       }
     }
   }
-  position_mcu();
+  //position_mcu();
 
   psu_type = LRS_150_24;
   psu_length = psu_length(psu_type);
@@ -450,17 +459,43 @@ module assembly(pct_x,pct_y,pct_z) {
       }
     }
     */
-    translate([-extrusion_vertical_spacing_x/2+extrusion_side/2+psu_width/2+1,extrusion_vertical_spacing_y/2-extrusion_side/2-psu_length/2-5,extrusion_side]) {
+    // LRS-350-24
+    translate([-extrusion_vertical_spacing_x/2+extrusion_side/2+psu_width/2+3,extrusion_vertical_spacing_y/2-extrusion_side/2-psu_length/2-10,extrusion_side]) {
       rotate([0,0,-90]) {
         rotate([180,0,0]) {
           //children();
         }
       }
     }
-    translate([extrusion_vertical_spacing_x/2-extrusion_side/2-5-psu_length/2,-10,extrusion_side-3]) {
+    // LRS-350-24
+    translate([0,-30,extrusion_side-30/2]) {
       rotate([0,0,0]) {
         rotate([180,0,0]) {
+          // left to right alignment
+          //children();
+        }
+      }
+    }
+    translate([-extrusion_vertical_spacing_x/2+extrusion_side/2+psu_width/2+3,extrusion_vertical_spacing_y/2-extrusion_side/2-psu_length/2-10,extrusion_side]) {
+      rotate([0,0,-90]) {
+        rotate([180,0,0]) {
+          //children();
+        }
+      }
+    }
+    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_width/2-3),front*(extrusion_vertical_spacing_y/2-psu_length/2-NEMA_width(motor_type_z)),extrusion_side-3]) {
+      rotate([0,0,-90]) {
+        rotate([180,0,0]) {
+          // front to rear
           children();
+        }
+      }
+    }
+    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-5),-10,extrusion_side-3]) {
+      rotate([0,0,0]) {
+        rotate([180,0,0]) {
+          // left to right alignment
+          //children();
         }
       }
     }
@@ -468,6 +503,7 @@ module assembly(pct_x,pct_y,pct_z) {
 
   position_psu() {
     % psu(psu_type);
+    //% cube([215,115,30],center=true);
   }
 
   for(x=[right]) {

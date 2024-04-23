@@ -1,4 +1,5 @@
 use <../z_axis.scad>;
 
-z_axis_assembly();
 
+belt_anchor_top();
+belt_anchor_bottom();
