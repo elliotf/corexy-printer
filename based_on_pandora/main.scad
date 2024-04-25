@@ -11,7 +11,7 @@ size_small = 2;
 //printer_size = size_medium;
 printer_size = size_small;
 
-m3_through_hole_diam = 3.4;
+m3_through_hole_diam = 3.3;
 m3_thread_into_plastic_diam = 2.8;
 m3_head_diam = 6; // very loose
 
@@ -68,7 +68,7 @@ sizes = [
     ],
   ],
   [
-    [500,200,150,100], // extrusion_lengths
+    [350,200,150,100], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,200], // X axis
       [MGN7H_carriage,MGN7,150], // Y axis
@@ -132,7 +132,7 @@ z_rail_length = printer_config[1][z][2];
 
 top_pos_z = extrusion_vertical_length;
 //gantry_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length-extrusion_side/2;
-gantry_pos_z = z_rail_length+54;
+gantry_pos_z = z_rail_length+50;
 echo("gantry_pos_z: ", gantry_pos_z);
 
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
@@ -229,7 +229,8 @@ rear_z_offset_x = left*0;
 
 //nozzle_x_extrusion_dist_y = 27.35;
 nozzle_x_extrusion_dist_y = 29;
-nozzle_x_extrusion_dist_z = 42;
+//nozzle_x_extrusion_dist_z = 42;
+nozzle_x_extrusion_dist_z = 32.95;
 
 center_brace_anchor_length = 24;
 center_brace_plate_thickness = 9;
@@ -278,8 +279,8 @@ module assembly(pct_x,pct_y,pct_z) {
 
   y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
 
-  //for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
-  for(z=[bottom_pos_z+extrusion_side/2]) {
+  for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
+  //for(z=[bottom_pos_z+extrusion_side/2]) {
     translate([0,0,z]) {
       for(x=[left,right]) {
         translate([x*extrusion_vertical_spacing_x/2,0,0]) {
@@ -376,7 +377,7 @@ module assembly(pct_x,pct_y,pct_z) {
       holes();
     }
   }
-  center_brace_anchor();
+  //center_brace_anchor();
 
   z_axis_assembly(pos_z);
 
@@ -487,7 +488,7 @@ module assembly(pct_x,pct_y,pct_z) {
       rotate([0,0,-90]) {
         rotate([180,0,0]) {
           // front to rear
-          children();
+          //children();
         }
       }
     }
@@ -495,7 +496,7 @@ module assembly(pct_x,pct_y,pct_z) {
       rotate([0,0,0]) {
         rotate([180,0,0]) {
           // left to right alignment
-          //children();
+          children();
         }
       }
     }
@@ -517,7 +518,7 @@ module assembly(pct_x,pct_y,pct_z) {
   for(x=[left,right]) {
     for(y=[front,rear]) {
       translate([x*(extrusion_vertical_spacing_x/2),y*(extrusion_vertical_spacing_y/2),extrusion_vertical_pos_z]) {
-        //% extrusion(extrusion_vertical_length);
+        % extrusion(extrusion_vertical_length);
       }
     }
 
