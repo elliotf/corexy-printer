@@ -13,3 +13,18 @@
 [submodule "slideswipe"]
 	path = slideswipe
 	url = https://github.com/chestwood96/SlideSwipe.git
+[submodule "tri-zero"]
+	path = tri-zero
+	url = https://github.com/zruncho3d/tri-zero.git
+[submodule "box-zero"]
+	path = box-zero
+	url = https://github.com/zruncho3d/BoxZero.git
+[submodule "zruncho3d-box-zero"]
+	path = zruncho3d-box-zero
+	url = https://github.com/zruncho3d/BoxZero.git
+[submodule "zruncho3d-tri-zero"]
+	path = zruncho3d-tri-zero
+	url = https://github.com/zruncho3d/tri-zero.git
+[submodule "voron-0"]
+	path = voron-0
+	url = https://github.com/VoronDesign/Voron-0.git

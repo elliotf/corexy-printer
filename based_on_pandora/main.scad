@@ -38,7 +38,7 @@ sizes = [
     [
       [MGN9H_carriage,MGN9,300], // X axis
       [MGN7H_carriage,MGN7,250], // Y axis
-      [MGN7H_carriage,MGN7,225], // Z axis
+      [MGN7H_carriage,MGN7,250], // Z axis
     ],
     [NEMA17_47,NEMA17_47,NEMA17_27,300],
     //[NEMA14_52,NEMA17_47,NEMA17_27,300], // untested
@@ -51,7 +51,7 @@ sizes = [
     ],
   ],
   [
-    [500,250,200,150], // extrusion_lengths
+    [450,250,200,150], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,250], // X axis
       [MGN7H_carriage,MGN7,200], // Y axis
@@ -68,7 +68,7 @@ sizes = [
     ],
   ],
   [
-    [350,200,150,100], // extrusion_lengths
+    [375,200,150,100], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,200], // X axis
       [MGN7H_carriage,MGN7,150], // Y axis
@@ -130,10 +130,12 @@ z_carriage = printer_config[1][z][0];
 z_rail = printer_config[1][z][1];
 z_rail_length = printer_config[1][z][2];
 
-top_pos_z = extrusion_vertical_length;
+printed_height_extension_height = 0;
+top_pos_z = extrusion_vertical_length+printed_height_extension_height;
 //gantry_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length-extrusion_side/2;
-gantry_pos_z = z_rail_length+50;
+gantry_pos_z = z_rail_length+46;
 echo("gantry_pos_z: ", gantry_pos_z);
+echo("bottom/mid spacing: ", gantry_pos_z-extrusion_side*1.5);
 
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
 
@@ -279,6 +281,28 @@ module assembly(pct_x,pct_y,pct_z) {
 
   y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
 
+  panel_thickness = 3;
+  //side_panel_height = 332;
+  side_panel_height = extrusion_vertical_length-9*2;
+  panel_width = 212;
+
+  echo("side_panel_height: ", side_panel_height);
+  echo("panel_width: ", panel_width);
+  for(r=[0,90,180,270]) {
+    rotate([0,0,r]) {
+      translate([0,extrusion_vertical_spacing_y/2+extrusion_side/2+panel_thickness/2+1.5,top_pos_z-9-side_panel_height/2]) {
+        // % cube([panel_width,panel_thickness,side_panel_height],center=true);
+      }
+      if (printed_height_extension_height > 0) {
+        translate([extrusion_vertical_spacing_x-6.5,-extrusion_vertical_spacing_y-3.5,top_pos_z-80]) {
+          rotate([0,0,90]) {
+            % color("orange") import("./external/box-zero-Top_Corner_x4.stl");
+          }
+        }
+      }
+    }
+  }
+
   for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
   //for(z=[bottom_pos_z+extrusion_side/2]) {
     translate([0,0,z]) {
@@ -298,14 +322,12 @@ module assembly(pct_x,pct_y,pct_z) {
       }
     }
   }
-  translate([0,extrusion_vertical_spacing_y/2,0]) {
-    translate([rear_z_offset_x,0,bottom_pos_z+extrusion_side+extrusion_main_length/2]) {
-      % extrusion(extrusion_main_length);
-    }
-    translate([0,motor_xy_pos_y-extrusion_vertical_spacing_y/2,motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thickness]) {
-      rotate([0,90,0]) {
-        % extrusion(extrusion_shortest_length);
-      }
+  translate([rear_z_offset_x,extrusion_vertical_spacing_y/2-extrusion_side,bottom_pos_z+extrusion_main_length/2]) {
+    % extrusion(extrusion_main_length);
+  }
+  translate([0,motor_xy_pos_y,motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thickness]) {
+    rotate([0,90,0]) {
+      % extrusion(extrusion_shortest_length);
     }
   }
 
@@ -507,15 +529,8 @@ module assembly(pct_x,pct_y,pct_z) {
     //% cube([215,115,30],center=true);
   }
 
+  //for(x=[left,right]) {
   for(x=[right]) {
-    for(y=[front,rear]) {
-      translate([x*(extrusion_vertical_spacing_x/2),y*(extrusion_vertical_spacing_y/2),extrusion_vertical_pos_z]) {
-        % extrusion(extrusion_vertical_length);
-      }
-    }
-  }
-
-  for(x=[left,right]) {
     for(y=[front,rear]) {
       translate([x*(extrusion_vertical_spacing_x/2),y*(extrusion_vertical_spacing_y/2),extrusion_vertical_pos_z]) {
         % extrusion(extrusion_vertical_length);
