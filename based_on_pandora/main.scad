@@ -4,6 +4,9 @@ use <./toolhead.scad>;
 use <./xy_joints.scad>;
 use <./z_axis.scad>;
 
+m3_threaded_insert_od = 5;
+m3_threaded_insert_height = 4;
+
 size_large = 0;
 size_medium = 1;
 size_small = 2;
