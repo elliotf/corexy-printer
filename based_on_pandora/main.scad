@@ -234,7 +234,8 @@ ab_pod_upper_thickness = 6;
 //rear_z_offset_x = right*(5+extrusion_side/2);
 //rear_z_offset_x = left*5;
 //rear_z_offset_x = right*extrusion_side/2;
-rear_z_offset_x = 0;
+//rear_z_offset_x = 0;
+rear_z_offset_x = right*carriage_width(z_carriage)/2;
 
 //nozzle_x_extrusion_dist_y = 27.35;
 nozzle_x_extrusion_dist_y = 29;
@@ -470,7 +471,7 @@ module assembly(pct_x,pct_y,pct_z) {
         }
       }
     }
-    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-95/2),front*(20),extrusion_side/2-3-20/2]) {
+    translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-95/2),front*(20),extrusion_side/2-3-20/2]) {
       rotate([0,0,0]) {
         rotate([180,0,0]) {
           // beside front-to-back psu
@@ -547,7 +548,7 @@ module assembly(pct_x,pct_y,pct_z) {
       }
     }
     //translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_width/2-2),front*(extrusion_vertical_spacing_y/2-psu_length/2-NEMA_width(motor_type_z)+4),extrusion_side/2-3]) {
-    translate([right*(extrusion_vertical_spacing_x/2-psu_width/2-2),front*(extrusion_vertical_spacing_y/2-psu_length/2-NEMA_width(motor_type_z)+4),extrusion_side/2-20]) {
+    translate([left*(extrusion_vertical_spacing_x/2-psu_width/2-2),front*(extrusion_vertical_spacing_y/2-psu_length/2-NEMA_width(motor_type_z)+4),extrusion_side/2-20]) {
       rotate([0,0,-90]) {
         rotate([180,0,0]) {
           // front to rear

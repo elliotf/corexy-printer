@@ -484,7 +484,7 @@ module ab_pod_assembly(side) {
     //for(a=[0,motor_xy_adjustment_amount]) {
     for(a=[0]) {
       translate([-side*a,0,motor_xy_pos_z]) {
-        rotate([0,0,side*90]) {
+        rotate([0,0,side*180]) {
           % NEMA(motor_type_xy); // AB motor
         }
         translate([0,0,16-side*4.5]) {
