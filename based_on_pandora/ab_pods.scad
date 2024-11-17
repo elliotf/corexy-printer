@@ -481,10 +481,10 @@ module motor_holes(z) {
 
 module ab_pod_assembly(side) {
   translate([side*motor_xy_pos_x,motor_xy_pos_y,0]) {
-    //for(a=[0,motor_xy_adjustment_amount]) {
-    for(a=[0]) {
+    for(a=[0,motor_xy_adjustment_amount]) {
+    //for(a=[0]) {
       translate([-side*a,0,motor_xy_pos_z]) {
-        rotate([0,0,side*180]) {
+        rotate([0,0,side*90]) {
           % NEMA(motor_type_xy); // AB motor
         }
         translate([0,0,16-side*4.5]) {
