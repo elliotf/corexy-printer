@@ -39,7 +39,7 @@ z_rail_positions = [
 ];
 // using rear module as reference
 
-carriage_offset_z = z_rail_length/2-carriage_length(z_carriage)/2-0; // - pos_z;
+carriage_offset_z = z_rail_length/2-carriage_length(z_carriage)/2; // - pos_z;
 
 tolerance = 0.4;
 
@@ -60,12 +60,31 @@ carriage_idler_pos_x = return_pos_x+carriage_idler_dist_from_return;
 //anchor_pos_x = carriage_idler_pos_x-belt_idler_od/2-belt_pitch_to_back(GT2x6);
 anchor_pos_x = carriage_idler_pos_x+belt_idler_od/2+0.4;
 
+gt2_belt_pitch = 2;
+approx_pi = 3.14159265359;
+function calculatePulleyDiam(teeth) = ((teeth*gt2_belt_pitch)/approx_pi);
+
+z_pulley_teeth = 16;
+z_pulley_diam = calculatePulleyDiam(z_pulley_teeth);
+largest_pulley_diam = calculatePulleyDiam(25);
+
+carriage_anchor_pos_x = extrusion_side/2+z_pulley_diam+2;
+carriage_anchor_center_pos_z = 0;
+carriage_anchor_offset_z = rail_offset_z+carriage_offset_z;
+carriage_anchor_spacing = 10;
+
+//single_z_idler_pos_x = carriage_anchor_pos_x+belt_idler_od/2;
+single_z_idler_pos_x = carriage_anchor_pos_x-belt_idler_od/2-1;
+single_z_idler_pos_z = gantry_pos_z-extrusion_side/2-belt_idler_od/2-7; // need to sneak it under the toolhead
+
 //toothed_to_smooth_dist = belt_pulley_pr(GT2x6, GT2x16_pulley, twisted=true);
-toothed_to_smooth_dist = belt_pulley_pr(GT2x6, GT2x16_pulley, twisted=true);
+//toothed_to_smooth_dist = belt_pulley_pr(GT2x6, GT2x16_pulley, twisted=true);
+toothed_to_smooth_dist = belt_pulley_pr(GT2x6, GT2x16_pulley, twisted=false);
 //motor_pos_x = carriage_idler_pos_x+10/2+toothed_to_smooth_dist;
 //motor_pos_x = carriage_idler_pos_x+10/2+toothed_to_smooth_dist;
 //motor_pos_x = carriage_idler_pos_x-belt_pitch_to_back(GT2x6);
-motor_belt_path_offset = carriage_idler_pos_x-belt_idler_od/2-toothed_to_smooth_dist;
+//motor_belt_path_offset = carriage_idler_pos_x-belt_idler_od/2-toothed_to_smooth_dist;
+motor_belt_path_offset = carriage_anchor_pos_x-toothed_to_smooth_dist;
 height_above_z_motor = 4;
 height_below_z_motor = 4;
 motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
@@ -92,19 +111,24 @@ belt_idler_max_diam = carriage_idler_spacing-extrude_height*2;
 z_carrier_idler_area_body_width = carriage_idler_stack_height+carriage_idler_bevel_height*2+z_carrier_mount_thickness*2;
 z_carrier_idler_area_body_depth = belt_idler_max_diam+z_carrier_mount_thickness*2;
 
-belt_plane_offset = extrusion_side/2+1+belt_width/2;
-belt_plane_offset_rear = carriage_width(z_carriage)/2+tolerance+z_carrier_idler_area_body_width/2;
+//belt_plane_offset = extrusion_side/2+1+belt_width/2;
+belt_plane_offset = carriage_width(z_carriage)/2+0.5+belt_width/2;
+//belt_plane_offset_rear = carriage_width(z_carriage)/2+tolerance+z_carrier_idler_area_body_width/2;
+belt_plane_offset_rear = belt_plane_offset;
 idler_pos_x     = belt_plane_offset;
 dist_between_belt_and_corner = belt_plane_offset-extrusion_side/2-belt_width/2;
 
 //extrusion_carrier_edge_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-mgn_height-mgn_mount_thickness-17;
 //extrusion_carrier_edge_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-mgn_height-mgn_mount_thickness-4;
 
+z_carriage_mount_height = mgn_length-8;
+z_carriage_fastener_area_thickness = 8;
+z_carriage_fastener_area_width = 8;
 mgn_hole_spacing = 13;
 //bed_assembly_offset_z = -extrusion_side/2;
 //bed_assembly_offset_z = -mgn_hole_spacing;
 //bed_assembly_offset_z = -mgn_length/2;
-bed_assembly_offset_z = -6;
+bed_assembly_offset_z = z_carriage_mount_height/2-extrusion_side;
 //bed_assembly_offset_z = 0;
 
 plate_thickness = build_plate_dimensions[z];
@@ -114,15 +138,17 @@ bed_plate_insulation_spacer_length = 10;
 //bed_plate_insulation_spacer_length = 6; // 10mm spacer, but sunk down some amount. Really only to leave room for bed heater
 //bed_plate_offset_y = -extrusion_side/2-bed_plate_insulation_spacer_diam-1;
 bed_plate_offset_y = -20;
-//rear_bed_extrusion_offset_x = 0;
-//rear_bed_extrusion_offset_x = left*(extrusion_side/2+bed_plate_insulation_spacer_diam/2);
 rear_bed_extrusion_offset_x = 0;
+//rear_bed_extrusion_offset_x = left*(extrusion_side/2+bed_plate_insulation_spacer_diam/2);
+//rear_bed_extrusion_offset_x = extrusion_side/2+bed_plate_insulation_spacer_diam/2;
+
+adjust_rear_belt_whatnots = 1+belt_idler_od/2+extrusion_side/2;
 
 //front_bed_extrusion_offset_from_bed_y = extrusion_side/2+bed_plate_insulation_spacer_diam/2+1;
-//front_bed_extrusion_offset_from_bed_y = 5;
+front_bed_extrusion_offset_from_bed_y = 5;
 //front_bed_extrusion_offset_from_bed_y = front*(extrusion_side/2);
 //front_bed_extrusion_offset_from_bed_y = 5-extrusion_side/2-bed_plate_insulation_spacer_diam/2;
-front_bed_extrusion_offset_from_bed_y = 5-extrusion_side/2-bed_plate_insulation_spacer_diam/2;
+//front_bed_extrusion_offset_from_bed_y = 5+extrusion_side/2+bed_plate_insulation_spacer_diam/2;
 extrusion_carrier_edge_pos_y = bed_plate_offset_y-build_plate_dimensions[y]/2+front_bed_extrusion_offset_from_bed_y;
 
 echo("extrusion_carrier_edge_pos_y: ", extrusion_carrier_edge_pos_y);
@@ -439,10 +465,17 @@ module z_carrier_base() {
   }
 
   module position_carriage() {
-    translate([-extrusion_side/2,0,0]) {
+    translate([0,extrusion_side/2,0]) {
+      rotate([-90,0,0]) {
+        rotate([0,0,90]) {
+          children();
+        }
+      }
+      /*
       rotate([0,-90,0]) {
         children();
       }
+      */
     }
   }
 
@@ -793,7 +826,167 @@ module z_carrier_rear() {
   }
 }
 
-module z_carrier_front() {
+module z_carrier_front(offset_belt_anchor_by=0) {
+  //belt_idler_max_diam = belt_idler_od+belt_thickness*2+2;
+  //z_carrier_idler_area_body_width = carriage_idler_stack_height+carriage_idler_bevel_height*2+z_carrier_mount_thickness*2;
+  //z_carrier_idler_area_body_depth = belt_idler_max_diam+z_carrier_mount_thickness*2;
+  overall_depth = extrusion_side/2+carriage_idler_pos_x+z_carrier_idler_area_body_depth/2;
+  dist_between_z_carriage_and_extrusion_x = front_bed_extrusion_length/2-extrusion_vertical_spacing_x/2;
+  dist_between_z_carriage_and_extrusion_y = abs(extrusion_vertical_spacing_y/2)-front*extrusion_carrier_edge_pos_y;
+  dist_to_bottom_of_extrusion = bed_assembly_offset_z;
+
+  belt_anchor_opening_height = 11.4; // from pandora's box
+  belt_anchor_opening_width = 9; // from pandora's box
+
+  //max_depth_of_carriage = extrusion_side/2+mgn_height+extrusion_side+3;
+  //belt_anchor_depth = max_depth_of_carriage-(carriage_idler_pos_0x-extrusion_side/2)-0.92; // FIXME: thickness of belt?
+  belt_anchor_depth = 20.2;
+  belt_opening_height = 2;
+  belt_opening_width = 7;
+  max_depth_of_carriage = carriage_anchor_pos_x+belt_anchor_depth+0.4-offset_belt_anchor_by; // FIXME: thickness of belt
+
+  echo("belt_anchor_depth: ", belt_anchor_depth);
+  echo("carriage_idler_pos_x: ", carriage_idler_pos_x);
+
+  module position_carriage() {
+    translate([0,extrusion_side/2,0]) {
+      rotate([-90,0,0]) {
+        rotate([0,0,90]) {
+          children();
+        }
+      }
+      /*
+      rotate([0,-90,0]) {
+        children();
+      }
+      */
+    }
+  }
+
+  module position_belt_anchor() {
+    translate([-belt_plane_offset,max_depth_of_carriage,0]) {
+      rotate([90,0,0]) {
+        children();
+      }
+    }
+  }
+
+  module body() {
+    position_carriage() {
+      remain_height = max_depth_of_carriage-(extrusion_side/2+mgn_height);
+      translate([0,0,max_depth_of_carriage-extrusion_side/2]) {
+        translate([0,0,-remain_height/2]) {
+          rounded_cube(z_carriage_mount_height,mgn_width,remain_height,2);
+        }
+        min_height = min(remain_height,belt_anchor_depth);
+        translate([0,mgn_width/2,-min_height/2]) {
+          cube([z_carriage_mount_height,5,min_height],center=true);
+        }
+      }
+    }
+
+    position_belt_anchor() {
+      //belt_anchor_width = belt_plane_offset+mgn_width/2;
+      belt_anchor_width = mgn_width/2+belt_opening_width/2-0.2;
+      translate([-mgn_width/2+belt_anchor_width/2-0.1,0,belt_anchor_depth/2]) {
+        rounded_cube(belt_anchor_width,z_carriage_mount_height,belt_anchor_depth,2);
+      }
+      translate([0,0,z_carriage_fastener_area_thickness/2]) {
+        rounded_cube(mgn_width+z_carriage_fastener_area_width*2,z_carriage_mount_height,z_carriage_fastener_area_thickness,2);
+      }
+    }
+  }
+
+  module holes() {
+    position_carriage() {
+      % carriage(z_carriage);
+      // FIXME: make printable, maybe using FSC ?
+      mgn_plate_thickness = 4;
+      translate([0,0,mgn_plate_thickness]) {
+        carriage_hole_positions(z_carriage) {
+          if (is_final) {
+            bridged_hole(4.4,2.1);
+          } else {
+            hole(2.1,max_depth_of_carriage*2,resolution);
+            translate([0,0,max_depth_of_carriage/2]) {
+              hole(4.4,max_depth_of_carriage,resolution);
+            }
+          }
+        }
+      }
+      translate([0,0,0]) {
+        for(z=[top,bottom]) {
+          mirror([z-1,0,0]) {
+            translate([belt_anchor_opening_height/2,mgn_width/2+0.2,mgn_height-20]) {
+              round_corner_filler(2,40);
+            }
+          }
+        }
+      }
+    }
+
+    position_belt_anchor() {
+      hole(3.4,max_depth_of_carriage*3,resolution);
+
+      tension_plate_thickness = 6;
+      for(y=[front,rear]) {
+        translate([0,y*(belt_anchor_opening_height/2-belt_opening_height/2),0]) {
+          rounded_cube(belt_opening_width,belt_opening_height,max_depth_of_carriage*3,1);
+        }
+        mirror([0,y-1,0]) {
+          translate([0,belt_anchor_opening_height/2,belt_anchor_depth]) {
+            rotate([0,90,0]) {
+              round_corner_filler(2,belt_width);
+            }
+          }
+        }
+      }
+
+      translate([belt_opening_width/2-belt_anchor_opening_width/2,0,tension_plate_thickness+belt_anchor_depth/2]) {
+        rounded_cube(belt_anchor_opening_width,belt_anchor_opening_height,belt_anchor_depth,2);
+      }
+
+      translate([-mgn_width/2-z_carriage_fastener_area_width/2,0,z_carriage_fastener_area_thickness]) {
+        hole_spacing = 10;
+        for(y=[front,rear]) {
+          translate([0,y*hole_spacing/2,0]) {
+            hole(4.7,6*2,resolution);
+            hole(3.2,z_carriage_fastener_area_thickness*3,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+
+  /*
+  dist_between_carriage_and_extrusion_y = abs(extrusion_vertical_spacing_y/2)-front*extrusion_carrier_edge_pos_y-extrusion_side/2;
+  dist_between_carriage_and_extrusion_x = front_bed_extrusion_length/2-extrusion_vertical_spacing_x/2;
+  echo("dist_between_carriage_and_extrusion_x: ", dist_between_carriage_and_extrusion_x);
+
+  module body() {
+    z_carrier_base();
+
+    translate([0,dist_between_carriage_and_extrusion_y-z_carrier_mount_thickness/2,0]) {
+      z_carrier_anchor_and_pivot(dist_between_carriage_and_extrusion_x);
+    }
+  }
+
+  module holes() {
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+  */
+}
+
+module old_z_carrier_front() {
   dist_between_carriage_and_extrusion_y = abs(extrusion_vertical_spacing_y/2)-front*extrusion_carrier_edge_pos_y-extrusion_side/2;
   dist_between_carriage_and_extrusion_x = front_bed_extrusion_length/2-extrusion_vertical_spacing_x/2;
   echo("dist_between_carriage_and_extrusion_x: ", dist_between_carriage_and_extrusion_x);
@@ -1022,10 +1215,11 @@ module z_axis_assembly_belted(pos_z) {
         //length = extrusion_shortest_length;
         //rear_bed_extrusion_length = 2*(extrusion_carrier_edge_pos_y-extrusion_side/2);
         //rear_bed_extrusion_length = extrusion_shortest_length;
-        rear_bed_extrusion_length = 140;
+        //rear_bed_extrusion_length = 140;
+        rear_bed_extrusion_length = 100;
         //rear_bed_extrusion_length = extrusion_short_length;
         //rear_bed_extrusion_length = extrusion_shortest_length;
-        rear_bed_extrusion_space_y = 5;
+        rear_bed_extrusion_space_y = 20;
 
         //length = 150;
         //translate([left*(extrusion_side/2+mgn_width/2+2),extrusion_side/2+rear_bed_extrusion_length/2,0]) {
@@ -1043,6 +1237,13 @@ module z_axis_assembly_belted(pos_z) {
       effective_radius = 6.68-1.38/2;
 
       belt_points = [
+        [carriage_anchor_pos_x,carriage_anchor_offset_z+carriage_anchor_spacing/2-pos_z,0],
+        [single_z_idler_pos_x,single_z_idler_pos_z,f623_2x_idler],
+        [motor_belt_path_offset,motor_pos_z,GT2x16_pulley],
+        [carriage_anchor_pos_x,carriage_anchor_offset_z-carriage_anchor_spacing/2-pos_z,0],
+      ];
+
+      old_belt_points = [
         [anchor_pos_x,bottom_pos_z+1,0],
         [carriage_idler_pos_x,carriage_idler_center_pos_z+carriage_idler_spacing_offset_z-carriage_idler_spacing/2-pos_z,f623_2x_idler],
         [motor_belt_path_offset,motor_pos_z,GT2x16_pulley],
@@ -1051,14 +1252,14 @@ module z_axis_assembly_belted(pos_z) {
         [anchor_pos_x,gantry_pos_z-extrusion_side/2-1,0],
       ];
 
-      echo("belt_points[0]: ", belt_points[0]);
-      echo("belt_points[1]: ", belt_points[1]);
+      //echo("belt_points[0]: ", belt_points[0]);
+      //echo("belt_points[1]: ", belt_points[1]);
 
       rotate([90,0,0]) {
         translate([motor_belt_path_offset,motor_pos_z,-motor_side*(belt_width/2+mgn_mount_thickness)]) {
           rotate([0,90-motor_side*90,0]) {
             rotate([0,0,-motor_side*90]) {
-              //% NEMA(z_motor_type);
+              % NEMA(z_motor_type);
             }
             //translate([0,0,9.5]) { // when 9/2 instead of belt_width/2
             translate([0,0,8]) {
@@ -1070,7 +1271,7 @@ module z_axis_assembly_belted(pos_z) {
         }
         translate([0,0,0]) {
           mirror([0,0,0]) {
-            % belt(GT2x6, belt_points, belt_colour = grey(20), tooth_colour = "#795C34", open = true, twist = false, auto_twist = false, start_twist = false);
+            % belt(GT2x6, belt_points, belt_colour = grey(20), tooth_colour = "#795C34", open = true, twist = false, auto_twist = false, start_twist = true);
 
             for(i=[0:len(belt_points)-1]) {
               p = belt_points[i];
@@ -1105,10 +1306,10 @@ module z_axis_assembly_belted(pos_z) {
     }
   }
   */
-  translate([rear_z_offset_x+belt_plane_offset_rear,rear*(extrusion_vertical_spacing_y/2),0]) {
+  translate([rear_z_offset_x+belt_plane_offset_rear,rear*(extrusion_vertical_spacing_y/2-extrusion_side+adjust_rear_belt_whatnots),0]) {
     mirror([0,0,0]) {
       rotate([0,0,90]) {
-        belt_drive_z(top);
+        belt_drive_z();
       }
     }
   }
@@ -1139,16 +1340,25 @@ module z_axis_assembly_belted(pos_z) {
       mirror([x-1,0,0]) {
         translate([extrusion_vertical_spacing_x/2,front*extrusion_vertical_spacing_y/2,0]) {
           rotate([0,0,0]) {
-            belt_anchor_top();
+            //belt_anchor_top();
             //belt_anchor_middle(); // not used anymore, I think
             //belt_anchor_bottom();
-            z_motor_mount_front();
+            //z_motor_mount_front();
             translate([0,0,rail_offset_z]) {
+              translate([0,extrusion_side/2,0]) {
+                rotate([-90,0,0]) {
+                  rotate([0,0,90]) {
+                    % rail(z_rail,z_rail_length);
+                  }
+                }
+              }
+              /*
               translate([-extrusion_side/2,0,0]) {
                 rotate([0,-90,0]) {
                   % rail(z_rail,z_rail_length);
                 }
               }
+              */
 
               translate([0,0,carriage_offset_z-pos_z]) {
                 z_carrier_front();
@@ -1165,7 +1375,7 @@ module z_axis_assembly_belted(pos_z) {
     }
 
     translate([rear_z_offset_x,rear*(extrusion_vertical_spacing_y/2-extrusion_side*1),0]) {
-      z_motor_mount_rear();
+      //z_motor_mount_rear();
       translate([0,0,rail_offset_z]) {
         translate([0,front*extrusion_side/2,0]) {
           rotate([90,0,0]) {
@@ -1175,9 +1385,9 @@ module z_axis_assembly_belted(pos_z) {
           }
         }
 
-        rotate([0,0,0]) {
+        rotate([0,0,180]) {
           translate([0,0,carriage_offset_z-pos_z]) {
-            z_carrier_rear();
+            z_carrier_front(adjust_rear_belt_whatnots);
             translate([0,-extrusion_side/2,0]) {
               rotate([0,0,0]) {
                 //% carriage(z_carriage);
@@ -1187,6 +1397,8 @@ module z_axis_assembly_belted(pos_z) {
         }
       }
     }
+    /*
+    */
   }
 
   position_z_modules();

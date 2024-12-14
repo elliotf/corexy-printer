@@ -37,6 +37,12 @@ module frame_assembly() {
       }
     }
 
+    translate([0,0,0]) {
+      translate([x*(extrusion_vertical_spacing_x/2),0,extrusion_side+extrusion_short_length/2]) {
+        //% extrusion(extrusion_short_length);
+      }
+    }
+
     translate([x*extrusion_vertical_spacing_x/2,0,gantry_pos_z]) {
       rotate([90,0,0]) {
         % extrusion(extrusion_main_length);

@@ -15,7 +15,7 @@ motor_shoulder_clearance = NEMA_boss_radius(motor_type_xy)*2+0.3;
 cut_through_height = 50;
 
 innermost_motor_shoulder_hole = motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_clearance/2;
-wall_between_motor_and_center_spar = innermost_motor_shoulder_hole-extrusion_shortest_length/2-0.2;
+wall_between_motor_and_center_spar = innermost_motor_shoulder_hole-extrusion_shortest_length/2-0.6;
 
 center_anchor_center_pos_x = motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length/2;
 
@@ -432,7 +432,6 @@ module upper_screw_area_filler_profile() {
   }
 }
 
-
 module motor_holes(z) {
   translate([motor_xy_pos_x,motor_xy_pos_y,z]) {
     /*
@@ -485,7 +484,7 @@ module ab_pod_assembly(side) {
     //for(a=[0]) {
       translate([-side*a,0,motor_xy_pos_z]) {
         rotate([0,0,side*90]) {
-          % NEMA(motor_type_xy); // AB motor
+          //% NEMA(motor_type_xy); // AB motor
         }
         translate([0,0,16-side*4.5]) {
           rotate([0,90+side*90,0]) {
