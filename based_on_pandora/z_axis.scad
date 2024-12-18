@@ -301,7 +301,7 @@ module z_idler_top_idler() {
     position_zip_ties() {
       zip_tie_hole_width = 4;
       zip_tie_hole_thickness = 1.5;
-      wall_between_wires_and_zip_ties = 1;
+      wall_between_wires_and_zip_ties = 1.5;
 
       depth_into_plastic = 3;
       wire_hole_diam = 10;
@@ -309,7 +309,7 @@ module z_idler_top_idler() {
       translate([0,wire_hole_diam/2-depth_into_plastic,0]) {
         hole(wire_hole_diam,50,resolution);
 
-        translate([0,0,zip_tie_hole_width/2+2]) {
+        translate([0,0,zip_tie_hole_width/2+1]) {
           difference() {
             id = wire_hole_diam+2*wall_between_wires_and_zip_ties;
             od = id + zip_tie_hole_thickness*2;
