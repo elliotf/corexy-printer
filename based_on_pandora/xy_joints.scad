@@ -60,7 +60,6 @@ module position_mgn_holes() {
 module xy_joint_bottom(side) {
   module body() {
     translate([0,0,mgn_height+xy_carriage_base_thickness/2]) {
-      debug_axes();
       linear_extrude(height=xy_carriage_base_thickness,center=true,convexity=2) {
         xy_joint_profile();
       }
@@ -84,7 +83,6 @@ module xy_joint_bottom(side) {
 module xy_joint_top(side) {
   module body() {
     translate([0,0,mgn_height+xy_carriage_base_thickness+belt_idler_stack_height+xy_carriage_top_thickness/2]) {
-      debug_axes();
       linear_extrude(height=xy_carriage_top_thickness,center=true,convexity=2) {
         xy_joint_profile();
       }
