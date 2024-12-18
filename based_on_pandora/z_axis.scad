@@ -320,7 +320,7 @@ module z_idler_top_idler() {
       }
     }
 
-    head_hole_length = 16;
+    head_hole_length = 9;
     position_top() {
       translate([0,0,frame_anchor_plastic_thickness]) {
         hole(m3_through_hole_diam,20,resolution);
@@ -329,7 +329,8 @@ module z_idler_top_idler() {
         }
       }
 
-      for(z=[-overall_height*0.2,-overall_height*0.6]) {
+      //for(z=[-overall_height*0.2,-overall_height*0.6]) {
+      for(z=[-overall_height*0.5]) {
         translate([0,0,z]) {
           rotate([0,90,0]) {
             hole(m3_through_hole_diam,100,resolution);
@@ -341,18 +342,26 @@ module z_idler_top_idler() {
         for(x=[left,right]) {
           translate([x*(center_brace_width*0.3),0,0]) {
             rotate([0,180,0]) {
-              translate([0,0,frame_anchor_plastic_thickness]) {
-                hole(m3_through_hole_diam,20,resolution);
-                translate([0,0,head_hole_length/2]) {
-                  hole(m3_head_diam,head_hole_length,resolution);
+              hole(m3_through_hole_diam,20,resolution);
+              translate([0,0,frame_anchor_plastic_thickness+head_hole_length/2]) {
+                hole(m3_head_diam,head_hole_length,8);
+              }
+              hull() {
+                inside_length = head_hole_length;
+                outside_length = inside_length+frame_anchor_plastic_thickness+m3_head_diam;
+                translate([0,0,top_of_vertical_to_brace_z]) {
+                  translate([0,0,inside_length/2]) {
+                    hole(m3_head_diam,inside_length,8);
+                  }
+                  translate([0,extrusion_side,outside_length/2]) {
+                    hole(m3_head_diam,outside_length,8);
+                  }
                 }
-                translate([0,0,head_hole_length]) {
-                  hull() {
-                    hole(m3_head_diam,0.2,resolution);
+                translate([0,0,frame_anchor_plastic_thickness+head_hole_length]) {
+                  hole(m3_head_diam,0.2,8);
 
-                    translate([0,m3_head_diam,m3_head_diam]) {
-                      hole(m3_head_diam,0.2,resolution);
-                    }
+                  translate([0,m3_head_diam,m3_head_diam]) {
+                    hole(m3_head_diam,0.2,8);
                   }
                 }
               }
