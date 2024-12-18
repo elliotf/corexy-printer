@@ -160,12 +160,12 @@ module ab_pod_lower() {
         motor_plate_profile();
       }
     }
-    translate([extrusion_vertical_spacing_x/2-extrusion_side/2,extrusion_vertical_spacing_y/2-extrusion_side/2,0]) {
+    translate([extrusion_vertical_spacing_x/2-extrusion_side/2,extrusion_vertical_spacing_y/2+extrusion_side/2-ab_corner_anchor_depth/2,0]) {
       translate([-side_anchor_thickness/2,0,gantry_pos_z]) {
         rounded_cube(side_anchor_thickness,ab_corner_anchor_depth,extrusion_side,wall_thickness*2);
       }
       for(y=[front,0,rear]) {
-        translate([0,y*(extrusion_side-wall_thickness),0]) {
+        translate([0,y*(ab_corner_anchor_depth/2-wall_thickness),0]) {
           hull() {
             translate([-space_between_motor_and_corner/2,0,motor_xy_pos_z+xy_motor_plate_thickness-ab_pod_lower_thickness/2]) {
               rounded_cube(space_between_motor_and_corner,wall_thickness*2,ab_pod_lower_thickness,wall_thickness*2);
@@ -512,11 +512,11 @@ module ab_pod_assembly(side) {
     //for(a=[0]) {
       translate([-side*a,0,motor_xy_pos_z]) {
         rotate([0,0,side*90]) {
-          //% NEMA(motor_type_xy); // AB motor
+          % NEMA(motor_type_xy); // AB motor
         }
         translate([0,0,16-side*4.5]) {
           rotate([0,90+side*90,0]) {
-            % pulley_assembly(GT2x16_pulley);
+            % pulley_assembly(xy_pulley_type);
           }
         }
       }

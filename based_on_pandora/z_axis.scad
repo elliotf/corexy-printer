@@ -79,9 +79,9 @@ single_z_idler_pos_z = gantry_pos_z-extrusion_side/2-belt_idler_od/2-7; // need 
 
 belt_plane_offset = carriage_width(z_carriage)/2+0.5+belt_width/2;
 
-//toothed_to_smooth_dist = belt_pulley_pr(GT2x6, GT2x16_pulley, twisted=true);
-//toothed_to_smooth_dist = belt_pulley_pr(GT2x6, GT2x16_pulley, twisted=true);
-toothed_to_smooth_dist = belt_pulley_pr(GT2x6, GT2x16_pulley, twisted=false);
+//toothed_to_smooth_dist = belt_pulley_pr(GT2x6, z_pulley_type, twisted=true);
+//toothed_to_smooth_dist = belt_pulley_pr(GT2x6, z_pulley_type, twisted=true);
+toothed_to_smooth_dist = belt_pulley_pr(GT2x6, z_pulley_type, twisted=false);
 //motor_belt_path_offset = carriage_idler_pos_x-belt_idler_od/2-toothed_to_smooth_dist;
 motor_belt_path_offset = carriage_anchor_pos_x-toothed_to_smooth_dist;
 height_above_z_motor = 4;
@@ -215,6 +215,16 @@ module z_idler_top_idler() {
     }
   }
 
+  module position_zip_ties() {
+    position_center_brace() {
+      translate([0,extrusion_side/2,-top_of_vertical_to_brace_z]) {
+        rotate([-22,0,0]) {
+          children();
+        }
+      }
+    }
+  }
+
   module position_idler() {
     translate([rear_z_offset_x+belt_plane_offset,idler_pos_y,single_z_idler_pos_z]) {
       rotate([0,90,0]) {
@@ -284,6 +294,28 @@ module z_idler_top_idler() {
         hole(m3_through_hole_diam,100,resolution);
         translate([0,0,40]) {
           //hole(m3_head_diam,80,resolution);
+        }
+      }
+    }
+
+    position_zip_ties() {
+      zip_tie_hole_width = 4;
+      zip_tie_hole_thickness = 1.5;
+      wall_between_wires_and_zip_ties = 1;
+
+      depth_into_plastic = 3;
+      wire_hole_diam = 10;
+
+      translate([0,wire_hole_diam/2-depth_into_plastic,0]) {
+        hole(wire_hole_diam,50,resolution);
+
+        translate([0,0,zip_tie_hole_width/2+2]) {
+          difference() {
+            id = wire_hole_diam+2*wall_between_wires_and_zip_ties;
+            od = id + zip_tie_hole_thickness*2;
+            hole(od,zip_tie_hole_width,resolution);
+            hole(id,zip_tie_hole_width+1,resolution);
+          }
         }
       }
     }
@@ -1196,7 +1228,7 @@ module z_axis_assembly_belted(pos_z) {
     belt_points = [
       [carriage_anchor_pos_x,carriage_anchor_offset_z+carriage_anchor_spacing/2-pos_z,0],
       [single_z_idler_pos_x,single_z_idler_pos_z,f623_2x_idler],
-      [motor_belt_path_offset,motor_pos_z,GT2x16_pulley],
+      [motor_belt_path_offset,motor_pos_z,z_pulley_type],
       [carriage_anchor_pos_x,carriage_anchor_offset_z-carriage_anchor_spacing/2-pos_z,0],
     ];
 
@@ -1212,7 +1244,7 @@ module z_axis_assembly_belted(pos_z) {
           rotate([0,90-motor_side*90,0]) {
             translate([0,0,8]) {
               rotate([180,0,0]) {
-                % pulley_assembly(GT2x16_pulley);
+                % pulley_assembly(z_pulley_type);
               }
             }
           }

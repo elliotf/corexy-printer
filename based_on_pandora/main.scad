@@ -35,8 +35,12 @@ belt_thickness = 1.5; // FIXME ?
 panel_thickness = 3;
 
 belt_idler_od = 10; // F623
+// maybe https://www.amazon.com/uxcell-Aluminum-Standoff-Quadcopter-Multirotors/dp/B08HL7VQFQ to have narrower diameter?
 belt_idler_spacer_id = m3_through_hole_diam;
-belt_idler_spacer_od = belt_idler_spacer_id+2*(extrude_width*2*2);
+//belt_idler_spacer_od = belt_idler_spacer_id+2*(extrude_width*2*2)-0.5;
+//belt_idler_spacer_od = 5;
+belt_idler_spacer_od = 6;
+echo("belt_idler_spacer_od: ", belt_idler_spacer_od);
 belt_idler_spacer_length = 9; // f623*2 + 2*0.5 shim
 belt_idler_stack_height = belt_idler_spacer_length*2;
 
@@ -109,7 +113,8 @@ x_carriage_width = max(carriage_length(printer_config[RAIL_CONFIGURATION][x][0])
 
 build_volume = [
   printer_config[RAIL_CONFIGURATION][x][2] - x_carriage_width - 5,
-  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+2.5,
+  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+2.5,
+  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5,
   printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]),
 ];
 
@@ -191,22 +196,26 @@ rear_idler_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-front_idler_e
 rear_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-rear_idler_dist_from_end;
 
 rear_brace_offset_y = 5;
-ab_corner_anchor_depth = 30; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
+//ab_corner_anchor_depth = 30; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
+ab_corner_anchor_depth = 28.4; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
 
 outer_idler_pos_x = front_idler_pos_x;
 //outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-front_idler_extrusion_dist_y;
 //outer_idler_pos_y = y_rail_pos_y+y_rail_length/2+front_idler_extrusion_dist_y;
 //outer_idler_pos_y = y_rail_pos_y+y_rail_length/2+10;
 //outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-8;
-outer_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-ab_corner_anchor_depth+(12)/2+0.2;
+//outer_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-ab_corner_anchor_depth+(12)/2+0.2;
+outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-7.5;
 
 //non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-23;
 //non_motor_idler_pos_y = outer_idler_pos_y+5.8;
 //non_motor_idler_pos_y = motor_xy_pos_y;
-non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-16;
+idler_motor_delta = 9;
+non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-16+idler_motor_delta;
 //non_motor_idler_pos_y = outer_idler_pos_y+5.8;
 //non_motor_idler_pos_y = outer_idler_pos_y+10;
-non_motor_idler_pos_y = rear_idler_pos_y-11;
+//non_motor_idler_pos_y = rear_idler_pos_y-10.6;
+non_motor_idler_pos_y = outer_idler_pos_y+1.5;
 
 xy_carriage_base_thickness = 4;
 xy_carriage_top_thickness = 6;
@@ -219,11 +228,14 @@ xy_bottom_belt_above_carriage_base = belt_idler_flange_thickness+belt_idler_shim
 xy_belt_spacing = 6+belt_idler_flange_thickness*2+belt_idler_shim_thickness*2;
 xy_belt_center_pos_z = gantry_pos_z+extrusion_side/2+carriage_height(y_carriage)+xy_carriage_base_thickness+xy_bottom_belt_above_carriage_base+xy_belt_spacing/2;
 
+z_pulley_type = GT2x16_pulley; // for more torque
+xy_pulley_type = GT2x16_pulley; // not enough room for the non-motor idler, but might be able to use another F623 instead of the spacer?
+//xy_pulley_type = GT2x20_pulley;
 motor_xy_width = NEMA_width(motor_type_xy);
 motor_xy_hole_spacing = NEMA_holes(motor_type_xy)[1]-NEMA_holes(motor_type_xy)[0];
 motor_xy_rounded = motor_xy_width-motor_xy_hole_spacing;
 //motor_xy_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-motor_xy_width/2-20; // inside chamber
-motor_xy_pos_x = non_motor_idler_pos_x-motor_xy_hole_spacing/2+0.5;
+motor_xy_pos_x = non_motor_idler_pos_x-motor_xy_hole_spacing/2+0.5-idler_motor_delta;
 //motor_xy_pos_x = motor_xy_width/2 + 12/2; // outside chamber on the back
 motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-motor_xy_width/2; // inside chamber
 //motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2+motor_xy_width/2+panel_thickness+3; // outside chamber on the  back
@@ -617,7 +629,7 @@ module assembly(pct_x,pct_y,pct_z) {
     }
   }
 
-  module belt_path(side) {
+  module belt_path(side,belt_tension_amount=0) {
     anchor_for = [-pos_x,0,pos_x];
     color_for = ["blue", 0, "red"];
 
@@ -637,11 +649,14 @@ module assembly(pct_x,pct_y,pct_z) {
       [xy_front_idler_pos_x,front_idler_clearance_pos_y,f623_2x_idler],
       [front_idler_pos_x,front_idler_pos_y,f623_2x_idler],
       [outer_idler_pos_x,outer_idler_pos_y,f623_2x_idler],
-      //[motor_xy_pos_x,motor_xy_pos_y,GT2x16_pulley],
-      [motor_xy_pos_x,motor_xy_pos_y,GT2x20_pulley],
+      //[motor_xy_pos_x,motor_xy_pos_y,xy_pulley_type],
+      [non_motor_idler_pos_x,non_motor_idler_pos_y,f623_2x_idler],
+      [motor_xy_pos_x-belt_tension_amount,motor_xy_pos_y,xy_pulley_type],
+      //[motor_xy_pos_x,motor_xy_pos_y,GT2x20_pulley],
       [rear_idler_pos_x,rear_idler_pos_y,f623_2x_idler],
       [-rear_idler_pos_x,rear_idler_pos_y,f623_2x_idler],
-      [-non_motor_idler_pos_x,non_motor_idler_pos_y,f623_2x_idler,"solo"],
+      //[-non_motor_idler_pos_x,non_motor_idler_pos_y,f623_2x_idler,"solo"],
+      [-non_motor_idler_pos_x,non_motor_idler_pos_y,f623_2x_idler],
       [-outer_idler_pos_x,outer_idler_pos_y,f623_2x_idler],
       [-front_idler_pos_x,xy_rear_idler_pos_y,f623_2x_idler],
       [x_carriage_pos_x-10,x_carriage_pos_y,0],
@@ -679,7 +694,8 @@ module assembly(pct_x,pct_y,pct_z) {
   }
 
   % belt_path(left);
-  % belt_path(right);
+  //% belt_path(right);
+  % belt_path(right,motor_xy_adjustment_amount);
 
   translate([0,0,gantry_pos_z-15/2]) {
     rotate([0,0,0]) {
