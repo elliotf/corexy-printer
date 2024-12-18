@@ -229,7 +229,7 @@ module ab_pod_lower() {
       }
       for(p=thread_into_plastic) {
         lead_in_height = 1;
-        thread_depth = xy_motor_plate_thickness+1;
+        thread_depth = xy_motor_plate_thickness-0.2;
         translate(p) {
           hull() {
             hole(m3_through_hole_diam,lead_in_height*2,resolution);
