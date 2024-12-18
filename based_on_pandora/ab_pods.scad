@@ -39,6 +39,7 @@ module ab_pod_upper() {
           corner_anchor_profile();
           upper_center_anchor_profile();
           upper_motor_area_profile();
+          extrusion_lock_profile();
         }
       }
     }
@@ -68,7 +69,7 @@ module ab_pod_upper() {
             translate([center_anchor_center_pos_x,addition_backside_meat_for_center_anchor/2,0]) {
               rounded_cube(center_brace_anchor_length,extrusion_side+addition_backside_meat_for_center_anchor,dist_to_extrusion_spar_z+2,rounded_diam);
             }
-            translate([innermost_motor_shoulder_hole-wall_between_motor_and_center_spar/2,front*(extrusion_side/2),0]) {
+            translate([innermost_motor_shoulder_hole-wall_between_motor_and_center_spar/2,front*(extrusion_side/2-wall_between_motor_and_center_spar/2),0]) {
               hole(wall_between_motor_and_center_spar,dist_to_extrusion_spar_z+2,resolution);
             }
             translate([motor_xy_pos_x,0,0]) {
@@ -147,6 +148,11 @@ module ab_pod_lower() {
   module body() {
     translate([0,0,motor_xy_pos_z+xy_motor_plate_thickness-ab_pod_lower_thickness/2]) {
       linear_extrude(height=ab_pod_lower_thickness,center=true,convexity=2) {
+        extrusion_lock_profile();
+      }
+    }
+    translate([0,0,motor_xy_pos_z+xy_motor_plate_thickness-ab_pod_lower_thickness/2]) {
+      linear_extrude(height=ab_pod_lower_thickness,center=true,convexity=2) {
         corner_anchor_profile();
       }
     }
@@ -203,8 +209,8 @@ module ab_pod_lower() {
     }
 
     translate([extrusion_vertical_spacing_x/2-extrusion_side/2-side_anchor_thickness,extrusion_vertical_spacing_y/2-extrusion_side/2,gantry_pos_z]) {
-      for(y=[front,rear]) {
-        translate([0,y*(extrusion_side/2),0]) {
+      for(y=[extrusion_side/2,extrusion_side-ab_corner_anchor_depth*0.75]) {
+        translate([0,y,0]) {
           rotate([0,-90,0]) {
             hole(3.4,(side_anchor_thickness+space_between_motor_and_corner)*2,resolution);
           }
@@ -255,6 +261,38 @@ module ab_pod_lower() {
         hole(m3_through_hole_diam,2*(set_screw_cavity_length-threaded_length),8);
       }
     }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module extrusion_lock_profile() {
+  pin_depth = 1;
+  module body() {
+    translate([extrusion_vertical_spacing_x/2,extrusion_vertical_spacing_y/2,0]) {
+      for(x=[left,right]) {
+        rotate([0,0,(x-1)*-135]) {
+          mirror([x-1,0,0]) {
+            translate([-extrusion_side/2,0,0]) {
+              hull() {
+                translate([0,extrusion_slot_width/2-pin_depth,0]) {
+                  square([pin_depth*2,pin_depth*2],center=true);
+                }
+                translate([0,-extrusion_slot_width/2+pin_depth,0]) {
+                  accurate_circle(pin_depth*2,8);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
   }
 
   difference() {
@@ -340,7 +378,7 @@ module lower_center_anchor_profile() {
 module upper_center_anchor_profile() {
   module body() {
     hull() {
-      translate([innermost_motor_shoulder_hole-wall_between_motor_and_center_spar/2,rear_brace_pos_y-extrusion_side/2,0]) {
+      translate([innermost_motor_shoulder_hole-wall_between_motor_and_center_spar/2,rear_brace_pos_y-extrusion_side/2+wall_between_motor_and_center_spar/2,0]) {
         accurate_circle(wall_between_motor_and_center_spar,resolution); // FIXME rounding the corner
       }
       translate([motor_xy_pos_x,addition_backside_meat_for_center_anchor/2,0]) {
@@ -395,7 +433,7 @@ module upper_screw_area_filler_profile() {
     hull() {
       translate([innermost_motor_shoulder_hole-wall_between_motor_and_center_spar/2,0,0]) {
         translate([0,rear_brace_pos_y,0]) {
-          translate([0,-extrusion_side/2-wall_between_motor_and_center_spar/2+wall_between_motor_and_center_spar/2,0]) {
+          translate([0,-extrusion_side/2+wall_between_motor_and_center_spar/2,0]) {
             accurate_circle(wall_between_motor_and_center_spar,resolution);
           }
         }

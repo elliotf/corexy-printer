@@ -114,6 +114,7 @@ x_carriage_width = max(carriage_length(printer_config[RAIL_CONFIGURATION][x][0])
 build_volume = [
   printer_config[RAIL_CONFIGURATION][x][2] - x_carriage_width - 5,
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+2.5,
+  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+6.5, // once we have a vampire bat-like extrusionless X gantry
   printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5,
   printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]),
 ];
@@ -195,10 +196,6 @@ rear_idler_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-front_idler_e
 //rear_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-front_idler_extrusion_dist_y+1;
 rear_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-rear_idler_dist_from_end;
 
-rear_brace_offset_y = 5;
-//ab_corner_anchor_depth = 30; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
-ab_corner_anchor_depth = 28.4; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
-
 outer_idler_pos_x = front_idler_pos_x;
 //outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-front_idler_extrusion_dist_y;
 //outer_idler_pos_y = y_rail_pos_y+y_rail_length/2+front_idler_extrusion_dist_y;
@@ -207,15 +204,19 @@ outer_idler_pos_x = front_idler_pos_x;
 //outer_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-ab_corner_anchor_depth+(12)/2+0.2;
 outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-7.5;
 
+//ab_corner_anchor_depth = 30; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
+//ab_corner_anchor_depth = 28.4; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
+ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-2);
+
 //non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-23;
 //non_motor_idler_pos_y = outer_idler_pos_y+5.8;
 //non_motor_idler_pos_y = motor_xy_pos_y;
-idler_motor_delta = 9;
+idler_motor_delta = 2;
 non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-16+idler_motor_delta;
 //non_motor_idler_pos_y = outer_idler_pos_y+5.8;
 //non_motor_idler_pos_y = outer_idler_pos_y+10;
 //non_motor_idler_pos_y = rear_idler_pos_y-10.6;
-non_motor_idler_pos_y = outer_idler_pos_y+1.5;
+non_motor_idler_pos_y = outer_idler_pos_y+2.9;
 
 xy_carriage_base_thickness = 4;
 xy_carriage_top_thickness = 6;
@@ -241,6 +242,12 @@ motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-motor_xy_width/
 //motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2+motor_xy_width/2+panel_thickness+3; // outside chamber on the  back
 //motor_xy_pos_z = gantry_pos_z+extrusion_side/2+carriage_height(y_carriage);
 motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box, yielding a motor plate thickness of 6
+
+//rear_brace_dist_from_back = 10;
+//rear_brace_offset_y = (extrusion_vertical_spacing_y/2-rear_brace_dist_from_back)-motor_xy_pos_y;
+//rear_brace_offset_y = 5;
+rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_side)-motor_xy_pos_y;
+echo("rear_brace_offset_y: ", rear_brace_offset_y);
 
 motor_xy_adjustment_amount = 5;
 
