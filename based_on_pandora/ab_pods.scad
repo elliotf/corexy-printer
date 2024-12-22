@@ -27,15 +27,13 @@ space_between_spar_and_elongated_holes_y = motor_xy_hole_spacing/2-m3_through_ho
 center_brace_rear_wall_thickness = m3_through_hole_diam+space_between_spar_and_elongated_holes_y;
 center_brace_rear_wall_length = 10;
 
-echo("xy_motor_plate_thickness: ", xy_motor_plate_thickness);
-
 module ab_pod_upper() {
-  top_pos_z = xy_belt_center_pos_z+belt_idler_stack_height/2;
+  top_pos_z = ab_top_pos_z;
 
   module body() {
     translate([0,0,top_pos_z]) {
       translate([0,0,ab_pod_upper_thickness/2]) {
-        linear_extrude(height=ab_pod_upper_thickness,center=true,convexity=2) {
+        linear_extrude(height=ab_pod_upper_thickness,center=true,convexity=3) {
           corner_anchor_profile();
           upper_center_anchor_profile();
           upper_motor_area_profile();

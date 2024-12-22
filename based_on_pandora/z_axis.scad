@@ -146,7 +146,7 @@ bed_plate_insulation_spacer_diam = 8;
 bed_plate_insulation_spacer_length = 10;
 //bed_plate_insulation_spacer_length = 6; // 10mm spacer, but sunk down some amount. Really only to leave room for bed heater
 //bed_plate_offset_y = -extrusion_side/2-bed_plate_insulation_spacer_diam-1;
-bed_plate_offset_y = -20;
+bed_plate_offset_y = -18;
 
 adjust_rear_belt_whatnots = 1+belt_idler_od/2+extrusion_side/2;
 
@@ -780,9 +780,18 @@ module z_carrier_front(is_final=0) {
 
   module holes() {
     position_fastener_holes() {
-      translate([0,0,z_carriage_fastener_area_thickness]) {
-        hole(4.7,6*2,resolution);
-        hole(3.2,z_carriage_fastener_area_thickness*3,resolution);
+      translate([0,0,z_carriage_fastener_area_thickness/2]) {
+        hole(m3_thread_into_plastic_diam,z_carriage_fastener_area_thickness+1,resolution);
+        for(z=[top,bottom]) {
+          translate([0,0,z*z_carriage_fastener_area_thickness/2]) {
+            hull() {
+              lead_in_depth = 0.4;
+              delta = m3_through_hole_diam-m3_thread_into_plastic_diam;
+              hole(m3_thread_into_plastic_diam,(lead_in_depth)*2+delta,resolution);
+              hole(m3_through_hole_diam,lead_in_depth*2,resolution);
+            }
+          }
+        }
       }
     }
     position_fastener_area() {
@@ -1158,6 +1167,112 @@ module z_motor_mount_rear() {
   }
 }
 
+module umbilical_wire_guard() {
+  room_for_belts = 3;
+  overall_width = center_brace_width;
+  rear_brace_dist_from_back = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
+  echo("rear_brace_dist_from_back: ", rear_brace_dist_from_back);
+  echo("room_for_belts: ", room_for_belts);
+  overall_depth = rear_brace_dist_from_back - room_for_belts;
+  overall_height = belt_idler_stack_height + 2;
+  thickness = 2;
+  hole_spacing = center_brace_width-m3_through_hole_diam;
+  screw_body_diam = m3_head_diam+2*2;
+
+  module position_mounting_screws() {
+    translate([0,0,0]) {
+      rotate([-90,0,0]) {
+        for(x=[left,right]) {
+          mirror([x-1,0,0]) {
+            translate([hole_spacing/2,0,0]) {
+              children();
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module body() {
+    for(x=[left,right]) {
+      rotate([-90,0,0]) {
+        mirror([x-1,0,0]) {
+          hull() {
+            translate([overall_width/2-rounded_diam/2,0,0]) {
+              translate([0,0,thickness/2]) {
+                rounded_cube(rounded_diam,extrusion_side,thickness,rounded_diam);
+              }
+              translate([0,0,overall_depth-thickness/2]) {
+                rounded_cube(rounded_diam,overall_height,thickness,rounded_diam);
+              }
+            }
+            translate([hole_spacing/2,0,overall_depth/2]) {
+              intersection() {
+                hole(screw_body_diam,overall_depth,resolution);
+                translate([screw_body_diam/2-m3_through_hole_diam/2-wall_thickness,0,0]) {
+                  cube([screw_body_diam,50,50],center=true);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    /*
+    position_mounting_screws() {
+      translate([0,0,overall_depth/2]) {
+        intersection() {
+          hole(screw_body_diam,overall_depth,resolution);
+          translate([screw_body_diam/2-m3_through_hole_diam/2-wall_thickness,0,0]) {
+            cube([screw_body_diam,50,50],center=true);
+          }
+        }
+      }
+    }
+    */
+    rotate([-90,0,0]) {
+      /*
+      for(x=[left,right]) {
+        hull() {
+          translate([x*(overall_width/2-rounded_diam/2),0,0]) {
+            translate([0,0,thickness/2]) {
+              rounded_cube(rounded_diam,extrusion_side,thickness,rounded_diam);
+            }
+            translate([0,0,overall_depth-thickness/2]) {
+              rounded_cube(rounded_diam,overall_height,thickness,rounded_diam);
+            }
+          }
+        }
+      }
+      */
+      translate([0,0,overall_depth-thickness/2]) {
+        cube([overall_width-rounded_diam,overall_height,thickness],center=true);
+      }
+    }
+  }
+
+  module holes() {
+    position_mounting_screws() {
+      //hole(m3_through_hole_diam,overall_depth*3,resolution);
+      translate([0,0,z_axis_screw_mount_thickness]) {
+        rotate([0,0,90]) {
+          bridged_hole(m3_head_diam,m3_through_hole_diam);
+        }
+      }
+    }
+    translate([0,overall_depth/2-thickness,0]) {
+      //cube([hole_spacing-screw_body_diam+m3_through_hole_diam-wall_thickness,overall_depth,overall_height],center=true);
+    }
+  }
+
+  translate([0,rear_brace_pos_y+extrusion_side/2,rear_brace_pos_z]) {
+    difference() {
+      body();
+      holes();
+    }
+  }
+}
+
 module z_axis_assembly_belted(pos_z) {
   for(x=[left,right]) {
     mirror([x-1,0,0]) {
@@ -1166,6 +1281,10 @@ module z_axis_assembly_belted(pos_z) {
     }
   }
   z_idler_top_idler();
+  umbilical_wire_guard();
+  translate([0,0,100]) {
+    //umbilical_wire_guard();
+  }
   translate([0,0,rail_offset_z+carriage_offset_z+extrusion_side/2]) {
     //translate([0,front*(extrusion_vertical_spacing_y/2-extrusion_side/2-mgn_height-mgn_mount_thickness-extrusion_side/2-5),0]) {
     translate([0,0,-pos_z+bed_assembly_offset_z]) {

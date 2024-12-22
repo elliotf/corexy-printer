@@ -5,6 +5,7 @@ use <./xy_joints.scad>;
 use <./z_axis.scad>;
 use <./probe.scad>;
 use <./frame.scad>;
+use <./ab_pods.scad>;
 
 is_final = false;
 
@@ -19,7 +20,7 @@ size_small = 2;
 printer_size = size_small;
 
 m3_through_hole_diam = 3.3;
-m3_thread_into_plastic_diam = 2.8;
+m3_thread_into_plastic_diam = 2.9;
 m3_head_diam = 6; // very loose
 
 m5_through_hole_diam = 5.4;
@@ -110,12 +111,13 @@ carriage_over_end_of_rail = 1; // how to take this into account?
 
 dragon_burner_width = 55;
 x_carriage_width = max(carriage_length(printer_config[RAIL_CONFIGURATION][x][0]), dragon_burner_width);
+x_axis_offset_y = 2;
 
 build_volume = [
-  printer_config[RAIL_CONFIGURATION][x][2] - x_carriage_width - 5,
+  printer_config[RAIL_CONFIGURATION][x][2] - x_carriage_width - 3,
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+2.5,
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+6.5, // once we have a vampire bat-like extrusionless X gantry
-  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5,
+  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5+x_axis_offset_y*2,
   printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]),
 ];
 
@@ -189,8 +191,8 @@ xy_carriage_bearing_dist_x = front_idler_clearance_bearing_dist_x;
 
 x_carriage_offset_y = carriage_length(y_carriage)/2-extrusion_side-carriage_height(x_carriage);
 
-xy_front_idler_offset_pos_y = x_carriage_offset_y-effective_radius; // based on y carriage
-xy_rear_idler_offset_pos_y = xy_front_idler_offset_pos_y+xy_carriage_bearing_dist_y; // based on y carriage
+//xy_front_idler_offset_pos_y = x_carriage_offset_y-effective_radius+x_axis_offset_y; // based on y carriage
+//xy_rear_idler_offset_pos_y = xy_front_idler_offset_pos_y+xy_carriage_bearing_dist_y; // based on y carriage
 
 rear_idler_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-front_idler_extrusion_dist_y;
 //rear_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-front_idler_extrusion_dist_y+1;
@@ -227,7 +229,9 @@ belt_idler_flange_thickness = 1;
 belt_idler_shim_thickness = 0.5;
 xy_bottom_belt_above_carriage_base = belt_idler_flange_thickness+belt_idler_shim_thickness+belt_width/2; // flange + 0.5mm shim
 xy_belt_spacing = 6+belt_idler_flange_thickness*2+belt_idler_shim_thickness*2;
-xy_belt_center_pos_z = gantry_pos_z+extrusion_side/2+carriage_height(y_carriage)+xy_carriage_base_thickness+xy_bottom_belt_above_carriage_base+xy_belt_spacing/2;
+xy_belt_center_extrusion_offset_z = carriage_height(y_carriage)+xy_carriage_base_thickness+xy_bottom_belt_above_carriage_base+xy_belt_spacing/2;
+xy_belt_center_pos_z = gantry_pos_z+extrusion_side/2+xy_belt_center_extrusion_offset_z;
+ab_top_pos_z = xy_belt_center_pos_z+belt_idler_stack_height/2;
 
 z_pulley_type = GT2x16_pulley; // for more torque
 xy_pulley_type = GT2x16_pulley; // not enough room for the non-motor idler, but might be able to use another F623 instead of the spacer?
@@ -264,6 +268,8 @@ frame_anchor_plastic_thickness = 6;
 //rear_z_offset_x = right*carriage_width(z_carriage)/2;
 //rear_z_offset_x = right*(carriage_width(z_carriage)/2-extrusion_side/2);
 rear_brace_pos_y = motor_xy_pos_y+rear_brace_offset_y;
+rear_brace_pos_z = motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thickness;
+rear_brace_distance_from_rear = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
 rear_z_offset_x = 0;
 echo("rear_z_offset_x: ", rear_z_offset_x);
 
@@ -282,7 +288,7 @@ echo("center_brace_width: ", center_brace_width);
 
 module bridged_hole(od,id,length=50) {
   hole(id,length,resolution);
-  translate([0,0,length/4+0.2]) {
+  translate([0,0,length/4]) {
     hole(od,length/2,resolution);
   }
   intersection() {
@@ -291,7 +297,7 @@ module bridged_hole(od,id,length=50) {
       cube([id,id,0.2*2*2],center=true);
       hole(id,0.2*3*2,8);
     }
-    hole(od,0.2*3*2,resolution);
+    hole(od,0.2*3*3,resolution);
   }
 }
 
@@ -397,7 +403,7 @@ module assembly(pct_x,pct_y,pct_z) {
   //pos_z = pct_z*printer_config[BUILD_DIMENSIONS][z];
   //pos_x = -x_rail_length/2+x_carriage_width/2+pct_x*build_volume[x];
   pos_x = -build_volume[x]/2+pct_x*build_volume[x];
-  pos_y = pct_y*build_volume[y];
+  pos_y = pct_y*build_volume[y]-x_axis_offset_y;
   pos_z = pct_z*build_volume[z];
 
   y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
@@ -600,7 +606,7 @@ module assembly(pct_x,pct_y,pct_z) {
   y_axis_assembly(pos_y);
 
   module position_x_axis() {
-    translate([0,0,gantry_pos_z+extrusion_side/2+carriage_height(y_carriage)]) {
+    translate([0,x_axis_offset_y,gantry_pos_z+extrusion_side/2+carriage_height(y_carriage)]) {
       translate([0,y_carriage_pos_y,0]) {
         children();
       }
@@ -610,27 +616,29 @@ module assembly(pct_x,pct_y,pct_z) {
   position_x_axis() {
     translate([0,carriage_length(y_carriage)/2-extrusion_side/2,extrusion_side/2+x_extrusion_above_y_carriage]) {
       rotate([0,90,0]) {
-        % extrusion(extrusion_main_length);
+        //% extrusion(extrusion_main_length);
       }
       translate([0,-extrusion_side/2,0]) {
         rotate([90,0,0]) {
           % rail(x_rail,x_rail_length);
         }
         translate([pos_x,0,0]) {
-          translate([0,0,-extrusion_side/2]) {
-            translate([0,-nozzle_x_extrusion_dist_y,-nozzle_x_extrusion_dist_z+1]) {
-              % color("red") hole(1.5,2,resolution);
-            }
-          }
           rotate([90,0,0]) {
             % carriage(x_carriage);
           }
-          translate([0,front*(extrusion_side/2+carriage_height(x_carriage)),0]) {
-            rotate([-90,0,0]) {
-              % color("orange") import("../Pandoras_Box/STLs/Gantry/x_carriage.stl");
+          translate([0,1,0]) {
+            translate([0,0,-extrusion_side/2]) {
+              translate([0,-nozzle_x_extrusion_dist_y,-nozzle_x_extrusion_dist_z+1]) {
+                % color("red") hole(1.5,2,resolution);
+              }
             }
+            translate([0,front*(extrusion_side/2+carriage_height(x_carriage)),0]) {
+              rotate([-90,0,0]) {
+                % color("orange") import("../Pandoras_Box/STLs/Gantry/x_carriage.stl");
+              }
+            }
+            % color("lightblue") toolhead();
           }
-          % color("lightblue") toolhead();
         }
       }
     }
@@ -644,12 +652,12 @@ module assembly(pct_x,pct_y,pct_z) {
     x_carriage_pos_y = y_carriage_pos_y+x_carriage_offset_y;
 
     xy_carriage_pos_x = front_idler_pos_x;
-    xy_front_idler_pos_y = x_carriage_pos_y-effective_radius;
+    xy_front_idler_pos_y = x_carriage_pos_y-effective_radius+x_axis_offset_y;
     xy_rear_idler_pos_y = xy_front_idler_pos_y+xy_carriage_bearing_dist_y;
     xy_carriage_pos_y = y_carriage_pos_y;
 
     belt_points = [
-      [x_carriage_pos_x+10,x_carriage_pos_y,0],
+      [x_carriage_pos_x+10,x_carriage_pos_y+x_axis_offset_y,0],
       [xy_front_idler_pos_x,xy_front_idler_pos_y,f623_2x_idler],
       //[front_idler_clearance_pos_x+effective_radius,front_idler_clearance_pos_y,0],
       [front_idler_clearance_pos_x+effective_radius,front_idler_clearance_pos_y,0],
@@ -666,7 +674,7 @@ module assembly(pct_x,pct_y,pct_z) {
       [-non_motor_idler_pos_x,non_motor_idler_pos_y,f623_2x_idler],
       [-outer_idler_pos_x,outer_idler_pos_y,f623_2x_idler],
       [-front_idler_pos_x,xy_rear_idler_pos_y,f623_2x_idler],
-      [x_carriage_pos_x-10,x_carriage_pos_y,0],
+      [x_carriage_pos_x-10,x_carriage_pos_y+x_axis_offset_y,0],
     ];
 
     translate([0,0,xy_belt_center_pos_z]) {
@@ -701,8 +709,8 @@ module assembly(pct_x,pct_y,pct_z) {
   }
 
   % belt_path(left);
-  //% belt_path(right);
-  % belt_path(right,motor_xy_adjustment_amount);
+  % belt_path(right);
+  //% belt_path(right,motor_xy_adjustment_amount);
 
   translate([0,0,gantry_pos_z-15/2]) {
     rotate([0,0,0]) {

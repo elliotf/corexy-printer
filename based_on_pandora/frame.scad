@@ -23,7 +23,7 @@ module frame_assembly() {
   translate([rear_z_offset_x,extrusion_vertical_spacing_y/2-extrusion_side,bottom_pos_z+extrusion_main_length/2]) {
     % extrusion(extrusion_main_length);
   }
-  translate([0,rear_brace_pos_y,motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thickness]) {
+  translate([0,rear_brace_pos_y,rear_brace_pos_z]) {
     rotate([0,90,0]) {
       % extrusion(extrusion_shortest_length);
     }
