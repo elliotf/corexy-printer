@@ -24,6 +24,31 @@ module countersunk_m2(depth=50,head_height=40) {
   }
 }
 
+module elongated_bridged_hole(hole_diam,elongation_length,depth=30,is_final) {
+  hull() {
+    for(x=[left,right]) {
+      translate([x*elongation_length/2,0,0]) {
+        hole(hole_diam,depth,resolution);
+      }
+    }
+  }
+  if (is_final) {
+    long_bridge = hole_diam+elongation_length+10;
+    hole_length = hole_diam+elongation_length;
+    translate([0,0,0]) {
+      intersection() {
+        union() {
+          cube([long_bridge,hole_diam,0.2*1*2],center=true);
+          cube([hole_length,hole_diam,0.2*2*2],center=true);
+          rounded_cube(hole_length,hole_diam,0.2*3*2,hole_diam,8);
+        }
+        children();
+      }
+    }
+  }
+}
+
+
 module xy_joint_profile() {
   module body() {
     diam = 2*(xy_front_idler_pos_x-(y_rail_pos_x-mgn_width/2));
@@ -106,10 +131,13 @@ module position_mgn(side) {
   }
 }
 
-module xy_joint_single_piece(side) {
+module xy_joint_single_piece(side, is_final) {
   idler_bevel_height = 0.5;
 
   rail_tolerance = 0.1;
+
+  hole_spacing_x = y_carriage[7];
+  hole_spacing_y = y_carriage[6];
 
   overall_height = xy_carriage_base_thickness+belt_idler_spacer_length*2+xy_carriage_top_thickness;
   idler_front_pos_x = -front_idler_clearance_bearing_dist_x*side;
@@ -124,7 +152,8 @@ module xy_joint_single_piece(side) {
   belt_cavity_width = 2.5;
   belt_cavity_height = 7;
 
-  idler_cavity_height = belt_idler_spacer_length-0.2*2;
+  add_material_between_cavities = 0.2;
+  idler_cavity_height = belt_idler_spacer_length-add_material_between_cavities;
 
   mgn_area_depth = carriage_length(y_carriage)-5;
   mgn_area_width = carriage_width(y_carriage);
@@ -187,10 +216,9 @@ module xy_joint_single_piece(side) {
 
   module body() {
     translate([0,0,mgn_height+overall_height/2]) {
-      translate([0,rear*(mgn_area_depth/4),0]) {
+      translate([0,0,0]) {
         rotate([90,0,0]) {
-          //rounded_cube(mgn_area_width,overall_height,mgn_area_depth,1);
-          rounded_cube(mgn_area_width,overall_height,mgn_area_depth/2,1);
+          rounded_cube(mgn_area_width,overall_height,mgn_area_depth,1);
         }
       }
       hull() {
@@ -200,13 +228,9 @@ module xy_joint_single_piece(side) {
         translate([idler_rear_pos_x,idler_rear_pos_y,0]) {
           hole(idler_body_diam,overall_height,resolution);
         }
-        translate([0,0,0]) {
-          //cube([mgn_area_width,mgn_area_depth,overall_height],center=true);
-        }
-        translate([0,front*(mgn_area_depth/4),0]) {
+        translate([0,front*(mgn_area_depth/2-1),0]) {
           rotate([90,0,0]) {
-            //rounded_cube(mgn_area_width,overall_height,mgn_area_depth,1);
-            rounded_cube(mgn_area_width,overall_height,mgn_area_depth/2,1);
+            rounded_cube(mgn_area_width,overall_height,2,1);
           }
         }
       }
@@ -235,28 +259,6 @@ module xy_joint_single_piece(side) {
     }
   }
 
-  module elongated_bridged_hole(hole_diam,elongation_length,depth=30) {
-    hull() {
-      for(x=[left,right]) {
-        translate([x*elongation_length/2,0,0]) {
-          hole(hole_diam,depth,resolution);
-        }
-      }
-    }
-    long_bridge = hole_diam+elongation_length+10;
-    hole_length = hole_diam+elongation_length;
-    translate([0,0,0]) {
-      intersection() {
-        union() {
-          cube([long_bridge,hole_diam,0.2*1*2],center=true);
-          cube([hole_length,hole_diam,0.2*2*2],center=true);
-          rounded_cube(hole_length,hole_diam,0.2*3*2,hole_diam,8);
-        }
-        children();
-      }
-    }
-  }
-
   module holes() {
     position_mgn() {
       % carriage(y_carriage);
@@ -279,7 +281,7 @@ module xy_joint_single_piece(side) {
         translate([0,0,-meat_behind_rail+sink_heads_by]) {
           rotate([180,0,0]) {
             elongated_hex_hole();
-            elongated_bridged_hole(m3_through_hole_diam, rail_adjustment_amount) {
+            elongated_bridged_hole(m3_through_hole_diam, rail_adjustment_amount,meat_behind_rail*2,is_final) {
               translate([0,0,-2]) {
                 elongated_hex_hole();
               }
@@ -331,13 +333,15 @@ module xy_joint_single_piece(side) {
       }
     }
 
-    position_idler_front() {
-      hull() {
-        bearing_cavity();
-        for(x=[left,right]) {
-          rotate([0,0,x*45]) {
-            translate([-side*mgn_width,-mgn_width,0]) {
-              bearing_cavity();
+    translate([0,0,-side*add_material_between_cavities/2]) {
+      position_idler_front() {
+        hull() {
+          bearing_cavity();
+          for(x=[left,right]) {
+            rotate([0,0,x*45]) {
+              translate([-side*mgn_width,-mgn_width,0]) {
+                bearing_cavity();
+              }
             }
           }
         }
@@ -350,20 +354,37 @@ module xy_joint_single_piece(side) {
       }
     }
 
-    position_idler_rear() {
-      translate([-side*mgn_length/2,front*(belt_idler_belt_cavity_diam/2-belt_cavity_width/2),0]) {
-        cube([mgn_length,belt_cavity_width,belt_cavity_height],center=true);
-      }
+    if (side == left) {
       hull() {
-        bearing_cavity();
-        translate([side*mgn_width,0,0]) {
-          bearing_cavity();
+        translate([0,0,mgn_height+xy_carriage_base_thickness]) {
+          translate([0,-hole_spacing_y/2,idler_cavity_height/4]) {
+            cube([belt_idler_cavity_diam*2,m2_head_diam,idler_cavity_height/2],center=true);
+          }
+        }
+        translate([0,0,side*add_material_between_cavities/2]) {
+          position_idler_rear() {
+            translate([0,front*(belt_idler_belt_cavity_diam/2-belt_cavity_width/2),-idler_cavity_height/4+0.5]) {
+              cube([mgn_length*2,belt_cavity_width,idler_cavity_height/2],center=true);
+            }
+          }
         }
       }
     }
-
-    hole_spacing_x = y_carriage[7];
-    hole_spacing_y = y_carriage[6];
+    translate([0,0,side*add_material_between_cavities/2]) {
+      position_idler_rear() {
+        hull() {
+          translate([-side*mgn_length/2,front*(belt_idler_belt_cavity_diam/2-belt_cavity_width/2),0]) {
+            cube([mgn_length,belt_cavity_width,belt_cavity_height],center=true);
+          }
+        }
+        hull() {
+          bearing_cavity();
+          translate([side*mgn_width,0,0]) {
+            bearing_cavity();
+          }
+        }
+      }
+    }
 
     translate([0,0,mgn_height]) {
       screw_head_height=7;
@@ -421,23 +442,12 @@ module xy_joint_single_piece(side) {
   bridges();
 }
 
-module y_carriage_assembly(side) {
+module y_carriage_assembly(side,is_final) {
   module body() {
-    position_mgn() {
-      //% carriage(y_carriage);
-    }
-    //xy_joint_bottom();
-    //xy_joint_top();
-    xy_joint_single_piece(side);
+    xy_joint_single_piece(side,is_final);
   }
 
   module holes() {
-    carriage_hole_positions(y_carriage) {
-      //hole(2.1,carrier_max_depth*2,resolution);
-      //translate([0,0,carrier_max_depth/2]) {
-        //hole(4.4,carrier_max_depth,resolution);
-      //}
-    }
   }
 
   difference() {
@@ -459,7 +469,7 @@ module front_idler(side) {
   }
 }
 
-module y_axis_assembly(pos_y) {
+module y_axis_assembly(pos_y,is_final) {
   for(x=[left,right]) {
     translate([0,y_rail_pos_y,gantry_pos_z+extrusion_side/2]) {
       translate([x*extrusion_vertical_spacing_x/2,0,0]) {
@@ -470,7 +480,7 @@ module y_axis_assembly(pos_y) {
 
       translate([x*extrusion_vertical_spacing_x/2,0,0]) {
         translate([0,-y_rail_length/2+carriage_length(y_carriage)/2+pos_y,0]) {
-          y_carriage_assembly(x);
+          y_carriage_assembly(x,is_final);
         }
       }
     }

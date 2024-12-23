@@ -286,18 +286,20 @@ center_brace_width = min(max_center_brace_width,2*(motor_xy_pos_x-motor_xy_width
 //center_brace_width = 40;
 echo("center_brace_width: ", center_brace_width);
 
-module bridged_hole(od,id,length=50) {
+module bridged_hole(od,id,length=50,is_final=1) {
   hole(id,length,resolution);
   translate([0,0,length/4]) {
     hole(od,length/2,resolution);
   }
-  intersection() {
-    union() {
-      cube([od,id,0.2*1*2],center=true);
-      cube([id,id,0.2*2*2],center=true);
-      hole(id,0.2*3*2,8);
+  if (is_final) {
+    intersection() {
+      union() {
+        cube([od,id,0.2*1*2],center=true);
+        cube([id,id,0.2*2*2],center=true);
+        hole(id,0.2*3*2,8);
+      }
+      hole(od,0.2*3*3,resolution);
     }
-    hole(od,0.2*3*3,resolution);
   }
 }
 
@@ -603,7 +605,7 @@ module assembly(pct_x,pct_y,pct_z) {
   for(x=[left,right]) {
     ab_pod_assembly(x);
   }
-  y_axis_assembly(pos_y);
+  y_axis_assembly(pos_y,is_final);
 
   module position_x_axis() {
     translate([0,x_axis_offset_y,gantry_pos_z+extrusion_side/2+carriage_height(y_carriage)]) {

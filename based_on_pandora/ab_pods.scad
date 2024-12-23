@@ -27,7 +27,7 @@ space_between_spar_and_elongated_holes_y = motor_xy_hole_spacing/2-m3_through_ho
 center_brace_rear_wall_thickness = m3_through_hole_diam+space_between_spar_and_elongated_holes_y;
 center_brace_rear_wall_length = 10;
 
-module ab_pod_upper() {
+module ab_pod_upper(is_final) {
   top_pos_z = ab_top_pos_z;
 
   module body() {
@@ -129,7 +129,7 @@ module ab_pod_upper() {
       translate([0,0,-recess_by]) {
         for(p=recessed_bridging) {
           translate(p) {
-            bridged_hole(m3_head_diam,m3_through_hole_diam);
+            bridged_hole(m3_head_diam,m3_through_hole_diam,20,is_final);
           }
         }
       }
@@ -142,7 +142,7 @@ module ab_pod_upper() {
   }
 }
 
-module ab_pod_lower() {
+module ab_pod_lower(is_final) {
   module body() {
     translate([0,0,motor_xy_pos_z+xy_motor_plate_thickness-ab_pod_lower_thickness/2]) {
       linear_extrude(height=ab_pod_lower_thickness,center=true,convexity=2) {
@@ -542,7 +542,7 @@ module motor_holes(z) {
   }
 }
 
-module ab_pod_assembly(side) {
+module ab_pod_assembly(side,is_final) {
   translate([side*motor_xy_pos_x,motor_xy_pos_y,0]) {
     for(a=[0,motor_xy_adjustment_amount]) {
     //for(a=[0]) {
@@ -560,8 +560,8 @@ module ab_pod_assembly(side) {
   }
 
   mirror([side-1,0,0]) {
-    ab_pod_lower();
-    ab_pod_upper();
+    ab_pod_lower(is_final);
+    ab_pod_upper(is_final);
   }
 }
 
@@ -576,7 +576,7 @@ module ab_pod_print_plate() {
           rotate([0,0,-90]) {
             rotate([180,0,0]) {
               translate([-motor_xy_pos_x,-motor_xy_pos_y,-motor_xy_pos_z-xy_motor_plate_thickness]) {
-                ab_pod_lower();
+                ab_pod_lower(is_final);
               }
             }
           }
@@ -585,7 +585,7 @@ module ab_pod_print_plate() {
           rotate([0,0,-90]) {
             rotate([180,0,0]) {
               translate([-motor_xy_pos_x,-motor_xy_pos_y,-motor_xy_pos_z-ab_pod_upper_thickness]) {
-                ab_pod_upper();
+                ab_pod_upper(is_final);
               }
             }
           }
@@ -600,5 +600,5 @@ translate([0,rear_brace_pos_y,motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thi
     % extrusion(extrusion_shortest_length);
   }
 }
-ab_pod_assembly(left);
-//ab_pod_assembly(right);
+ab_pod_assembly(left,is_final);
+//ab_pod_assembly(right,is_final);
