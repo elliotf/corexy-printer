@@ -5,7 +5,7 @@ define render_stl_template
 stls: stl/$(1)
 
 stl/$(1) : parts/$(1).scad
-	openscad --enable=fast-csg -D debug=0 -m make -o $$@.stl $$^ && echo $$^ && (notify-send "$$@ done" || true)
+	openscad --enable=predictible-output --enable=fast-csg -D debug=0 -m make -o $$@.stl $$^ && echo $$^ && (notify-send "$$@ done" || true)
 
 .PHONY : stl/$(1)
 

@@ -172,7 +172,7 @@ module xy_joint_single_piece(side, is_final) {
 
   meat_behind_rail = mgn_area_depth/2-rail_pos_y;
   meat_below_carriage = 1.4;
-  meat_beside_rail_at_end_of_support = 3;
+  meat_beside_rail_at_end_of_support = 3.5;
   rail_body_meat = meat_behind_rail+meat_below_carriage;
 
   module position_rail() {
@@ -275,6 +275,25 @@ module xy_joint_single_piece(side, is_final) {
         }
       }
     }
+
+    // clearance for motors
+    translate([0,mgn_area_depth/2-rail_body_meat/2,0]) {
+      hull() {
+        translate([0,0,rail_pos_z-rail_width(x_rail)/2-meat_beside_rail_at_end_of_support-20]) {
+          translate([-side*(extrusion_side/2+rail_support_length-meat_beside_rail_at_end_of_support/2),0,0]) {
+            rotate([90,0,0]) {
+              rounded_cube(meat_beside_rail_at_end_of_support*2,40,rail_body_meat+1,2);
+            }
+          }
+          translate([-side*(mgn_width),0,0]) {
+            rotate([90,0,0]) {
+              rounded_cube(mgn_width-(6)*2,40,rail_body_meat+1,2);
+            }
+          }
+        }
+      }
+    }
+
     position_rail() {
       sink_heads_by = 5;
       rail_hole_positions(x_rail, x_rail_length) {
