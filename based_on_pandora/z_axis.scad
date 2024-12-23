@@ -390,9 +390,16 @@ module z_idler_front_brace_inner(is_final) {
   room_for_belt = 1;
   hole_spacing = (inner_brace_height*0.5);
 
-  module position_main_body() {
-    translate([extrusion_vertical_spacing_x/2-extrusion_side/2-overall_thickness/2,-extrusion_vertical_spacing_y/2-room_for_belt/2,single_z_idler_pos_z+z_idler_brace_body_diam/2-inner_brace_height/2]) {
+  module position_extrusion_body() {
+    translate([extrusion_vertical_spacing_x/2-extrusion_side/2-overall_thickness/2,-extrusion_vertical_spacing_y/2,single_z_idler_pos_z+z_idler_brace_body_diam/2-inner_brace_height/2]) {
       rotate([0,90,0]) {
+        children();
+      }
+    }
+  }
+  module position_main_body() {
+    position_extrusion_body() {
+      translate([0,-room_for_belt/2,0]) {
         children();
       }
     }
@@ -421,14 +428,17 @@ module z_idler_front_brace_inner(is_final) {
         }
       }
     }
+
     position_main_body() {
       rounded_cube(inner_brace_height,extrusion_side-room_for_belt,overall_thickness,z_idler_brace_body_diam/2);
+    }
 
+    position_extrusion_body() {
       // tabs to help with alignment, but might be make it hard to use NDNs
       for(z=[top,bottom,0]) {
-        tab_length = 4;
+        tab_length = 6;
         translate([z*(inner_brace_height/2-tab_length/2),0,overall_thickness/2]) {
-          //rounded_cube(tab_length,extrusion_slot_width-0.2,2*2,2);
+          rounded_cube(tab_length,extrusion_slot_width-0.2,1*2,2);
         }
       }
     }
@@ -438,7 +448,7 @@ module z_idler_front_brace_inner(is_final) {
     position_front_z_idler() {
       hole(m3_through_hole_diam,50,resolution);
     }
-    position_main_body() {
+    position_extrusion_body() {
       for(x=[left,right]) {
         translate([x*hole_spacing/2,0,overall_thickness/2-z_axis_screw_mount_thickness]) {
           rotate([180,0,0]) {

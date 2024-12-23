@@ -9,6 +9,8 @@ center_channel_width = belt_idler_od-1;
 m2_through_hole_diam = 2.2;
 m2_head_diam = 4.2;
 
+recess_idler_screws_head_depth = 3;
+
 rounded_diam = 2;
 
 module countersunk_m2(depth=50,head_height=40) {
@@ -332,6 +334,14 @@ module xy_joint_single_piece(side, is_final) {
       rail_width = rail_width(x_rail)+rail_tolerance;
       translate([0,0,rail_height/2]) {
         cube([x_rail_length+rail_adjustment_amount,rail_width,rail_height],center=true);
+      }
+    }
+
+    translate([0,0,mgn_height+overall_height]) {
+      for(p=[[idler_front_pos_x,idler_front_pos_y,0],[idler_rear_pos_x,idler_rear_pos_y,0]]) {
+        translate(p) {
+          hole(m3_head_diam,recess_idler_screws_head_depth*2,resolution);
+        }
       }
     }
 

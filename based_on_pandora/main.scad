@@ -409,6 +409,7 @@ module assembly(pct_x,pct_y,pct_z) {
   pos_y = pct_y*build_volume[y]-x_axis_offset_y;
   pos_z = pct_z*build_volume[z];
 
+  echo("pos: ", [pos_x,pos_y,pos_z]);
   y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
 
   panel_thickness = 3;
