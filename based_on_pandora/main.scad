@@ -45,6 +45,12 @@ echo("belt_idler_spacer_od: ", belt_idler_spacer_od);
 belt_idler_spacer_length = 9; // f623*2 + 2*0.5 shim
 belt_idler_stack_height = belt_idler_spacer_length*2;
 
+psu_mount_gap = 4;
+height_above_z_motor = 2;
+height_below_z_motor = 4;
+z_motor_type = NEMA17_47;
+z_motor_side = NEMA_width(z_motor_type);
+
 sizes = [
   [
     [400,300,250,200], // extrusion_lengths
@@ -118,7 +124,7 @@ build_volume = [
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+2.5,
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+6.5, // once we have a vampire bat-like extrusionless X gantry
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5+x_axis_offset_y*2, // probe mount hits motor plate with NEMA17
-  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5, // probe mount hits motor plate with NEMA17
+  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+5, // probe mount hits motor plate with NEMA17
   printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]),
 ];
 
@@ -148,7 +154,7 @@ z_carriage = printer_config[1][z][0];
 z_rail = printer_config[1][z][1];
 z_rail_length = printer_config[1][z][2];
 
-printed_height_extension_height = 50;
+printed_height_extension_height = 0;
 top_pos_z = extrusion_vertical_length+printed_height_extension_height;
 //gantry_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length-extrusion_side/2;
 //gantry_pos_z = z_rail_length+37.5;
@@ -164,10 +170,10 @@ front_idler_room_y = 32; // 35;
 //front_idler_extrusion_dist_y = 6.5;
 //front_idler_extrusion_dist_y = 6.8;
 rear_idler_dist_from_end = 7.5;
-front_idler_extrusion_dist_y = 6.8;
+//front_idler_extrusion_dist_y = 6.8;
+front_idler_extrusion_dist_y = 6.5;
 front_idler_clearance_bearing_dist_x = 2.65;
-//front_idler_clearance_bearing_dist_y = 11.5;
-front_idler_clearance_bearing_dist_y = 12;
+front_idler_clearance_bearing_dist_y = 11.5;
 
 x_carriage = printer_config[1][x][0];
 x_rail = printer_config[1][x][1];
@@ -426,7 +432,8 @@ module assembly(pct_x,pct_y,pct_z) {
       translate([0,extrusion_vertical_spacing_y/2+extrusion_side/2+panel_thickness/2+1.5,top_pos_z-9-side_panel_height/2]) {
         // % cube([panel_width,panel_thickness,side_panel_height],center=true);
       }
-      if (0) { //printed_height_extension_height > 0) {
+      //if (0) { //printed_height_extension_height > 0) {
+      if (printed_height_extension_height > 0) {
         translate([extrusion_vertical_spacing_x-6.5,-extrusion_vertical_spacing_y-3.5,top_pos_z-80]) {
           rotate([0,0,90]) {
             % color("orange") import("./external/box-zero-Top_Corner_x4.stl");
@@ -520,7 +527,7 @@ module assembly(pct_x,pct_y,pct_z) {
   position_mcu() {
     type = BTT_SKR_V1_4_TURBO;
     //type = BTT_SKR_MINI_E3_V2_0; // only four steppers, would need two
-    % color("blue", 0.3) cube([90,64,20],center=true); // mellow fly d5
+    //% color("blue", 0.3) cube([90,64,20],center=true); // mellow fly d5
     //% pcb(type);
   }
 
@@ -529,68 +536,22 @@ module assembly(pct_x,pct_y,pct_z) {
   psu_width = psu_width(psu_type);
   psu_height = psu_height(psu_type);
   module position_psu() {
-    psu_center_z = psu_length/2;
-    // vertically
-    //translate([-spar_main_len/2+5+psu_width(psu_type)/2,rear_support_pos_y+extrusion_side/2+3,bottom_pos_z+psu_center_z]) {
-    //  rotate([-90,0,0]) {
-    // horizontally
-    /*
-    */
-    /*
-    translate([-spar_main_len/2+4+psu_width(psu_type)/2,rear_support_pos_y+extrusion_side/2+3,bottom_pos_z+psu_center_z]) {
-      rotate([-90,0,0]) {
-        rotate([0,0,-90]) {
+    // stuck to the bottom of the deck panel
+    pos_x = left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-psu_mount_gap);
+    pos_y = extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-4-psu_width/2;
+    translate([pos_x,pos_y,extrusion_side-panel_thickness-2]) {
+      rotate([0,0,0]) {
+        rotate([180,0,0]) {
           children();
         }
       }
     }
-    translate([-spar_main_len/2+psu_width(psu_type)/2,spar_main_len/2-psu_length(psu_type)/2,bottom_pos_z-extrusion_side/2]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          //children();
-        }
-      }
-    }
-    */
-    // LRS-350-24
-    translate([-extrusion_vertical_spacing_x/2+extrusion_side/2+psu_width/2+3,extrusion_vertical_spacing_y/2-extrusion_side/2-psu_length/2-10,extrusion_side]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          //children();
-        }
-      }
-    }
-    // LRS-350-24
-    translate([0,-30,extrusion_side-30/2]) {
+
+    // on the very bottom
+    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-psu_mount_gap),-10,extrusion_side/2]) {
       rotate([0,0,0]) {
         rotate([180,0,0]) {
-          // left to right alignment
           //children();
-        }
-      }
-    }
-    translate([-extrusion_vertical_spacing_x/2+extrusion_side/2+psu_width/2+3,extrusion_vertical_spacing_y/2-extrusion_side/2-psu_length/2-10,extrusion_side]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          //children();
-        }
-      }
-    }
-    //translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_width/2-2),front*(extrusion_vertical_spacing_y/2-psu_length/2-NEMA_width(motor_type_z)+4),extrusion_side/2-3]) {
-    translate([left*(extrusion_vertical_spacing_x/2-psu_width/2-2),front*(extrusion_vertical_spacing_y/2-psu_length/2-NEMA_width(motor_type_z)+4),extrusion_side/2-20]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          // front to rear
-          //children();
-        }
-      }
-    }
-    //translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-5),-18,extrusion_side/2-3]) {
-    translate([0,-10,extrusion_side/2]) {
-      rotate([0,0,0]) {
-        rotate([180,0,0]) {
-          // left to right alignment
-          children();
         }
       }
     }
@@ -598,9 +559,9 @@ module assembly(pct_x,pct_y,pct_z) {
 
   position_psu() {
     translate([0,0,psu_height(psu_type)/2]) {
-      % color("#ccc") cube([psu_length(psu_type),psu_width(psu_type),psu_height(psu_type)],center=true);
+      //% color("#ccc") cube([psu_length(psu_type),psu_width(psu_type),psu_height(psu_type)],center=true);
     }
-    //% psu(psu_type);
+    % psu(psu_type);
     //% cube([215,115,30],center=true);
   }
 
@@ -614,6 +575,17 @@ module assembly(pct_x,pct_y,pct_z) {
       translate([0,y_carriage_pos_y,0]) {
         children();
       }
+    }
+  }
+
+  translate([0,-extrusion_vertical_spacing_y/2+extrusion_side/2,gantry_pos_z+extrusion_side/2]) {
+    translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2),0,0]) {
+      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_lower.stl");
+      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_upper.stl");
+    }
+    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2),0,0]) {
+      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_left_lower.stl");
+      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_left_upper.stl");
     }
   }
 

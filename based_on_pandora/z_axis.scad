@@ -8,8 +8,6 @@ carriage_idler_spacing_offset_z = 0;
 
 z_screw_length = printer_config[MOTOR_CONFIGURATION][3];
 //z_motor_type = printer_config[MOTOR_CONFIGURATION][z];
-z_motor_type = NEMA17_47;
-z_motor_side = NEMA_width(z_motor_type);
 
 rail_offset_x = extrusion_vertical_spacing_x/2;
 rail_offset_y = extrusion_vertical_spacing_y/2-extrusion_side/2;
@@ -84,12 +82,10 @@ belt_plane_offset = carriage_width(z_carriage)/2+0.5+belt_width/2;
 toothed_to_smooth_dist = belt_pulley_pr(GT2x6, z_pulley_type, twisted=false);
 //motor_belt_path_offset = carriage_idler_pos_x-belt_idler_od/2-toothed_to_smooth_dist;
 motor_belt_path_offset = carriage_anchor_pos_x-toothed_to_smooth_dist;
-height_above_z_motor = 4;
-height_below_z_motor = 4;
 motor_offset_x = -belt_plane_offset-10;
 motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
 z_base_motor_mount_overall_width = abs(motor_offset_x)+extrusion_side/2;
-z_base_motor_mount_overall_height = abs(motor_pos_z)+z_motor_side/2;
+z_base_motor_mount_overall_height = abs(motor_pos_z)+z_motor_side/2+height_below_z_motor;
 
 anchor_middle_pos_z = gantry_pos_z-extrusion_side/2;
 anchor_bottom_pos_z = bottom_pos_z+extrusion_side;
@@ -218,7 +214,7 @@ module z_idler_top_idler() {
   module position_zip_ties() {
     position_center_brace() {
       translate([0,extrusion_side/2,-top_of_vertical_to_brace_z]) {
-        rotate([-22,0,0]) {
+        rotate([-18,0,0]) {
           children();
         }
       }
@@ -300,7 +296,7 @@ module z_idler_top_idler() {
       wall_between_wires_and_zip_ties = 1.5;
 
       depth_into_plastic = 3;
-      wire_hole_diam = 10;
+      wire_hole_diam = 8;
 
       translate([0,wire_hole_diam/2-depth_into_plastic,0]) {
         hole(wire_hole_diam,50,resolution);
@@ -997,7 +993,7 @@ module z_motor_mount_base(adjust_belt_pos_y=0,is_final) {
     belt_cut_depth = z_base_motor_mount_overall_width-extrusion_side;
     belt_cut_width = belt_idler_od+3;
     position_motor() {
-      //% NEMA(z_motor_type);
+      % NEMA(z_motor_type);
       NEMA_screw_positions(z_motor_type) {
         translate([0,0,z_axis_screw_mount_thickness]) {
           bridged_hole(m3_head_diam,m3_through_hole_diam,100,is_final);

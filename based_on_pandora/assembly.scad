@@ -6,4 +6,5 @@ pct_x = 0;
 echo("build_volume[x]: ", build_volume[x]);
 echo("pct_x*build_volume[x]: ", pct_x*build_volume[x]);
 
-assembly(0.4,1+0.033,0);
+//assembly(0.37,1+0.033,0);
+assembly(1,1,0);
