@@ -392,7 +392,7 @@ module probe_assembly() {
 
   translate([0,0,extrusion_side/2]) {
     rotate([0,90,0]) {
-      % extrusion(60);
+      % extrusion_l(60);
     }
   }
 

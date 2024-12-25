@@ -1309,7 +1309,7 @@ module z_axis_assembly_belted(pos_z,is_final) {
       //translate([left*(extrusion_side/2+mgn_width/2+2),extrusion_side/2+rear_bed_extrusion_length/2,0]) {
       translate([rear_bed_extrusion_offset_x,rear_bed_extrusion_pos_y,0]) {
         rotate([90,0,0]) {
-          % extrusion(rear_bed_extrusion_length);
+          % extrusion_l(rear_bed_extrusion_length);
         }
         //translate([-0.1,rear_bed_extrusion_length/2,0]) {
         translate([0,rear_bed_extrusion_length/2,0]) {
@@ -1318,8 +1318,8 @@ module z_axis_assembly_belted(pos_z,is_final) {
       }
       translate([0,extrusion_carrier_edge_pos_y,0]) {
         rotate([0,90,0]) {
-          //% extrusion(extrusion_main_length);
-          % extrusion(front_bed_extrusion_length);
+          //% extrusion_l(extrusion_main_length);
+          % extrusion_l(front_bed_extrusion_length);
         }
         for(x=[left,right]) {
           mirror([x-1,0,0]) {
@@ -1513,10 +1513,10 @@ z_axis_assembly(0);
 frame_assembly();
 /*
 translate([rear_z_offset_x,extrusion_vertical_spacing_y/2-extrusion_side,bottom_pos_z+extrusion_main_length/2]) {
-  % extrusion(extrusion_main_length);
+  % extrusion_l(extrusion_main_length);
 }
 translate([extrusion_vertical_spacing_x/2,-extrusion_vertical_spacing_y/2,top_pos_z-extrusion_vertical_length/2]) {
-  % extrusion(extrusion_vertical_length);
+  % extrusion_l(extrusion_vertical_length);
 }
 */
 

@@ -597,7 +597,7 @@ module ab_pod_print_plate() {
 
 translate([0,rear_brace_pos_y,motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thickness]) {
   rotate([0,90,0]) {
-    % extrusion(extrusion_shortest_length);
+    % extrusion_l(extrusion_shortest_length);
   }
 }
 ab_pod_assembly(left,is_final);
