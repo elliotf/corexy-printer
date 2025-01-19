@@ -148,7 +148,7 @@ module xy_joint_single_piece(side, is_final) {
   idler_rear_pos_x = 0;
   idler_rear_pos_z = xy_belt_center_extrusion_offset_z+xy_belt_spacing/2*side;
   idler_rear_pos_y = idler_front_pos_y+xy_carriage_bearing_dist_y;
-  idler_body_diam = belt_idler_od+2.5;
+  idler_body_diam = belt_idler_od+1.5;
   belt_idler_cavity_diam = belt_idler_od+2;
   belt_idler_belt_cavity_diam = belt_idler_cavity_diam+2;
   belt_cavity_width = 2.5;
@@ -389,11 +389,14 @@ module xy_joint_single_piece(side, is_final) {
           translate([0,-hole_spacing_y/2,idler_cavity_height/4]) {
             cube([belt_idler_cavity_diam*2,m2_head_diam,idler_cavity_height/2],center=true);
           }
+          translate([0,-hole_spacing_y/2,idler_cavity_height/2]) {
+            cube([belt_idler_cavity_diam*2,m2_head_diam,belt_cavity_height],center=true);
+          }
         }
         translate([0,0,side*add_material_between_cavities/2]) {
           position_idler_rear() {
-            translate([0,front*(belt_idler_belt_cavity_diam/2-belt_cavity_width/2),-idler_cavity_height/4+0.5]) {
-              cube([mgn_length*2,belt_cavity_width,idler_cavity_height/2],center=true);
+            translate([0,front*(belt_idler_belt_cavity_diam/2-belt_cavity_width/2),0]) {
+              cube([mgn_length*2,belt_cavity_width,belt_cavity_height],center=true);
             }
           }
         }

@@ -7,6 +7,17 @@ use <./probe.scad>;
 use <./frame.scad>;
 use <./ab_pods.scad>;
 
+// FIXME:
+// * M6 for E2020t extrusion
+// * Less chunky Z motor mounts
+// * Adjust for MGN7 rails sinking into E2020t extrusion slot?
+
+// Need to compensate for euro slot, probably
+// euro 2020 height : 19.88
+// mgn7 rail height : 4.78
+// mgn7 rail inside euro 2020 + euro 2020 height: 23.8
+// rail is dropped by ~0.86mm
+
 $fn=24;
 
 is_final = false;
@@ -22,8 +33,8 @@ size_medium_2020 = 4;
 size_large_2020 = 5;
 //printer_size = size_large;
 //printer_size = size_medium;
-printer_size = size_small;
-//printer_size = size_small_2020; // B0rken
+//printer_size = size_small;
+printer_size = size_small_2020; // B0rken
 //printer_size = size_medium_2020; // B0rken
 //printer_size = size_large_2020; // B0rken
 
@@ -126,10 +137,10 @@ sizes = [
   ],
   [
     [
-      [300,E2020t],
+      [400,E2020t],
       [200,E2020t],
       [150,E2020t],
-      [100,E2020t],
+      [100,MakerbeamXL],
     ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,200], // X axis
@@ -146,6 +157,7 @@ sizes = [
       [120,120,6],
     ],
   ],
+  /*
   [
     [
       [450,E2020t],
@@ -190,6 +202,7 @@ sizes = [
       [235,235,6],
     ],
   ],
+  */
 ];
 
 EXTRUSION_LENGTHS = 0;
@@ -222,7 +235,18 @@ extrusion_main_length = printer_config[0][1][0];
 extrusion_short_length = printer_config[0][2][0];
 extrusion_shortest_length = printer_config[0][3][0];
 
-extrusion_type = printer_config[0][0][1];
+extrusion_vertical_type = printer_config[0][0][1];
+extrusion_main_type = printer_config[0][1][1];
+extrusion_short_type = printer_config[0][2][1];
+extrusion_shortest_type = printer_config[0][3][1];
+
+extrusion_vertical_side = extrusion_width(extrusion_vertical_type);
+extrusion_main_side = extrusion_width(extrusion_main_type);
+extrusion_short_side = extrusion_width(extrusion_short_type);
+extrusion_shortest_side = extrusion_width(extrusion_shortest_type);
+
+extrusion_type = extrusion_vertical_type;
+
 //extrusion_side = 15;
 extrusion_side = extrusion_width(extrusion_type);
 
@@ -231,11 +255,6 @@ extrusion_side = extrusion_width(extrusion_type);
 extrusion_slot_width = extrusion_channel_width(extrusion_type);
 echo("extrusion_type: ", extrusion_type);
 echo("extrusion_slot_width: ", extrusion_slot_width);
-
-extrusion_vertical_type = printer_config[0][0][1];
-extrusion_main_type = printer_config[0][1][1];
-extrusion_short_type = printer_config[0][2][1];
-extrusion_shortest_type = printer_config[0][3][1];
 
 motor_type_xy = printer_config[2][0];
 motor_type_z = printer_config[2][0];
@@ -288,7 +307,7 @@ y_rail_pos_y = -extrusion_vertical_spacing_y/2+extrusion_side/2+front_idler_room
 
 //front_idler_pos_x = extrusion_vertical_spacing_x/2+2;
 front_idler_pos_x = extrusion_vertical_spacing_x/2;
-front_idler_pos_y = -extrusion_vertical_spacing_y/2+extrusion_side/2+front_idler_extrusion_dist_y;
+front_idler_pos_y = -extrusion_vertical_spacing_y/2+extrusion_width(extrusion_vertical_type)/2+front_idler_extrusion_dist_y;
 front_idler_clearance_pos_x = front_idler_pos_x-front_idler_clearance_bearing_dist_x;
 front_idler_clearance_pos_y = front_idler_pos_y+front_idler_clearance_bearing_dist_y;
 
@@ -298,7 +317,9 @@ xy_front_idler_pos_x = front_idler_pos_x-front_idler_clearance_bearing_dist_x;
 xy_carriage_bearing_dist_y = 11.38;
 xy_carriage_bearing_dist_x = front_idler_clearance_bearing_dist_x;
 
-x_carriage_offset_y = carriage_length(y_carriage)/2-extrusion_side-carriage_height(x_carriage);
+//x_carriage_offset_y = carriage_length(y_carriage)/2-extrusion_side-carriage_height(x_carriage);
+x_carriage_offset_space = 15; // since we're trying extrusionless X for now
+x_carriage_offset_y = carriage_length(y_carriage)/2-x_carriage_offset_space-carriage_height(x_carriage);
 
 //xy_front_idler_offset_pos_y = x_carriage_offset_y-effective_radius+x_axis_offset_y; // based on y carriage
 //xy_rear_idler_offset_pos_y = xy_front_idler_offset_pos_y+xy_carriage_bearing_dist_y; // based on y carriage
@@ -359,7 +380,7 @@ motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box,
 //rear_brace_dist_from_back = 10;
 //rear_brace_offset_y = (extrusion_vertical_spacing_y/2-rear_brace_dist_from_back)-motor_xy_pos_y;
 //rear_brace_offset_y = 5;
-rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_side)-motor_xy_pos_y;
+rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y;
 echo("rear_brace_offset_y: ", rear_brace_offset_y);
 
 motor_xy_adjustment_amount = 5;
@@ -377,7 +398,7 @@ frame_anchor_plastic_thickness = 6;
 //rear_z_offset_x = right*carriage_width(z_carriage)/2;
 //rear_z_offset_x = right*(carriage_width(z_carriage)/2-extrusion_side/2);
 rear_brace_pos_y = motor_xy_pos_y+rear_brace_offset_y;
-rear_brace_pos_z = motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thickness;
+rear_brace_pos_z = motor_xy_pos_z+extrusion_width(extrusion_shortest_type)/2+xy_motor_plate_thickness;
 rear_brace_distance_from_rear = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
 rear_z_offset_x = 0;
 echo("rear_z_offset_x: ", rear_z_offset_x);
@@ -387,11 +408,13 @@ nozzle_x_extrusion_dist_y = 29;
 //nozzle_x_extrusion_dist_z = 42;
 nozzle_x_extrusion_dist_z = 32.95;
 
-center_brace_anchor_length = 22.75;
-center_brace_plate_thickness = 9;
+//center_brace_anchor_length = 22.75;
+center_brace_anchor_length = 20;
+//center_brace_plate_thickness = 9;
 
-max_center_brace_width = 50;
+max_center_brace_width = 45;
 center_brace_width = min(max_center_brace_width,2*(motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length)-0.2);
+echo("center_brace_width: ", center_brace_width);
 //center_brace_width = 40;
 echo("center_brace_width: ", center_brace_width);
 
@@ -688,22 +711,22 @@ module assembly(pct_x,pct_y,pct_z) {
   }
 
   translate([0,-extrusion_vertical_spacing_y/2+extrusion_side/2,gantry_pos_z+extrusion_side/2]) {
-    translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2),0,0]) {
+    translate([right*(extrusion_vertical_spacing_x/2-extrusion_width(MakerbeamXL)/2),0,0]) {
       % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_lower.stl");
       % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_upper.stl");
     }
-    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2),0,0]) {
+    translate([left*(extrusion_vertical_spacing_x/2-extrusion_width(MakerbeamXL)/2),0,0]) {
       % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_left_lower.stl");
       % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_left_upper.stl");
     }
   }
 
   position_x_axis() {
-    translate([0,carriage_length(y_carriage)/2-extrusion_side/2,extrusion_side/2+x_extrusion_above_y_carriage]) {
+    translate([0,carriage_length(y_carriage)/2-x_carriage_offset_space/2,extrusion_side/2+x_extrusion_above_y_carriage]) {
       rotate([0,90,0]) {
         //% extrusion(extrusion_main_length);
       }
-      translate([0,-extrusion_side/2,0]) {
+      translate([0,-x_carriage_offset_space/2,0]) {
         rotate([90,0,0]) {
           % rail(x_rail,x_rail_length);
         }
