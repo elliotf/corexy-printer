@@ -449,6 +449,9 @@ module upper_screw_area_filler_profile() {
     // meat between screw holes
     translate([motor_xy_pos_x,0,0]) {
       translate([0,motor_xy_pos_y,0]) {
+        translate([-motor_xy_hole_spacing/2,motor_xy_hole_spacing/2-m3_through_hole_diam/2,0]) {
+          square([space_between_elongated_motor_holes_x,m3_through_hole_diam],center=true);
+        }
         translate([-motor_xy_adjustment_amount/2,motor_xy_hole_spacing/2-m3_through_hole_diam/2,0]) {
           rounded_square(space_between_elongated_motor_holes_x,m3_through_hole_diam*2,m3_through_hole_diam);
 
@@ -600,5 +603,5 @@ translate([0,rear_brace_pos_y,motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thi
     % extrusion_l(extrusion_shortest_length);
   }
 }
-ab_pod_assembly(left,is_final);
+ab_pod_assembly(right,is_final);
 //ab_pod_assembly(right,is_final);

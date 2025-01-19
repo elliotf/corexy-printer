@@ -1,5 +1,7 @@
 include <./main.scad>;
 
+hole_diam = min(4,extrusion_slot_width-1);
+
 module frame_assembly() {
   for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
   //for(z=[bottom_pos_z+extrusion_side/2]) {
@@ -33,13 +35,23 @@ module frame_assembly() {
   //for(x=[right]) {
     for(y=[front,rear]) {
       translate([x*(extrusion_vertical_spacing_x/2),y*(extrusion_vertical_spacing_y/2),extrusion_vertical_pos_z]) {
-        % extrusion_l(extrusion_vertical_length);
-      }
-    }
-
-    translate([0,0,0]) {
-      translate([x*(extrusion_vertical_spacing_x/2),0,extrusion_side+extrusion_short_length/2]) {
-        //% extrusion_l(extrusion_short_length);
+        difference() {
+          extrusion_l(extrusion_vertical_length);
+          translate([0,0,-extrusion_vertical_pos_z+gantry_pos_z]) {
+            rotate([90,0,0]) {
+              hole(hole_diam,extrusion_side,resolution);
+            }
+          }
+          for(z=[top,bottom],r=[0,90]) {
+            translate([0,0,z*(extrusion_vertical_length/2-extrusion_side/2)]) {
+              rotate([0,0,r]) {
+                rotate([90,0,0]) {
+                  hole(hole_diam,extrusion_side,resolution);
+                }
+              }
+            }
+          }
+        }
       }
     }
 

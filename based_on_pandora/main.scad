@@ -7,6 +7,8 @@ use <./probe.scad>;
 use <./frame.scad>;
 use <./ab_pods.scad>;
 
+$fn=24;
+
 is_final = false;
 
 m3_threaded_insert_od = 5;
@@ -15,9 +17,15 @@ m3_threaded_insert_height = 4;
 size_large = 0;
 size_medium = 1;
 size_small = 2;
+size_small_2020 = 3;
+size_medium_2020 = 4;
+size_large_2020 = 5;
 //printer_size = size_large;
 //printer_size = size_medium;
 printer_size = size_small;
+//printer_size = size_small_2020; // B0rken
+//printer_size = size_medium_2020; // B0rken
+//printer_size = size_large_2020; // B0rken
 
 m3_through_hole_diam = 3.3;
 m3_thread_into_plastic_diam = 2.9;
@@ -29,8 +37,6 @@ m5_thread_into_plastic_diam = 4.8;
 extrude_width = 0.4;
 extrude_height = 0.2;
 wall_thickness = extrude_width*3;
-extrusion_side = 15;
-extrusion_slot_width = 3;
 belt_width = 6;
 belt_thickness = 1.5; // FIXME ?
 panel_thickness = 3;
@@ -53,7 +59,12 @@ z_motor_side = NEMA_width(z_motor_type);
 
 sizes = [
   [
-    [400,300,250,200], // extrusion_lengths
+    [
+      [500,MakerbeamXL],
+      [300,MakerbeamXL],
+      [250,MakerbeamXL],
+      [200,MakerbeamXL],
+    ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,300], // X axis
       [MGN7H_carriage,MGN7,250], // Y axis
@@ -70,7 +81,12 @@ sizes = [
     ],
   ],
   [
-    [350,250,200,150], // extrusion_lengths
+    [
+      [450,MakerbeamXL],
+      [250,MakerbeamXL],
+      [200,MakerbeamXL],
+      [150,MakerbeamXL],
+    ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,250], // X axis
       [MGN7H_carriage,MGN7,200], // Y axis
@@ -87,7 +103,12 @@ sizes = [
     ],
   ],
   [
-    [300,200,150,100], // extrusion_lengths
+    [
+      [400,MakerbeamXL],
+      [200,MakerbeamXL],
+      [150,MakerbeamXL],
+      [100,MakerbeamXL],
+    ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,200], // X axis
       [MGN7H_carriage,MGN7,150], // Y axis
@@ -101,6 +122,72 @@ sizes = [
     ],
     [
       [120,120,6],
+    ],
+  ],
+  [
+    [
+      [300,E2020t],
+      [200,E2020t],
+      [150,E2020t],
+      [100,E2020t],
+    ], // extrusion_lengths
+    [
+      [MGN9H_carriage,MGN9,200], // X axis
+      [MGN7H_carriage,MGN7,150], // Y axis
+      [MGN7H_carriage,MGN7,150], // Z axis
+    ],
+    [NEMA17_47,NEMA17_47,NEMA17_27,200],
+    //[NEMA14_52,NEMA17_47,NEMA17_27,200], // untested
+    [
+      // electronics
+      LRS_150_24,
+    ],
+    [
+      [120,120,6],
+    ],
+  ],
+  [
+    [
+      [450,E2020t],
+      [270,E2020t],
+      [200,E2020t],
+      [150,E2020t],
+    ], // extrusion_lengths
+    [
+      [MGN9H_carriage,MGN9,250], // X axis
+      [MGN7H_carriage,MGN7,220], // Y axis
+      [MGN7H_carriage,MGN7,220], // Z axis
+    ],
+    [NEMA17_47,NEMA17_47,NEMA17_27,250],
+    //[NEMA14_52,NEMA17_47,NEMA17_27,200], // untested
+    [
+      // electronics
+      LRS_150_24,
+    ],
+    [
+      [180,180,6],
+    ],
+  ],
+  [
+    [
+      [500,E2020t],
+      [350,E2020t],
+      [250,E2020t],
+      [200,E2020t],
+    ], // extrusion_lengths
+    [
+      [MGN9H_carriage,MGN9,300], // X axis
+      [MGN7H_carriage,MGN7,250], // Y axis
+      [MGN7H_carriage,MGN7,250], // Z axis
+    ],
+    [NEMA17_47,NEMA17_47,NEMA17_27,300],
+    //[NEMA14_52,NEMA17_47,NEMA17_27,200], // untested
+    [
+      // electronics
+      LRS_150_24,
+    ],
+    [
+      [235,235,6],
     ],
   ],
 ];
@@ -130,10 +217,25 @@ build_volume = [
 
 echo("build_volume: ", build_volume);
 
-extrusion_vertical_length = printer_config[0][0];
-extrusion_main_length = printer_config[0][1];
-extrusion_short_length = printer_config[0][2];
-extrusion_shortest_length = printer_config[0][3];
+extrusion_vertical_length = printer_config[0][0][0];
+extrusion_main_length = printer_config[0][1][0];
+extrusion_short_length = printer_config[0][2][0];
+extrusion_shortest_length = printer_config[0][3][0];
+
+extrusion_type = printer_config[0][0][1];
+//extrusion_side = 15;
+extrusion_side = extrusion_width(extrusion_type);
+
+//extrusion_side = 20;
+//extrusion_slot_width = 3;
+extrusion_slot_width = extrusion_channel_width(extrusion_type);
+echo("extrusion_type: ", extrusion_type);
+echo("extrusion_slot_width: ", extrusion_slot_width);
+
+extrusion_vertical_type = printer_config[0][0][1];
+extrusion_main_type = printer_config[0][1][1];
+extrusion_short_type = printer_config[0][2][1];
+extrusion_shortest_type = printer_config[0][3][1];
 
 motor_type_xy = printer_config[2][0];
 motor_type_z = printer_config[2][0];
@@ -320,10 +422,11 @@ module x_carriage() {
 
 module extrusion_l(length) {
   if (extrusion_side == 15) {
-    % extrusion_makerbeam_xl(length);
+    //% extrusion(MakerbeamXL, length); // very different from makerbeam xl
+    extrusion_makerbeam_xl(length);
   } else if (extrusion_side == 20) {
     //% extrusion_2020(length);
-    % extrusion(E2020t, length);
+    extrusion(E2020t, length);
   } else {
     // wat
   }
@@ -563,7 +666,11 @@ module assembly(pct_x,pct_y,pct_z) {
     translate([0,0,psu_height(psu_type)/2]) {
       //% color("#ccc") cube([psu_length(psu_type),psu_width(psu_type),psu_height(psu_type)],center=true);
     }
-    % psu(psu_type);
+    difference() {
+      psu(psu_type);
+      translate([0,0,0]) {
+      }
+    }
     //% cube([215,115,30],center=true);
   }
 
