@@ -14,7 +14,11 @@ space_between_motor_and_corner = extrusion_vertical_spacing_x/2-extrusion_width(
 motor_shoulder_clearance = NEMA_boss_radius(motor_type_xy)*2+0.3;
 cut_through_height = 50;
 
+motor_shoulder_hole_smaller_by = 4;
+motor_shoulder_hole_smaller_diam = motor_shoulder_clearance-motor_shoulder_hole_smaller_by;
+
 innermost_motor_shoulder_hole = motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_clearance/2;
+//innermost_motor_shoulder_hole = motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_hole_smaller_diam/2;
 wall_between_motor_and_center_spar = innermost_motor_shoulder_hole-extrusion_shortest_length/2-0.6;
 
 center_anchor_center_pos_x = motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length/2;
@@ -197,12 +201,10 @@ module ab_pod_lower(is_final) {
 
     translate([motor_xy_pos_x,motor_xy_pos_y,motor_xy_pos_z]) {
       shoulder_height = 2.2;
-      smaller_by = 4;
-      smaller_diam = motor_shoulder_clearance-smaller_by;
-      cutter(smaller_diam,cut_through_height);
+      cutter(motor_shoulder_hole_smaller_diam,cut_through_height);
       hull() {
         cutter(motor_shoulder_clearance,shoulder_height*2);
-        cutter(smaller_diam,(shoulder_height+smaller_by/2)*2);
+        cutter(motor_shoulder_hole_smaller_diam,(shoulder_height+motor_shoulder_hole_smaller_by/2)*2);
       }
     }
 

@@ -97,10 +97,6 @@ module probe_dock() {
   space_between_extrusion_mount_anchors = (dock_length-extrusion_mount_anchor_width*num_extrusion_anchors)/(num_extrusion_anchors-1);
   extrusion_mount_anchor_spacing = space_between_extrusion_mount_anchors+extrusion_mount_anchor_width;
 
-  translate([extrusion_mount_offset_x,extrusion_mount_offset_y,bottom_of_extrusion_mount_pos_z]) {
-    debug_axes(1);
-  }
-    
   module body() {
     hull() {
       translate([extrusion_mount_offset_x,0,0]) {

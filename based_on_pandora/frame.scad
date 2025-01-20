@@ -20,8 +20,18 @@ module frame_assembly() {
       }
     }
   }
+
+  hole_diam = extrusion_center_hole(extrusion_vertical_type) - 0.5;
+
   translate([rear_z_offset_x,extrusion_vertical_spacing_y/2-extrusion_side,bottom_pos_z+extrusion_main_length/2]) {
-    % extrusion(extrusion_main_type,extrusion_main_length);
+    % difference() {
+      extrusion(extrusion_main_type,extrusion_main_length);
+      translate([0,0,-extrusion_main_length/2+extrusion_side/2]) {
+        rotate([90,0,0]) {
+          hole(hole_diam,extrusion_side,resolution);
+        }
+      }
+    }
   }
   translate([0,rear_brace_pos_y,rear_brace_pos_z]) {
     rotate([0,90,0]) {
@@ -29,12 +39,11 @@ module frame_assembly() {
     }
   }
 
-  hole_diam = extrusion_center_hole(extrusion_vertical_type) - 0.5;
 
   for(x=[left,right]) {
     for(y=[front,rear]) {
       translate([x*(extrusion_vertical_spacing_x/2),y*(extrusion_vertical_spacing_y/2),extrusion_vertical_pos_z]) {
-        difference() {
+        % difference() {
           extrusion(extrusion_vertical_type,extrusion_vertical_length);
           translate([0,0,-extrusion_vertical_pos_z+gantry_pos_z]) {
             rotate([90,0,0]) {

@@ -8,9 +8,9 @@ use <./frame.scad>;
 use <./ab_pods.scad>;
 
 // FIXME:
-// * M6 for E2020t extrusion
-// * Less chunky Z motor mounts
-// * Adjust for MGN7 rails sinking into E2020t extrusion slot?
+// * Front XY idlers for E2020t
+// * Access to adjust Z pulley set screw (though it's accessible through the belt hole for now)
+// * Increase XY motor adjustment range by reducing area around XY pulley
 
 // Need to compensate for euro slot, probably
 // euro 2020 height : 19.88
@@ -44,6 +44,16 @@ m3_head_diam = 6; // very loose
 
 m5_through_hole_diam = 5.4;
 m5_thread_into_plastic_diam = 4.8;
+
+m6_through_hole_diam = 6.3;
+m6_head_diam = 11; // very loose
+
+function screw_head_diam_for_extrusion(extrustion_type) = (extrusion_type == MakerbeamXL)
+          ? m3_head_diam : (extrusion_type == E2020t)
+                         ? m6_head_diam : 30;
+function screw_shaft_diam_for_extrusion(extrusion_type) = (extrusion_type == MakerbeamXL)
+          ? m3_through_hole_diam : (extrusion_type == E2020t)
+                         ? m6_through_hole_diam : 40;
 
 extrude_width = 0.4;
 extrude_height = 0.2;
@@ -219,15 +229,6 @@ dragon_burner_width = 55;
 x_carriage_width = max(carriage_length(printer_config[RAIL_CONFIGURATION][x][0]), dragon_burner_width);
 x_axis_offset_y = 2;
 
-build_volume = [
-  printer_config[RAIL_CONFIGURATION][x][2] - x_carriage_width - 3,
-  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+2.5,
-  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+6.5, // once we have a vampire bat-like extrusionless X gantry
-  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5+x_axis_offset_y*2, // probe mount hits motor plate with NEMA17
-  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+5, // probe mount hits motor plate with NEMA17
-  printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]),
-];
-
 echo("build_volume: ", build_volume);
 
 extrusion_vertical_length = printer_config[0][0][0];
@@ -258,6 +259,15 @@ echo("extrusion_slot_width: ", extrusion_slot_width);
 
 motor_type_xy = printer_config[2][0];
 motor_type_z = printer_config[2][0];
+
+build_volume = [
+  printer_config[RAIL_CONFIGURATION][x][2] - x_carriage_width - 3,
+  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+2.5,
+  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+6.5, // once we have a vampire bat-like extrusionless X gantry
+  //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5+x_axis_offset_y*2, // probe mount hits motor plate with NEMA17
+  printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+3.5+extrusion_side-15, // probe mount hits motor plate with NEMA17
+  printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]),
+];
 
 build_plate_dimensions = printer_config[MISC][0];
 
@@ -380,10 +390,16 @@ motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box,
 //rear_brace_dist_from_back = 10;
 //rear_brace_offset_y = (extrusion_vertical_spacing_y/2-rear_brace_dist_from_back)-motor_xy_pos_y;
 //rear_brace_offset_y = 5;
-rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y;
+//rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y;
+rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y+(20-15)/2;
 echo("rear_brace_offset_y: ", rear_brace_offset_y);
 
 motor_xy_adjustment_amount = 5;
+
+//y_rail_sunk_into_extrusion = 0;
+//z_rail_sunk_into_extrusion = 0;
+y_rail_sunk_into_extrusion = (extrusion_main_type == E2020t) ? 0.8 : 0;  // FIXME: see if this is correct enough
+z_rail_sunk_into_extrusion = (extrusion_vertical_type == E2020t) ? 0.8 : 0;  // FIXME: see if this is correct enough
 
 xy_bottom_of_belt_idler_stack = xy_belt_center_pos_z-xy_belt_spacing/2-belt_width/2-belt_idler_flange_thickness-belt_idler_shim_thickness;
 xy_motor_plate_thickness = xy_bottom_of_belt_idler_stack-motor_xy_pos_z;
@@ -409,7 +425,7 @@ nozzle_x_extrusion_dist_y = 29;
 nozzle_x_extrusion_dist_z = 32.95;
 
 //center_brace_anchor_length = 22.75;
-center_brace_anchor_length = 20;
+center_brace_anchor_length = 18;
 //center_brace_plate_thickness = 9;
 
 max_center_brace_width = 45;
@@ -534,6 +550,23 @@ module center_brace_anchor() {
 }
 
 module assembly(pct_x,pct_y,pct_z) {
+  translate([extrusion_vertical_spacing_x/2+extrusion_side/2,0,-z_motor_side/2-3]) {
+    //% iec(IEC_fused_inlet);
+    rotate([0,90,0]) {
+      % iec(IEC_320_C14_switched_fused_inlet);
+    }
+  }
+
+  //translate([-extrusion_vertical_spacing_x/2+30,0,]) {
+  //translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3),extrusion_vertical_spacing_y/2-extrusion_side/2-127/2,12.2/2+extrusion_side/2]) {
+  translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3),0,12.2/2+extrusion_side/2]) {
+    rotate([0,0,90]) {
+      rotate([180,0,0]) {
+        % color("orange") import("../../Voron-2/STLs/Electronics_Bay/wago_221-415_mount_3by5.stl");
+      }
+    }
+  }
+
   //pos_x = -x_rail_length/2+carriage_length(x_carriage)+pct_x*printer_config[BUILD_DIMENSIONS][x];
   //pos_y = pct_y*printer_config[BUILD_DIMENSIONS][y];
   //pos_z = pct_z*printer_config[BUILD_DIMENSIONS][z];
@@ -668,7 +701,7 @@ module assembly(pct_x,pct_y,pct_z) {
     pos_x = left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-psu_mount_gap);
     pos_y = extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-4-psu_width/2;
     translate([pos_x,pos_y,extrusion_side-panel_thickness-2]) {
-      rotate([0,0,0]) {
+      rotate([0,0,180]) {
         rotate([180,0,0]) {
           children();
         }
@@ -740,7 +773,7 @@ module assembly(pct_x,pct_y,pct_z) {
                 % color("red") hole(1.5,2,resolution);
               }
             }
-            translate([0,front*(extrusion_side/2+carriage_height(x_carriage)),0]) {
+            translate([0,front*(15/2+carriage_height(x_carriage)),0]) {
               rotate([-90,0,0]) {
                 % color("orange") import("../Pandoras_Box/STLs/Gantry/x_carriage.stl");
               }

@@ -50,89 +50,6 @@ module elongated_bridged_hole(hole_diam,elongation_length,depth=30,is_final) {
   }
 }
 
-
-module xy_joint_profile() {
-  module body() {
-    diam = 2*(xy_front_idler_pos_x-(y_rail_pos_x-mgn_width/2));
-    hull() {
-      translate([y_rail_pos_x,0,0]) {
-        rounded_square(mgn_width,mgn_length,rounded_diam);
-      }
-      translate([xy_front_idler_pos_x,xy_front_idler_offset_pos_y,0]) {
-        accurate_circle(diam,resolution);
-      }
-    }
-  }
-
-  module holes() {
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
-module position_mgn_holes() {
-  mgn_hole_spacing_width = 12;
-  mgn_hole_spacing_length = 13;
-
-  for(x=[left,right],y=[front,rear]) {
-    translate([y_rail_pos_x+x*mgn_hole_spacing_width/2,y*mgn_hole_spacing_length/2,0]) {
-      children();
-    }
-  }
-}
-
-module xy_joint_bottom(side) {
-  module body() {
-    translate([0,0,mgn_height+xy_carriage_base_thickness/2]) {
-      linear_extrude(height=xy_carriage_base_thickness,center=true,convexity=2) {
-        xy_joint_profile();
-      }
-    }
-  }
-
-  module holes() {
-    translate([0,0,mgn_height+xy_carriage_base_thickness]) {
-      position_mgn_holes() {
-        countersunk_m2();
-      }
-    }
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
-module xy_joint_top(side) {
-  module body() {
-    translate([0,0,mgn_height+xy_carriage_base_thickness+belt_idler_stack_height+xy_carriage_top_thickness/2]) {
-      linear_extrude(height=xy_carriage_top_thickness,center=true,convexity=2) {
-        xy_joint_profile();
-      }
-    }
-  }
-
-  module holes() {
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
-module position_mgn(side) {
-  translate([0,0,0]) {
-    rotate([0,0,90]) {
-      children();
-    }
-  }
-}
-
 module xy_joint_single_piece(side, is_final) {
   idler_bevel_height = 0.5;
 
@@ -141,7 +58,7 @@ module xy_joint_single_piece(side, is_final) {
   hole_spacing_x = y_carriage[7];
   hole_spacing_y = y_carriage[6];
 
-  overall_height = xy_carriage_base_thickness+belt_idler_spacer_length*2+xy_carriage_top_thickness;
+  overall_height = xy_carriage_base_thickness+belt_idler_spacer_length*2+xy_carriage_top_thickness+y_rail_sunk_into_extrusion;
   idler_front_pos_x = -front_idler_clearance_bearing_dist_x*side;
   idler_front_pos_y = x_carriage_offset_y+x_axis_offset_y-effective_radius;
   idler_front_pos_z = xy_belt_center_extrusion_offset_z-xy_belt_spacing/2*side;
@@ -174,7 +91,7 @@ module xy_joint_single_piece(side, is_final) {
 
   meat_behind_rail = mgn_area_depth/2-rail_pos_y;
   meat_below_carriage = 1.4;
-  meat_beside_rail_at_end_of_support = 3.5;
+  meat_beside_rail_at_end_of_support = 5;
   rail_body_meat = meat_behind_rail+meat_below_carriage;
 
   module position_rail() {
@@ -211,13 +128,15 @@ module xy_joint_single_piece(side, is_final) {
   }
 
   module position_mgn() {
-    rotate([0,0,90]) {
-      children();
+    translate([0,0,-y_rail_sunk_into_extrusion]) {
+      rotate([0,0,90]) {
+        children();
+      }
     }
   }
 
   module body() {
-    translate([0,0,mgn_height+overall_height/2]) {
+    translate([0,0,mgn_height+overall_height/2-y_rail_sunk_into_extrusion]) {
       translate([0,0,0]) {
         rotate([90,0,0]) {
           rounded_cube(mgn_area_width,overall_height,mgn_area_depth,1);
@@ -240,7 +159,7 @@ module xy_joint_single_piece(side, is_final) {
 
     hull() {
       translate([0,mgn_area_depth/2-rail_body_meat/2,0]) {
-        translate([0,0,mgn_height+overall_height/2]) {
+        translate([0,0,mgn_height+overall_height/2-y_rail_sunk_into_extrusion]) {
           rotate([90,0,0]) {
             rounded_cube(mgn_area_width,overall_height,rail_body_meat,1);
           }
@@ -281,15 +200,20 @@ module xy_joint_single_piece(side, is_final) {
     // clearance for motors
     translate([0,mgn_area_depth/2-rail_body_meat/2,0]) {
       hull() {
+        translate([-side*(mgn_width),0,0]) {
+          rotate([90,0,0]) {
+            cube([mgn_width,mgn_height*2,40],center=true);
+          }
+        }
         translate([0,0,rail_pos_z-rail_width(x_rail)/2-meat_beside_rail_at_end_of_support-20]) {
           translate([-side*(extrusion_side/2+rail_support_length-meat_beside_rail_at_end_of_support/2),0,0]) {
             rotate([90,0,0]) {
-              rounded_cube(meat_beside_rail_at_end_of_support*2,40,rail_body_meat+1,2);
+              rounded_cube(meat_beside_rail_at_end_of_support,40,rail_body_meat+1,2);
             }
           }
-          translate([-side*(mgn_width),0,0]) {
+          translate([-side*(mgn_width+0.5),0,0]) {
             rotate([90,0,0]) {
-              rounded_cube(mgn_width-(6)*2,40,rail_body_meat+1,2);
+              rounded_cube(2,40,rail_body_meat+1,2);
             }
           }
         }
@@ -309,7 +233,6 @@ module xy_joint_single_piece(side, is_final) {
             }
           }
         }
-        //debug_axes(1);
         /*
         hull() {
           for(x=[left,right]) {
@@ -418,7 +341,7 @@ module xy_joint_single_piece(side, is_final) {
       }
     }
 
-    translate([0,0,mgn_height]) {
+    translate([0,0,mgn_height]) { // FIXME: mgn_height-y_rail_sunk_into_extrusion ?
       screw_head_height=7;
 
       for(x=[left,right],y=[front,rear]) {
@@ -504,7 +427,7 @@ module front_idler(side) {
 module y_axis_assembly(pos_y,is_final) {
   for(x=[left,right]) {
     translate([0,y_rail_pos_y,gantry_pos_z+extrusion_side/2]) {
-      translate([x*extrusion_vertical_spacing_x/2,0,0]) {
+      translate([x*extrusion_vertical_spacing_x/2,0,-y_rail_sunk_into_extrusion]) {
         rotate([0,0,90]) {
           % rail(y_rail,y_rail_length);
         }
