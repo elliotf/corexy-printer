@@ -8,7 +8,6 @@ use <./frame.scad>;
 use <./ab_pods.scad>;
 
 // FIXME:
-// * Front XY idlers for E2020t
 // * Access to adjust Z pulley set screw (though it's accessible through the belt hole for now)
 // * Increase XY motor adjustment range by reducing area around XY pulley
 
@@ -77,6 +76,7 @@ height_above_z_motor = 2;
 height_below_z_motor = 4;
 z_motor_type = NEMA17_47;
 z_motor_side = NEMA_width(z_motor_type);
+z_axis_screw_mount_thickness = 4;
 
 sizes = [
   [
@@ -740,17 +740,6 @@ module assembly(pct_x,pct_y,pct_z) {
       translate([0,y_carriage_pos_y,0]) {
         children();
       }
-    }
-  }
-
-  translate([0,-extrusion_vertical_spacing_y/2+extrusion_side/2,gantry_pos_z+extrusion_side/2]) {
-    translate([right*(extrusion_vertical_spacing_x/2-extrusion_width(MakerbeamXL)/2),0,0]) {
-      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_lower.stl");
-      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_upper.stl");
-    }
-    translate([left*(extrusion_vertical_spacing_x/2-extrusion_width(MakerbeamXL)/2),0,0]) {
-      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_left_lower.stl");
-      % color("orange") import("../Pandoras_Box/STLs/Gantry/idler_left_upper.stl");
     }
   }
 

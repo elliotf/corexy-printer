@@ -76,7 +76,7 @@ carriage_anchor_spacing = 10;
 
 //single_z_idler_pos_x = carriage_anchor_pos_x+belt_idler_od/2;
 single_z_idler_pos_x = carriage_anchor_pos_x-belt_idler_od/2-1;
-single_z_idler_pos_z = gantry_pos_z-extrusion_side/2-belt_idler_od/2+1; // need to sneak it under the toolhead
+single_z_idler_pos_z = gantry_pos_z-extrusion_side/2-belt_idler_od/2-5+extrusion_side-15; // need to sneak it under the toolhead, mostly for MakerbeamXL. E2020t has tons of room
 
 //belt_plane_offset = max(carriage_width(z_carriage),extrusion_width(extrusion_vertical_type))/2+0.5+belt_width/2;
 //belt_plane_offset = max(carriage_width(z_carriage),extrusion_width(extrusion_vertical_type))/2+belt_idler_spacer_length/2;
@@ -100,7 +100,6 @@ z_carrier_rounded_diam = min(z_carrier_mount_thickness,2);
 z_carrier_height = carriage_length(z_carriage)-6;
 z_carrier_pivot_gap_width = 1;
 z_carrier_pivot_body_height = 2;
-z_axis_screw_mount_thickness = 4;
 
 z_carrier_pivot_length = 3; // should be short enough so that it's not too sloppy
 z_carrier_pivot_side = 3; // should be small enough so that it's not too stiff
@@ -519,7 +518,7 @@ module z_idler_front_brace_corner(is_final=false) {
           cube([extrusion_side,6,overall_height],center=true);
         }
       }
-      tab_height = 4;
+      tab_height = 7; // too long?
       translate([0,extrusion_side/2,gantry_pos_z-extrusion_side/2-tab_height/2]) {
         depth_into_slot = 3;
         rounded_cube(extrusion_slot_width-slot_tolerance,depth_into_slot*2,tab_height,2);
@@ -556,7 +555,7 @@ module z_idler_front_brace_corner(is_final=false) {
           hole(m3_head_diam,40,resolution);
         }
       }
-      translate([0,extrusion_side/2+3,single_z_idler_pos_z-m3_through_hole_diam/2-2-m3_head_diam/2]) {
+      translate([0,extrusion_side/2+z_axis_screw_mount_thickness,gantry_pos_z-extrusion_side/2-overall_height+m3_head_diam/2+1]) {
         rotate([90,0,0]) {
           hole(m3_through_hole_diam,40,resolution);
           translate([0,0,-20]) {
@@ -1020,7 +1019,7 @@ module z_carrier_base(is_final,offset_belt_anchor_by=0) {
           for(z=[top,bottom]) {
             mirror([z-1,0,0]) {
               translate([belt_anchor_opening_height/2,mgn_width/2+0.2,mgn_height-20]) {
-                # round_corner_filler(2,40);
+                round_corner_filler(2,40);
               }
             }
           }

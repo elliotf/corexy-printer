@@ -13,6 +13,23 @@ recess_idler_screws_head_depth = 3;
 
 rounded_diam = 2;
 
+compacting_idler_pos_x = front_idler_pos_x-front_idler_clearance_bearing_dist_x;
+compacting_idler_pos_y = front_idler_pos_y+11.5;
+
+front_idler_base_pos_x = extrusion_vertical_spacing_x/2;
+front_idler_base_pos_y = front*(extrusion_vertical_spacing_y/2-extrusion_side/2);
+front_idler_base_pos_z = gantry_pos_z+extrusion_side/2;
+front_idler_main_body_depth = compacting_idler_pos_y-front_idler_base_pos_y+belt_idler_od/2+2;
+
+body_bevel_height = 0.4;
+screw_bevel_height = 0.5;
+screw_bevel_small_od = m3_through_hole_diam+1;
+screw_bevel_large_od = screw_bevel_small_od+screw_bevel_height*2;
+
+overall_height = xy_carriage_base_thickness+belt_idler_spacer_length*2+xy_carriage_top_thickness+y_rail_sunk_into_extrusion;
+
+function front_idler_pos_z(side) = (gantry_pos_z+extrusion_side/2+xy_belt_center_extrusion_offset_z)-xy_belt_spacing/2*side;
+
 module countersunk_m2(depth=50,head_height=40) {
 
   hole(m2_through_hole_diam,depth*2,resolution);
@@ -58,14 +75,13 @@ module xy_joint_single_piece(side, is_final) {
   hole_spacing_x = y_carriage[7];
   hole_spacing_y = y_carriage[6];
 
-  overall_height = xy_carriage_base_thickness+belt_idler_spacer_length*2+xy_carriage_top_thickness+y_rail_sunk_into_extrusion;
   idler_front_pos_x = -front_idler_clearance_bearing_dist_x*side;
   idler_front_pos_y = x_carriage_offset_y+x_axis_offset_y-effective_radius;
   idler_front_pos_z = xy_belt_center_extrusion_offset_z-xy_belt_spacing/2*side;
   idler_rear_pos_x = 0;
   idler_rear_pos_z = xy_belt_center_extrusion_offset_z+xy_belt_spacing/2*side;
   idler_rear_pos_y = idler_front_pos_y+xy_carriage_bearing_dist_y;
-  idler_body_diam = belt_idler_od+1.5;
+  idler_body_diam = belt_idler_od+1.75;
   belt_idler_cavity_diam = belt_idler_od+2;
   belt_idler_belt_cavity_diam = belt_idler_cavity_diam+2;
   belt_cavity_width = 2.5;
@@ -411,8 +427,52 @@ module y_carriage_assembly(side,is_final) {
   }
 }
 
-module front_idler(side) {
+module position_front_idler(side) {
+  translate([front_idler_pos_x*side,front_idler_pos_y,front_idler_pos_z(side)]) {
+    children();
+  }
+}
+
+module position_compacting_idler(side) {
+  translate([compacting_idler_pos_x*side,compacting_idler_pos_y,front_idler_pos_z(side)]) {
+    children();
+  }
+}
+
+module front_idler_body(side,height) {
+  width = 15;
+  rounded_diam = 2;
+
+  module profile(shrink_by=0) {
+    hull() {
+      translate([front_idler_base_pos_x*side,front_idler_base_pos_y]) {
+        depth = belt_idler_od/2;
+        translate([0,depth/2,0]) {
+          rounded_square(width-shrink_by*2,depth-shrink_by*2,rounded_diam-shrink_by*2);
+        }
+      }
+      translate([compacting_idler_pos_x*side,compacting_idler_pos_y]) {
+        accurate_circle(belt_idler_od+1.75-shrink_by*2,resolution);
+      }
+      /*
+      translate([front_idler_base_pos_x*side,front_idler_base_pos_y]) {
+        translate([0,front_idler_main_body_depth/2,0]) {
+          rounded_square(width-shrink_by*2,front_idler_main_body_depth-shrink_by*2,rounded_diam-shrink_by*2);
+        }
+      }
+      */
+    }
+  }
+
   module body() {
+    hull() {
+      linear_extrude(height=height,center=true,convexity=3) {
+        profile(body_bevel_height);
+      }
+      linear_extrude(height=height-body_bevel_height*2,center=true,convexity=3) {
+        profile(0);
+      }
+    }
   }
 
   module holes() {
@@ -424,7 +484,172 @@ module front_idler(side) {
   }
 }
 
+module front_idler_top(side,is_final) {
+  // alternatively we could make the front idler like zruncho's BoxZero front ilders and key it into the extrusion
+  // for reference: https://github.com/zruncho3d/BoxZero/blob/main/STLs/Front_Idler_Left_Upper_x1.stl
+  //target_height = overall_height+mgn_height+m3_head_diam;
+  target_height = overall_height+mgn_height+m3_head_diam/2;
+  target_screw_length = 35; // in case we want to make it longer
+  target_compacting_screw_length = 35;
+  echo("target_height: ", target_height);
+  idler_cavity_height = front_idler_pos_z(side)-front_idler_base_pos_z+belt_idler_spacer_length/2;
+  height = target_height-idler_cavity_height;
+
+  module body() {
+    translate([0,0,front_idler_base_pos_z]) {
+      translate([0,0,idler_cavity_height+height/2]) {
+        front_idler_body(side,height);
+      }
+    }
+    position_front_idler(side) {
+      translate([0,0,belt_idler_spacer_length/2-screw_bevel_height]) {
+        rotate([180,0,0]) {
+          bevel(screw_bevel_large_od,screw_bevel_small_od,screw_bevel_height);
+        }
+      }
+    }
+    position_compacting_idler(side) {
+      translate([0,0,belt_idler_spacer_length/2-screw_bevel_height]) {
+        rotate([180,0,0]) {
+          bevel(screw_bevel_large_od,screw_bevel_small_od,screw_bevel_height);
+        }
+      }
+    }
+  }
+
+  module holes() {
+    position_front_idler(side) {
+      hole(m3_through_hole_diam,height*5,resolution);
+    }
+    position_compacting_idler(side) {
+      hole(m3_through_hole_diam,height*5,resolution);
+    }
+
+    translate([compacting_idler_pos_x*side,compacting_idler_pos_y,front_idler_base_pos_z+target_compacting_screw_length+2]) {
+      bridged_hole(m3_head_diam,m3_through_hole_diam,target_compacting_screw_length+2,is_final);
+    }
+    translate([front_idler_pos_x*side,front_idler_pos_y,front_idler_base_pos_z]) {
+      translate([0,0,-3+target_screw_length]) {
+        bridged_hole(m3_head_diam,m3_through_hole_diam,target_screw_length+2,is_final);
+      }
+      translate([0,-m3_head_diam/2,target_height-m3_head_diam/2]) {
+        depth = m3_head_diam;
+        translate([0,depth/2,0]) {
+          slot_length = m3_head_diam+z_axis_screw_mount_thickness;
+          hull() {
+            translate([0,-z_axis_screw_mount_thickness/2,0]) {
+              rotate([-90,0,0]) {
+                hole(m3_through_hole_diam,slot_length,resolution);
+              }
+              translate([0,0,20]) {
+                cube([m3_through_hole_diam,slot_length,1],center=true);
+              }
+            }
+          }
+          hull() {
+            rotate([-90,0,0]) {
+              hole(m3_head_diam,depth,resolution);
+            }
+            translate([0,0,20]) {
+              rounded_diam = 2;
+              rounded_cube(m3_head_diam+rounded_diam,depth,1,rounded_diam);
+            }
+            translate([0,m3_head_diam/2,m3_head_diam/2+2]) {
+              rotate([-90,0,0]) {
+                hole(m3_through_hole_diam,slot_length,resolution);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module front_idler_bottom(side,is_final) {
+  height = front_idler_pos_z(side)-belt_idler_spacer_length/2-extrusion_side/2-gantry_pos_z;
+
+  module body() {
+    translate([0,0,front_idler_base_pos_z]) {
+      translate([0,0,height/2]) {
+        front_idler_body(side,height);
+      }
+      hull() {
+        translate([front_idler_base_pos_x*side,front_idler_base_pos_y+front_idler_main_body_depth,z_axis_screw_mount_thickness/2]) {
+          hole(m3_head_diam+1,z_axis_screw_mount_thickness-body_bevel_height*2,resolution);
+          hole(m3_head_diam+1-body_bevel_height*2,z_axis_screw_mount_thickness,resolution);
+        }
+        translate([0,0,z_axis_screw_mount_thickness/2]) {
+          front_idler_body(side,z_axis_screw_mount_thickness);
+        }
+      }
+      translate([front_idler_base_pos_x*side,front_idler_base_pos_y,height/2]) {
+        tolerance = 0.2;
+        tab_width = extrusion_channel_width(extrusion_main_type)-tolerance;
+        tab_depth = 1;
+        cube([tab_width,tab_depth*2,height],center=true);
+      }
+    }
+    position_front_idler(side) {
+      translate([0,0,-belt_idler_spacer_length/2+screw_bevel_height]) {
+        bevel(screw_bevel_large_od,screw_bevel_small_od,screw_bevel_height);
+      }
+    }
+    position_compacting_idler(side) {
+      translate([0,0,-belt_idler_spacer_length/2+screw_bevel_height]) {
+        bevel(screw_bevel_large_od,screw_bevel_small_od,screw_bevel_height);
+      }
+    }
+  }
+
+  module holes() {
+    position_front_idler(side) {
+      hole(m3_through_hole_diam,height*3,resolution);
+    }
+    position_compacting_idler(side) {
+      translate([0,0,-belt_idler_spacer_length/2]) {
+        hole(m3_thread_into_plastic_diam,2*(height-1),resolution);
+
+        lead_in_length = 3;
+        hull() {
+          delta = m3_through_hole_diam-m3_thread_into_plastic_diam;
+          hole(m3_thread_into_plastic_diam,2*(lead_in_length+delta),resolution);
+          hole(m3_through_hole_diam,2*(lead_in_length),resolution);
+        }
+      }
+    }
+    translate([front_idler_base_pos_x*side,front_idler_base_pos_y,front_idler_base_pos_z]) {
+      translate([0,front_idler_main_body_depth,z_axis_screw_mount_thickness]) {
+        hole(m3_through_hole_diam,50,resolution);
+        translate([0,0,25]) {
+          hole(m3_head_diam,50,resolution);
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module y_axis_assembly(pos_y,is_final) {
+  for(x=[left,right]) {
+    front_idler_top(x,is_final);
+    front_idler_bottom(x,is_final);
+  }
+
+  translate([0,-extrusion_vertical_spacing_y/2+extrusion_side/2,gantry_pos_z+extrusion_side/2]) {
+    //% color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_lower.stl");
+    //% color("orange") import("../Pandoras_Box/STLs/Gantry/idler_right_upper.stl");
+  }
+
   for(x=[left,right]) {
     translate([0,y_rail_pos_y,gantry_pos_z+extrusion_side/2]) {
       translate([x*extrusion_vertical_spacing_x/2,0,-y_rail_sunk_into_extrusion]) {
@@ -454,5 +679,25 @@ module y_axis_assembly(pos_y,is_final) {
       }
     }
     */
+  }
+}
+
+y_axis_assembly(-2,false);
+translate([0,0,gantry_pos_z]) {
+  for(x=[left,right]) {
+    translate([x*(extrusion_vertical_spacing_x/2),0,0]) {
+      rotate([90,0,0]) {
+        % extrusion(extrusion_main_type,extrusion_main_length);
+      }
+    }
+  }
+}
+
+for(x=[left,right]) {
+  position_compacting_idler(x) {
+    % pulley_assembly(f623_2x_idler);
+  }
+  position_front_idler(x) {
+    % pulley_assembly(f623_2x_idler);
   }
 }
