@@ -241,7 +241,7 @@ module ab_pod_lower(is_final) {
             hole(m3_through_hole_diam,lead_in_height*2,resolution);
             hole(0.1,(lead_in_height+m3_through_hole_diam)*2,resolution);
           }
-        
+
           hole(m3_thread_into_plastic_diam,thread_depth*2,resolution);
         }
       }
@@ -441,7 +441,7 @@ module upper_screw_area_filler_profile() {
             square([wall_between_motor_and_center_spar,2],center=true);
           }
         }
-        
+
       }
     }
     translate([motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_clearance/4-1,motor_xy_pos_y+motor_shoulder_clearance/4+1,0]) {
@@ -490,13 +490,12 @@ module upper_screw_area_filler_profile() {
   }
 
   module holes() {
-    
+
   }
 
   difference() {
     body();
     holes();
-    
   }
 }
 
