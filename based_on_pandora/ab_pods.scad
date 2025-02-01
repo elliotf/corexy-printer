@@ -255,7 +255,6 @@ module ab_pod_lower(is_final) {
       set_screw_cavity_length = space_between_motor_and_corner+extrusion_side;
       threaded_length = 14;
 
-      //echo("set_screw_cavity_length: ", set_screw_cavity_length);
       rotate([0,90,0]) {
         hole(m3_thread_into_plastic_diam,2*(set_screw_cavity_length+1),8);
         hole(m3_through_hole_diam,2*(set_screw_cavity_length-threaded_length),8);

@@ -6,10 +6,21 @@ use <./z_axis.scad>;
 use <./probe.scad>;
 use <./frame.scad>;
 use <./ab_pods.scad>;
+use <./electronics.scad>;
 
 // FIXME:
-// * Access to adjust Z pulley set screw (though it's accessible through the belt hole for now)
+// * bed cable chain mounts
 // * Increase XY motor adjustment range by reducing area around XY pulley
+// * Reduce unique vitamin count
+//   * screws -- normalize on m3x10 for screwing to extrusion?
+// * camera mount
+//   * something like the v0 mount would be nice
+//   * would need/want to avoid bed cable chain
+// * light mounts
+// * probe mount
+//   * a slideswipe/unklickyslideswipe mount?
+// * bottom panel mount
+// * Access to adjust Z pulley set screw (though it's accessible through the belt hole for now)
 
 // Need to compensate for euro slot, probably
 // euro 2020 height : 19.88
@@ -59,7 +70,7 @@ extrude_height = 0.2;
 wall_thickness = extrude_width*3;
 belt_width = 6;
 belt_thickness = 1.5; // FIXME ?
-panel_thickness = 3;
+deck_panel_thickness = 4;
 
 belt_idler_od = 10; // F623
 // maybe https://www.amazon.com/uxcell-Aluminum-Standoff-Quadcopter-Multirotors/dp/B08HL7VQFQ to have narrower diameter?
@@ -67,12 +78,11 @@ belt_idler_spacer_id = m3_through_hole_diam;
 //belt_idler_spacer_od = belt_idler_spacer_id+2*(extrude_width*2*2)-0.5;
 //belt_idler_spacer_od = 5;
 belt_idler_spacer_od = 6;
-echo("belt_idler_spacer_od: ", belt_idler_spacer_od);
 belt_idler_spacer_length = 9; // f623*2 + 2*0.5 shim
 belt_idler_stack_height = belt_idler_spacer_length*2;
 
 psu_mount_gap = 4;
-height_above_z_motor = 2;
+height_above_z_motor = 1;
 height_below_z_motor = 4;
 z_motor_type = NEMA17_47;
 z_motor_side = NEMA_width(z_motor_type);
@@ -254,8 +264,6 @@ extrusion_side = extrusion_width(extrusion_type);
 //extrusion_side = 20;
 //extrusion_slot_width = 3;
 extrusion_slot_width = extrusion_channel_width(extrusion_type);
-echo("extrusion_type: ", extrusion_type);
-echo("extrusion_slot_width: ", extrusion_slot_width);
 
 motor_type_xy = printer_config[2][0];
 motor_type_z = printer_config[2][0];
@@ -276,6 +284,9 @@ bottom_pos_z = 0;
 //extrusion_base_pos_z = extrusion_side/2;
 extrusion_base_pos_z = extrusion_side/2;
 
+z_motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
+z_base_motor_mount_overall_height = abs(z_motor_pos_z)+z_motor_side/2+height_below_z_motor;
+
 extrusion_vertical_spacing_x = extrusion_main_length+extrusion_side;
 extrusion_vertical_spacing_y = extrusion_vertical_spacing_x;
 
@@ -285,15 +296,16 @@ z_carriage = printer_config[1][z][0];
 z_rail = printer_config[1][z][1];
 z_rail_length = printer_config[1][z][2];
 
+bottom_panel_side = extrusion_main_length + 13; // based on voron 0 bottom panel
+bottom_panel_hole_spacing_x = extrusion_main_length - 3.14; // voron 0 bottom panel hole spacing is 196.86 and 196.91.
+bottom_panel_hole_spacing_y = extrusion_main_length - 3.09; // voron 0 bottom panel hole spacing is 196.86 and 196.91.
+
 printed_height_extension_height = 0;
 top_pos_z = extrusion_vertical_length+printed_height_extension_height;
 //gantry_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length-extrusion_side/2;
 //gantry_pos_z = z_rail_length+37.5;
 gantry_pos_z = extrusion_side+z_rail_length+27.5;
 //gantry_pos_z = 180+15/2;
-//echo("180+15/2: ", 180+15/2);
-echo("gantry_pos_z: ", gantry_pos_z);
-//echo("bottom/mid spacing: ", gantry_pos_z-extrusion_side*1.5);
 
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
 
@@ -392,7 +404,6 @@ motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box,
 //rear_brace_offset_y = 5;
 //rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y;
 rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y+(20-15)/2;
-echo("rear_brace_offset_y: ", rear_brace_offset_y);
 
 motor_xy_adjustment_amount = 5;
 
@@ -417,7 +428,6 @@ rear_brace_pos_y = motor_xy_pos_y+rear_brace_offset_y;
 rear_brace_pos_z = motor_xy_pos_z+extrusion_width(extrusion_shortest_type)/2+xy_motor_plate_thickness;
 rear_brace_distance_from_rear = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
 rear_z_offset_x = 0;
-echo("rear_z_offset_x: ", rear_z_offset_x);
 
 //nozzle_x_extrusion_dist_y = 27.35;
 nozzle_x_extrusion_dist_y = 29;
@@ -430,9 +440,6 @@ center_brace_anchor_length = 18;
 
 max_center_brace_width = 45;
 center_brace_width = min(max_center_brace_width,2*(motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length)-0.2);
-echo("center_brace_width: ", center_brace_width);
-//center_brace_width = 40;
-echo("center_brace_width: ", center_brace_width);
 
 module bridged_hole(od,id,length=50,is_final=1) {
   hole(id,length,resolution);
@@ -550,19 +557,51 @@ module center_brace_anchor() {
 }
 
 module assembly(pct_x,pct_y,pct_z) {
+  /*
+  // right side
   translate([extrusion_vertical_spacing_x/2+extrusion_side/2,0,-z_motor_side/2-3]) {
-    //% iec(IEC_fused_inlet);
     rotate([0,90,0]) {
       % iec(IEC_320_C14_switched_fused_inlet);
     }
   }
+  */
 
-  //translate([-extrusion_vertical_spacing_x/2+30,0,]) {
-  //translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3),extrusion_vertical_spacing_y/2-extrusion_side/2-127/2,12.2/2+extrusion_side/2]) {
-  translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3),0,12.2/2+extrusion_side/2]) {
+  // right side
+  translate([left*(extrusion_vertical_spacing_x/2+extrusion_side/2),extrusion_main_length/2-30,-z_motor_side/2-3]) {
+    rotate([0,-90,0]) {
+      //% iec(IEC_320_C14_switched_fused_inlet);
+    }
+  }
+
+  //translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3),10,12.2/2+extrusion_side/2]) {
+  translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3-2),10,12.2/2+extrusion_side/2-2]) {
     rotate([0,0,90]) {
       rotate([180,0,0]) {
-        % color("orange") import("../../Voron-2/STLs/Electronics_Bay/wago_221-415_mount_3by5.stl");
+        //% color("orange") import("../../Voron-2/STLs/Electronics_Bay/wago_221-415_mount_3by5.stl");
+      }
+    }
+  }
+  // on bottom back rail towards left
+  translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-42),extrusion_vertical_spacing_y/2-extrusion_side/2-22.3,12.2/2+extrusion_side/2]) {
+    rotate([0,0,180]) {
+      rotate([180,0,0]) {
+        //% color("orange") import("../../VoronUsers/printer_mods/BlueBear/Wago_221_mount/WAGO_221-413_3x3-mount-screw.stl");
+      }
+    }
+  }
+  // on bottom left rail towards back
+  translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3),rear*(extrusion_vertical_spacing_x/2-extrusion_side/2-42),12.2/2+extrusion_side/2]) {
+    rotate([0,0,-90]) {
+      rotate([180,0,0]) {
+        //% color("orange") import("../../VoronUsers/printer_mods/BlueBear/Wago_221_mount/WAGO_221-413_3x3-mount-screw.stl");
+      }
+    }
+  }
+  // on bottom right rail towards back
+  translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-22.3),rear*(extrusion_vertical_spacing_x/2-extrusion_side/2-42-30),12.2/2+extrusion_side/2]) {
+    rotate([0,0,90]) {
+      rotate([180,0,0]) {
+        //% color("orange") import("../../VoronUsers/printer_mods/BlueBear/Wago_221_mount/WAGO_221-413_3x3-mount-screw.stl");
       }
     }
   }
@@ -575,8 +614,6 @@ module assembly(pct_x,pct_y,pct_z) {
   pos_y = pct_y*build_volume[y]-x_axis_offset_y;
   pos_z = pct_z*build_volume[z];
 
-  echo("[pos_x,pos_y,pos_z]: ", [pos_x,pos_y,pos_z]);
-
   y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
 
   panel_thickness = 3;
@@ -586,13 +623,10 @@ module assembly(pct_x,pct_y,pct_z) {
 
   frame_assembly();
 
-  echo("side_panel_height: ", side_panel_height);
-  echo("panel_width: ", panel_width);
+  //echo("side_panel_height: ", side_panel_height);
+  //echo("panel_width: ", panel_width);
   for(r=[0,90,180,270]) {
     rotate([0,0,r]) {
-      translate([0,extrusion_vertical_spacing_y/2+extrusion_side/2+panel_thickness/2+1.5,top_pos_z-9-side_panel_height/2]) {
-        // % cube([panel_width,panel_thickness,side_panel_height],center=true);
-      }
       //if (0) { //printed_height_extension_height > 0) {
       if (printed_height_extension_height > 0) {
         translate([extrusion_vertical_spacing_x-6.5,-extrusion_vertical_spacing_y-3.5,top_pos_z-80]) {
@@ -607,129 +641,6 @@ module assembly(pct_x,pct_y,pct_z) {
   //center_brace_anchor();
 
   z_axis_assembly(pos_z);
-
-  module position_pi() {
-    translate([pcb_length(RPI3)/2,-35,-5]) {
-      rotate([180,0,0]) {
-        //children();
-        //% pcb(RPI3);
-      }
-    }
-    translate([pcb_length(RPI0)/2,-35,-5]) {
-      rotate([180,0,0]) {
-        children();
-        //% pcb(RPI0);
-      }
-    }
-  }
-  position_pi() {
-    //% pcb(RPI3);
-    //% pcb(RPI0);
-  }
-
-  module position_skr_e3_mini() {
-    /*
-    //type = BTT_SKR_MINI_E3_V2_0; // only four steppers, would need two
-    type = BTT_SKR_MINI_E3_V2_0;
-    translate([0,0,extrusion_side-psu_height-5]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          % pcb(type);
-        }
-      }
-    }
-    */
-  }
-
-  module position_mcu() {
-    translate([0,0,extrusion_side/2-psu_height-4-20/2]) {
-      rotate([0,0,0]) {
-        rotate([180,0,0]) {
-          // stacked below PSU
-          children();
-        }
-      }
-    }
-    /*
-    translate([pcb_width(type)/2+10,0,0]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          //children();
-        }
-      }
-    }
-    */
-    //translate([extrusion_vertical_spacing_x/2-extrusion_side/2-32,0,0]) {
-    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-32),0,0]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          // next to PSU that is positioned front-to-back
-          //children();
-        }
-      }
-    }
-    translate([right*(extrusion_vertical_spacing_x/2-extrusion_side/2-95/2),front*(20),extrusion_side/2-3-20/2]) {
-      rotate([0,0,0]) {
-        rotate([180,0,0]) {
-          // beside front-to-back psu
-          //children();
-        }
-      }
-    }
-    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-95/2),extrusion_vertical_spacing_y/2-extrusion_side/2-70/2,extrusion_side/2-3-20/2]) {
-      rotate([0,0,0]) {
-        rotate([180,0,0]) {
-          // rear corner
-          //children();
-        }
-      }
-    }
-  }
-  position_mcu() {
-    type = BTT_SKR_V1_4_TURBO;
-    //type = BTT_SKR_MINI_E3_V2_0; // only four steppers, would need two
-    //% color("blue", 0.3) cube([90,64,20],center=true); // mellow fly d5
-    //% pcb(type);
-  }
-
-  psu_type = LRS_150_24;
-  psu_length = psu_length(psu_type);
-  psu_width = psu_width(psu_type);
-  psu_height = psu_height(psu_type);
-  module position_psu() {
-    // stuck to the bottom of the deck panel
-    pos_x = left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-psu_mount_gap);
-    pos_y = extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-4-psu_width/2;
-    translate([pos_x,pos_y,extrusion_side-panel_thickness-2]) {
-      rotate([0,0,180]) {
-        rotate([180,0,0]) {
-          children();
-        }
-      }
-    }
-
-    // on the very bottom
-    translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-psu_mount_gap),-10,extrusion_side/2]) {
-      rotate([0,0,0]) {
-        rotate([180,0,0]) {
-          //children();
-        }
-      }
-    }
-  }
-
-  position_psu() {
-    translate([0,0,psu_height(psu_type)/2]) {
-      //% color("#ccc") cube([psu_length(psu_type),psu_width(psu_type),psu_height(psu_type)],center=true);
-    }
-    difference() {
-      psu(psu_type);
-      translate([0,0,0]) {
-      }
-    }
-    //% cube([215,115,30],center=true);
-  }
-
   for(x=[left,right]) {
     ab_pod_assembly(x);
   }
@@ -745,9 +656,6 @@ module assembly(pct_x,pct_y,pct_z) {
 
   position_x_axis() {
     translate([0,carriage_length(y_carriage)/2-x_carriage_offset_space/2,extrusion_side/2+x_extrusion_above_y_carriage]) {
-      rotate([0,90,0]) {
-        //% extrusion(extrusion_main_length);
-      }
       translate([0,-x_carriage_offset_space/2,0]) {
         rotate([90,0,0]) {
           % rail(x_rail,x_rail_length);
@@ -847,4 +755,6 @@ module assembly(pct_x,pct_y,pct_z) {
       // probe_assembly();
     }
   }
+
+  electronics_assembly();
 }

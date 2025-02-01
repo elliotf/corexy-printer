@@ -491,7 +491,6 @@ module front_idler_top(side,is_final) {
   target_height = overall_height+mgn_height+m3_head_diam/2;
   target_screw_length = 35; // in case we want to make it longer
   target_compacting_screw_length = 35;
-  echo("target_height: ", target_height);
   idler_cavity_height = front_idler_pos_z(side)-front_idler_base_pos_z+belt_idler_spacer_length/2;
   height = target_height-idler_cavity_height;
 
