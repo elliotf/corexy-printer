@@ -10,7 +10,6 @@ use <./electronics.scad>;
 
 // FIXME:
 // * bed cable chain mounts
-// * Increase XY motor adjustment range by reducing area around XY pulley
 // * Reduce unique vitamin count
 //   * screws -- normalize on m3x10 for screwing to extrusion?
 // * camera mount
@@ -405,7 +404,7 @@ motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box,
 //rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y;
 rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y+(20-15)/2;
 
-motor_xy_adjustment_amount = 5;
+motor_xy_adjustment_amount = 7;
 
 //y_rail_sunk_into_extrusion = 0;
 //z_rail_sunk_into_extrusion = 0;

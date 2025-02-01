@@ -17,8 +17,7 @@ cut_through_height = 50;
 motor_shoulder_hole_smaller_by = 4;
 motor_shoulder_hole_smaller_diam = motor_shoulder_clearance-motor_shoulder_hole_smaller_by;
 
-innermost_motor_shoulder_hole = motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_clearance/2;
-//innermost_motor_shoulder_hole = motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_hole_smaller_diam/2;
+innermost_motor_shoulder_hole = motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_hole_smaller_diam/2;
 wall_between_motor_and_center_spar = innermost_motor_shoulder_hole-extrusion_shortest_length/2-0.6;
 
 center_anchor_center_pos_x = motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length/2;
@@ -92,13 +91,13 @@ module ab_pod_upper(is_final) {
     motor_holes(top_pos_z);
     translate([motor_xy_pos_x,motor_xy_pos_y,top_pos_z]) {
       hull() {
-        hole(motor_shoulder_clearance,cut_through_height,resolution*2);
+        hole(motor_shoulder_hole_smaller_diam,cut_through_height,resolution*2);
         translate([-motor_xy_adjustment_amount,0,0]) {
-          hole(motor_shoulder_clearance,cut_through_height,resolution*2);
+          hole(motor_shoulder_hole_smaller_diam,cut_through_height,resolution*2);
         }
       }
     }
-    translate([motor_xy_pos_x-motor_shoulder_clearance/2-motor_xy_adjustment_amount,-extrusion_width(extrusion_shortest_type)/2,top_pos_z]) {
+    translate([motor_xy_pos_x-motor_shoulder_hole_smaller_diam/2-motor_xy_adjustment_amount,-extrusion_width(extrusion_shortest_type)/2,top_pos_z]) {
       translate([0,rear_brace_pos_y,0]) {
         translate([0,-wall_between_motor_and_center_spar/2,0]) {
           rotate([0,0,90]) {
@@ -414,7 +413,7 @@ module upper_motor_area_profile() {
       translate([extrusion_vertical_spacing_x/2-extrusion_width(extrusion_vertical_type)/2-space_between_motor_and_corner/2,0,0]) {
         rounded_square(space_between_motor_and_corner,ab_corner_anchor_depth,wall_thickness*2);
       }
-      translate([motor_xy_pos_x+motor_shoulder_clearance/2+rounded_diam/2,0,0]) {
+      translate([motor_xy_pos_x+motor_shoulder_hole_smaller_diam/2+rounded_diam/2,0,0]) {
         rounded_square(rounded_diam,ab_corner_anchor_depth,rounded_diam);
       }
     }
