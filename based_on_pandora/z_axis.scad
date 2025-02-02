@@ -318,7 +318,8 @@ module z_idler_top_idler(is_final) {
   module holes() {
     position_idler() {
       translate([0,0,-belt_idler_spacer_length/2-3.6+16]) { // FIXME: figure out depth, figure out screw length
-        bridged_hole(m3_head_diam,m3_through_hole_diam,30,is_final);
+        //bridged_hole(m3_head_diam,m3_through_hole_diam,30,is_final);
+        hole(m3_through_hole_diam,30,resolution);
       }
     }
 
@@ -1520,7 +1521,7 @@ module position_z_modules(pos_z) {
             */
 
             translate([0,0,carriage_offset_z-pos_z]) {
-              z_carrier_front();
+              z_carrier_front(is_final);
               translate([-extrusion_side/2,0,0]) {
                 rotate([0,-90,0]) {
                   //% carriage(z_carriage);

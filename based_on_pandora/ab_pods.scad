@@ -413,8 +413,9 @@ module upper_motor_area_profile() {
       translate([extrusion_vertical_spacing_x/2-extrusion_width(extrusion_vertical_type)/2-space_between_motor_and_corner/2,0,0]) {
         rounded_square(space_between_motor_and_corner,ab_corner_anchor_depth,wall_thickness*2);
       }
-      translate([motor_xy_pos_x+motor_shoulder_hole_smaller_diam/2+rounded_diam/2,0,0]) {
-        rounded_square(rounded_diam,ab_corner_anchor_depth,rounded_diam);
+      larger_rounded = motor_shoulder_hole_smaller_diam;
+      translate([motor_xy_pos_x+motor_shoulder_hole_smaller_diam/2+larger_rounded/2,0,0]) {
+        rounded_square(larger_rounded,ab_corner_anchor_depth,larger_rounded,resolution*2);
       }
     }
   }
@@ -564,36 +565,6 @@ module ab_pod_assembly(side,is_final) {
   mirror([side-1,0,0]) {
     ab_pod_lower(is_final);
     ab_pod_upper(is_final);
-  }
-}
-
-module ab_pod_print_plate() {
-  space_apart = 5;
-  dist_x = extrusion_vertical_spacing_x/2-motor_xy_pos_x+extrusion_side/2+space_apart;
-  for(x=[left,right]) {
-    mirror([x-1,0,0]) {
-    //mirror([0,0,0]) {
-      translate([0,0,0]) {
-        translate([motor_xy_width*1.2+space_apart,0,0]) {
-          rotate([0,0,-90]) {
-            rotate([180,0,0]) {
-              translate([-motor_xy_pos_x,-motor_xy_pos_y,-motor_xy_pos_z-xy_motor_plate_thickness]) {
-                ab_pod_lower(is_final);
-              }
-            }
-          }
-        }
-        translate([motor_xy_width/2+space_apart/2,0,xy_motor_plate_thickness+belt_idler_stack_height]) {
-          rotate([0,0,-90]) {
-            rotate([180,0,0]) {
-              translate([-motor_xy_pos_x,-motor_xy_pos_y,-motor_xy_pos_z-ab_pod_upper_thickness]) {
-                ab_pod_upper(is_final);
-              }
-            }
-          }
-        }
-      }
-    }
   }
 }
 

@@ -440,19 +440,21 @@ center_brace_anchor_length = 18;
 max_center_brace_width = 45;
 center_brace_width = min(max_center_brace_width,2*(motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length)-0.2);
 
-module bridged_hole(od,id,length=50,is_final=1) {
-  hole(id,length,resolution);
-  translate([0,0,length/4]) {
-    hole(od,length/2,resolution);
-  }
-  if (is_final) {
-    intersection() {
-      union() {
-        cube([od,id,0.2*1*2],center=true);
-        cube([id,id,0.2*2*2],center=true);
-        hole(id,0.2*3*2,8);
+module bridged_hole(od,id,length=50,is_final=1,num_sides=resolution) {
+  render() {
+    hole(id,length,resolution);
+    translate([0,0,length/4]) {
+      hole(od,length/2,num_sides);
+    }
+    if (is_final) {
+      intersection() {
+        union() {
+          cube([od,id,0.2*1*2],center=true);
+          cube([id,id,0.2*2*2],center=true);
+          hole(id,0.2*3*2,8);
+        }
+        hole(od,0.2*3*3,num_sides);
       }
-      hole(od,0.2*3*3,resolution);
     }
   }
 }
@@ -555,6 +557,64 @@ module center_brace_anchor() {
   }
 }
 
+module half_rail_nut_bar(rail_type,rail_length,is_final) {
+  screw_type = rail_screw(rail_type);
+  screw_hole_diam = screw_radius(screw_type)*2;
+
+  nut_type = screw_nut(screw_type);
+  nut_diam = 2*nut_trap_flat_radius(nut_type);
+  nut_height = 3;
+
+  extrusion_slot_width = extrusion_channel_width(extrusion_main_type);
+  //extrusion_wall_thickness = extrusion_spar_thickness(extrusion_main_type);
+  extrusion_wall_thickness = extrusion_tab_thickness(extrusion_main_type);
+  extrusion_cavity_width = extrusion_channel_width_internal(extrusion_main_type);
+  extrusion_cavity_depth = 4;
+  plastic_below_extrusion_surface = 1;
+  nut_depth_below_extrusion_wall = 0.6;
+  meat_below_extrusion = 1.6;
+
+  echo("extrusion_wall_thickness: ", extrusion_wall_thickness);
+
+  echo("screw_hole_diam: ", screw_hole_diam);
+  echo("nut_diam: ", nut_diam);
+
+  module body() {
+    translate([rail_length/4,0,0]) {
+      translate([0,0,-extrusion_wall_thickness/2-plastic_below_extrusion_surface]) {
+        cube([rail_length/2-4,extrusion_slot_width-0.4,extrusion_wall_thickness],center=true);
+      }
+      hull() {
+        translate([0,0,-extrusion_wall_thickness]) {
+          translate([0,0,-meat_below_extrusion/2]) {
+            cube([rail_length/2-4,extrusion_cavity_width-0.5,meat_below_extrusion],center=true);
+          }
+          translate([0,0,-extrusion_cavity_depth/2]) {
+            cube([rail_length/2-4,5.5,extrusion_cavity_depth],center=true);
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    rail_hole_positions(rail_type, rail_length) {
+      translate([0,0,-extrusion_wall_thickness-nut_depth_below_extrusion_wall]) {
+        rotate([0,0,90]) {
+          rotate([0,180,0]) {
+            bridged_hole(nut_diam,screw_hole_diam,30,is_final,6);
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module assembly(pct_x,pct_y,pct_z) {
   /*
   // right side
@@ -637,11 +697,9 @@ module assembly(pct_x,pct_y,pct_z) {
     }
   }
 
-  //center_brace_anchor();
-
   z_axis_assembly(pos_z);
   for(x=[left,right]) {
-    ab_pod_assembly(x);
+    ab_pod_assembly(x,is_final);
   }
   y_axis_assembly(pos_y,is_final);
 
