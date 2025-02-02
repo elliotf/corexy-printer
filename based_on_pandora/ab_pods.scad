@@ -28,7 +28,7 @@ space_between_elongated_motor_holes_x = motor_xy_hole_spacing-m3_through_hole_di
 space_between_spar_and_elongated_holes_y = motor_xy_hole_spacing/2-m3_through_hole_diam/2-extrusion_width(extrusion_shortest_type)/2-rear_brace_offset_y-tolerance;
 
 center_brace_rear_wall_thickness = m3_through_hole_diam+space_between_spar_and_elongated_holes_y;
-center_brace_rear_wall_length = 10;
+center_brace_rear_wall_length = 8.5;
 
 module ab_pod_upper(is_final) {
   top_pos_z = ab_top_pos_z;
@@ -159,12 +159,10 @@ module ab_pod_lower(is_final) {
     }
     translate([0,0,motor_xy_pos_z+xy_motor_plate_thickness/2]) {
       linear_extrude(height=xy_motor_plate_thickness,center=true,convexity=2) {
-        lower_center_anchor_profile();
-      }
-    }
-    translate([0,0,motor_xy_pos_z+xy_motor_plate_thickness/2]) {
-      linear_extrude(height=xy_motor_plate_thickness,center=true,convexity=2) {
-        motor_plate_profile();
+        hull() {
+          lower_center_anchor_profile();
+          motor_plate_profile();
+        }
       }
     }
     translate([extrusion_vertical_spacing_x/2-extrusion_side/2,extrusion_vertical_spacing_y/2+extrusion_side/2-ab_corner_anchor_depth/2,0]) {
@@ -324,8 +322,8 @@ module corner_anchor_profile() {
 module motor_plate_profile() {
   module body() {
     hull() {
-      translate([motor_xy_pos_x-motor_xy_adjustment_amount,motor_xy_pos_y,0]) {
-        rounded_square(motor_xy_width+motor_xy_adjustment_amount*2,motor_xy_width,motor_xy_rounded);
+      translate([motor_xy_pos_x,motor_xy_pos_y,0]) {
+        rounded_square(motor_xy_width,motor_xy_width,motor_xy_rounded);
       }
     }
     translate([motor_xy_pos_x+motor_xy_width/2,motor_xy_pos_y+motor_xy_width/2-ab_corner_anchor_depth/2,0]) {
@@ -351,9 +349,8 @@ module lower_center_anchor_profile() {
   module body() {
     hull() {
       translate([motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount,0,0]) {
-        translate([0,motor_xy_pos_y,0]) {
+        translate([motor_xy_adjustment_amount/2,motor_xy_pos_y,0]) {
           rounded_square(motor_xy_rounded,motor_xy_width,motor_xy_rounded);
-
         }
         translate([0,rear_brace_pos_y,0]) {
           translate([-center_brace_anchor_length+rounded_diam/2,addition_backside_meat_for_center_anchor/2,0]) {
@@ -388,7 +385,7 @@ module upper_center_anchor_profile() {
           }
         }
         translate([0,motor_xy_pos_y,0]) {
-          translate([-motor_xy_width/2-motor_xy_adjustment_amount,0,0]) {
+          translate([-motor_xy_width/2-motor_xy_adjustment_amount/2,0,0]) {
             translate([motor_xy_width/4-motor_xy_rounded/2,motor_xy_width/2-motor_xy_rounded/2,0]) {
               rounded_square(motor_xy_width/2,motor_xy_rounded,motor_xy_rounded);
             }
@@ -441,7 +438,6 @@ module upper_screw_area_filler_profile() {
             square([wall_between_motor_and_center_spar,2],center=true);
           }
         }
-
       }
     }
     translate([motor_xy_pos_x-motor_xy_adjustment_amount-motor_shoulder_clearance/4-1,motor_xy_pos_y+motor_shoulder_clearance/4+1,0]) {
