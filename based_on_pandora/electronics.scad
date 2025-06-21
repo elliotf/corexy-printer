@@ -63,9 +63,9 @@ module position_mcu() {
   }
 }
 
-psu_type = LRS_150_24;
+psu_type = sizes[printer_size][ELECTRONICS][0];
 nopscadlib_psu_length = psu_length(psu_type); // this seems to be incorrect; NopSCADlib has 152.5
-psu_length = 159;
+psu_length = (psu_type == LRS_150_24) ? 159  : psu_length(psu_type);
 psu_length_delta = psu_length-nopscadlib_psu_length;
 psu_width = psu_width(psu_type);
 psu_height = psu_height(psu_type);

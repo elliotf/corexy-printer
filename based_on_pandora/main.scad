@@ -10,6 +10,7 @@ use <./electronics.scad>;
 
 // FIXME:
 // * bed cable chain mounts
+// * zip tie points for AB motor pods
 // * Reduce unique vitamin count
 //   * screws -- normalize on m3x10 for screwing to extrusion?
 // * camera mount
@@ -31,7 +32,7 @@ $fn=24;
 
 is_final = false;
 
-m3_threaded_insert_od = 5;
+m3_threaded_insert_od = 4.7;
 m3_threaded_insert_height = 4;
 
 size_large = 0;
@@ -43,9 +44,9 @@ size_large_2020 = 5;
 //printer_size = size_large;
 //printer_size = size_medium;
 //printer_size = size_small;
-printer_size = size_small_2020; // B0rken
-//printer_size = size_medium_2020; // B0rken
-//printer_size = size_large_2020; // B0rken
+printer_size = size_small_2020; // mostly not b0rken
+//printer_size = size_medium_2020; // mostly b0rken
+//printer_size = size_large_2020; // mostly b0rken
 
 m3_through_hole_diam = 3.3;
 m3_thread_into_plastic_diam = 2.9;
@@ -132,7 +133,7 @@ sizes = [
       [180,180,6],
     ],
   ],
-  [
+  [ // size_small
     [
       [400,MakerbeamXL],
       [200,MakerbeamXL],
@@ -154,11 +155,11 @@ sizes = [
       [120,120,6],
     ],
   ],
-  [
+  [ // size_small_2020
     [
       [400,E2020t],
       [200,E2020t],
-      [150,E2020t],
+      [150,MakerbeamXL],
       [100,MakerbeamXL],
     ], // extrusion_lengths
     [
@@ -176,13 +177,12 @@ sizes = [
       [120,120,6],
     ],
   ],
-  /*
   [
     [
       [450,E2020t],
-      [270,E2020t],
+      [250,E2020t],
       [200,E2020t],
-      [150,E2020t],
+      [150,MakerbeamXL],
     ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,250], // X axis
@@ -193,7 +193,7 @@ sizes = [
     //[NEMA14_52,NEMA17_47,NEMA17_27,200], // untested
     [
       // electronics
-      LRS_150_24,
+      S_300_12,
     ],
     [
       [180,180,6],
@@ -202,9 +202,9 @@ sizes = [
   [
     [
       [500,E2020t],
-      [350,E2020t],
+      [300,E2020t],
       [250,E2020t],
-      [200,E2020t],
+      [200,MakerbeamXL],
     ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,300], // X axis
@@ -215,13 +215,12 @@ sizes = [
     //[NEMA14_52,NEMA17_47,NEMA17_27,200], // untested
     [
       // electronics
-      LRS_150_24,
+      S_300_12,
     ],
     [
       [235,235,6],
     ],
   ],
-  */
 ];
 
 EXTRUSION_LENGTHS = 0;
@@ -303,7 +302,12 @@ printed_height_extension_height = 0;
 top_pos_z = extrusion_vertical_length+printed_height_extension_height;
 //gantry_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length-extrusion_side/2;
 //gantry_pos_z = z_rail_length+37.5;
-gantry_pos_z = extrusion_side+z_rail_length+27.5;
+//gantry_pos_z = extrusion_side+z_rail_length+27.5;
+old_gantry_pos_z = extrusion_side+z_rail_length+27.5;
+echo("old_gantry_pos_z: ", old_gantry_pos_z);
+new_gantry_pos_z = extrusion_main_length-2.5;
+echo("new_gantry_pos_z: ", new_gantry_pos_z);
+gantry_pos_z = new_gantry_pos_z;
 //gantry_pos_z = 180+15/2;
 
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
@@ -574,6 +578,9 @@ module half_rail_nut_bar(rail_type,rail_length,is_final) {
   nut_depth_below_extrusion_wall = 0.6;
   meat_below_extrusion = 1.6;
 
+  extrusion_slot_fill_width = extrusion_slot_width-0.4;
+  rounded_diam = extrusion_slot_fill_width;
+
   echo("extrusion_wall_thickness: ", extrusion_wall_thickness);
 
   echo("screw_hole_diam: ", screw_hole_diam);
@@ -582,15 +589,15 @@ module half_rail_nut_bar(rail_type,rail_length,is_final) {
   module body() {
     translate([rail_length/4,0,0]) {
       translate([0,0,-extrusion_wall_thickness/2-plastic_below_extrusion_surface]) {
-        cube([rail_length/2-4,extrusion_slot_width-0.4,extrusion_wall_thickness],center=true);
+        rounded_cube(rail_length/2-4,extrusion_slot_width-0.4,extrusion_wall_thickness,rounded_diam);
       }
       hull() {
         translate([0,0,-extrusion_wall_thickness]) {
           translate([0,0,-meat_below_extrusion/2]) {
-            cube([rail_length/2-4,extrusion_cavity_width-0.5,meat_below_extrusion],center=true);
+            rounded_cube(rail_length/2-4,extrusion_cavity_width-0.5,meat_below_extrusion,rounded_diam);
           }
           translate([0,0,-extrusion_cavity_depth/2]) {
-            cube([rail_length/2-4,5.5,extrusion_cavity_depth],center=true);
+            rounded_cube(rail_length/2-4,5.5,extrusion_cavity_depth,rounded_diam);
           }
         }
       }

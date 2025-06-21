@@ -215,10 +215,38 @@ module ab_pod_lower(is_final) {
       }
     }
 
+    center_anchor_screw_inner_pos_x = center_anchor_center_pos_x-center_brace_anchor_length*0.2;
+    center_anchor_screw_outer_pos_x = center_anchor_center_pos_x+center_brace_anchor_length*0.3;
+    zip_tie_hole_id = 3;
+    motor_zip_tie_pos_x = center_anchor_screw_outer_pos_x-zip_tie_hole_id/2+1;
+
+    zip_tie_hole_width = 4;
+    zip_tie_hole_thickness = 2;
+    wall_between_wires_and_zip_ties = 1.5;
+    od = zip_tie_hole_id + zip_tie_hole_thickness*2;
+
+    module zip_tie_hole() {
+
+      difference() {
+        hole(od,zip_tie_hole_width,resolution);
+        hole(zip_tie_hole_id,zip_tie_hole_width+1,resolution);
+      }
+    }
+
+    translate([motor_zip_tie_pos_x,0,motor_xy_pos_z]) {
+      for(y=[front,rear]) {
+        translate([0,rear_brace_pos_y+y*(15/2+zip_tie_hole_width/2),0]) {
+          rotate([90,0,0]) {
+            zip_tie_hole();
+          }
+        }
+      }
+    }
+
     screw_through = [
       [outer_idler_pos_x,outer_idler_pos_y,0],
-      [center_anchor_center_pos_x-center_brace_anchor_length*0.2,rear_brace_pos_y,0],
-      [center_anchor_center_pos_x+center_brace_anchor_length*0.3,rear_brace_pos_y,0],
+      [center_anchor_screw_outer_pos_x,rear_brace_pos_y,0],
+      [center_anchor_screw_inner_pos_x,rear_brace_pos_y,0],
     ];
     thread_into_plastic = [
       [rear_idler_pos_x,rear_idler_pos_y,0],
@@ -410,7 +438,7 @@ module upper_motor_area_profile() {
       translate([extrusion_vertical_spacing_x/2-extrusion_width(extrusion_vertical_type)/2-space_between_motor_and_corner/2,0,0]) {
         rounded_square(space_between_motor_and_corner,ab_corner_anchor_depth,wall_thickness*2);
       }
-      larger_rounded = motor_shoulder_hole_smaller_diam;
+      larger_rounded = motor_shoulder_hole_smaller_diam/2;
       translate([motor_xy_pos_x+motor_shoulder_hole_smaller_diam/2+larger_rounded/2,0,0]) {
         rounded_square(larger_rounded,ab_corner_anchor_depth,larger_rounded,resolution*2);
       }
@@ -546,7 +574,7 @@ module ab_pod_assembly(side,is_final) {
     for(a=[0,motor_xy_adjustment_amount]) {
     //for(a=[0]) {
       translate([-side*a,0,motor_xy_pos_z]) {
-        rotate([0,0,side*90]) {
+        rotate([0,0,side*180]) {
           % NEMA(motor_type_xy); // AB motor
         }
         translate([0,0,16-side*4.5]) {
