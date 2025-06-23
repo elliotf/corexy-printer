@@ -84,8 +84,11 @@ belt_idler_stack_height = belt_idler_spacer_length*2;
 psu_mount_gap = 4;
 height_above_z_motor = 1;
 height_below_z_motor = 4;
-z_motor_type = NEMA17_47;
+//z_motor_type = NEMA17_47; // belted
+z_motor_type = NEMA17_27; // leadscrew
 z_motor_side = NEMA_width(z_motor_type);
+z_motor_hole_spacing = NEMA_hole_pitch(z_motor_type);
+z_motor_screw_spacing = z_motor_hole_spacing;
 z_axis_screw_mount_thickness = 4;
 
 sizes = [
@@ -279,8 +282,6 @@ build_plate_dimensions = printer_config[MISC][0];
 
 skirt_height = 0;
 bottom_pos_z = 0;
-//extrusion_base_pos_z = extrusion_side/2;
-extrusion_base_pos_z = extrusion_side/2;
 
 z_motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
 z_base_motor_mount_overall_height = abs(z_motor_pos_z)+z_motor_side/2+height_below_z_motor;
@@ -305,7 +306,8 @@ top_pos_z = extrusion_vertical_length+printed_height_extension_height;
 //gantry_pos_z = extrusion_side+z_rail_length+27.5;
 old_gantry_pos_z = extrusion_side+z_rail_length+27.5;
 echo("old_gantry_pos_z: ", old_gantry_pos_z);
-new_gantry_pos_z = extrusion_main_length-2.5;
+//new_gantry_pos_z = extrusion_main_length-2.5;
+new_gantry_pos_z = extrusion_main_length;
 echo("new_gantry_pos_z: ", new_gantry_pos_z);
 gantry_pos_z = new_gantry_pos_z;
 //gantry_pos_z = 180+15/2;
@@ -431,6 +433,10 @@ rear_brace_pos_y = motor_xy_pos_y+rear_brace_offset_y;
 rear_brace_pos_z = motor_xy_pos_z+extrusion_width(extrusion_shortest_type)/2+xy_motor_plate_thickness;
 rear_brace_distance_from_rear = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
 rear_z_offset_x = 0;
+rear_z_pos_y = extrusion_vertical_spacing_y/2-extrusion_side;
+//rear_z_pos_y = extrusion_vertical_spacing_y/2;
+//rear_z_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length/2;
+rear_z_pos_z = bottom_pos_z+extrusion_main_length/2;
 
 //nozzle_x_extrusion_dist_y = 27.35;
 nozzle_x_extrusion_dist_y = 29;
@@ -732,6 +738,7 @@ module assembly(pct_x,pct_y,pct_z) {
             translate([0,0,-extrusion_side/2]) {
               translate([0,-nozzle_x_extrusion_dist_y,-nozzle_x_extrusion_dist_z+1]) {
                 % color("red") hole(1.5,2,resolution);
+                % color("red") hole(0.75,7,resolution);
               }
             }
             translate([0,front*(15/2+carriage_height(x_carriage)),0]) {

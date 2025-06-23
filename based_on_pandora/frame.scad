@@ -23,7 +23,7 @@ module frame_assembly() {
 
   hole_diam = extrusion_center_hole(extrusion_vertical_type) - 0.5;
 
-  translate([rear_z_offset_x,extrusion_vertical_spacing_y/2-extrusion_side,bottom_pos_z+extrusion_main_length/2]) {
+  translate([rear_z_offset_x,rear_z_pos_y,rear_z_pos_z]) {
     % difference() {
       extrusion(extrusion_main_type,extrusion_main_length);
       translate([0,0,-extrusion_main_length/2+extrusion_side/2]) {

@@ -77,7 +77,7 @@ psu_mount_wall_thickness = 2;
 
 // below the deck panel on a mount, facing right
 psu_pos_x = left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-4);
-psu_pos_y = extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-psu_width/2-10;
+psu_pos_y = extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-psu_width/2-20;
 psu_pos_z = extrusion_side-deck_panel_thickness-psu_mount_wall_thickness-tolerance;
 
 psu_mount_overall_width = psu_hole_width+psu_mount_wall_thickness*2;
