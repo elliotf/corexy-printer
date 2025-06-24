@@ -98,7 +98,7 @@ module frame_assembly() {
 
   for(x=[left,right]) {
     translate([x*extrusion_vertical_spacing_x/2,0,0]) {
-      skirt_filler(x);
+      //skirt_filler(x);
     }
   }
 }
