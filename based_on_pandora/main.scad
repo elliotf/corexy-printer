@@ -3,6 +3,7 @@ include <NopSCADlib/lib.scad>;
 use <./toolhead.scad>;
 use <./xy_joints.scad>;
 use <./z_axis.scad>;
+use <./x_carriage.scad>;
 use <./probe.scad>;
 use <./frame.scad>;
 use <./ab_pods.scad>;
@@ -260,11 +261,18 @@ extrusion_shortest_side = extrusion_width(extrusion_shortest_type);
 extrusion_type = extrusion_vertical_type;
 
 //extrusion_side = 15;
+extrusion_slot_width = extrusion_channel_width(extrusion_type);
 extrusion_side = extrusion_width(extrusion_type);
+
+panel_extrusion_slot_room = 6;
+echo("extrusion_vertical_length: ", extrusion_vertical_length);
+panel_width = extrusion_main_length+extrusion_side-panel_extrusion_slot_room;
+panel_height = extrusion_vertical_length-extrusion_side-panel_extrusion_slot_room;
+echo("panel_width: ", panel_width);
+echo("panel_height: ", panel_height);
 
 //extrusion_side = 20;
 //extrusion_slot_width = 3;
-extrusion_slot_width = extrusion_channel_width(extrusion_type);
 
 motor_type_xy = printer_config[2][0];
 motor_type_z = printer_config[2][0];
@@ -275,7 +283,7 @@ build_volume = [
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+6.5, // once we have a vampire bat-like extrusionless X gantry
   //printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+4.5+x_axis_offset_y*2, // probe mount hits motor plate with NEMA17
   printer_config[RAIL_CONFIGURATION][y][2] - carriage_length(printer_config[RAIL_CONFIGURATION][y][0])+3.5+extrusion_side-15, // probe mount hits motor plate with NEMA17
-  printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]),
+  printer_config[RAIL_CONFIGURATION][z][2] - carriage_length(printer_config[RAIL_CONFIGURATION][z][0]) + 1,
 ];
 
 build_plate_dimensions = printer_config[MISC][0];
@@ -365,7 +373,7 @@ outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-7.5;
 
 //ab_corner_anchor_depth = 30; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
 //ab_corner_anchor_depth = 28.4; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
-ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-2);
+ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-3);
 
 //non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-23;
 //non_motor_idler_pos_y = outer_idler_pos_y+5.8;
@@ -424,6 +432,25 @@ ab_pod_lower_thickness = xy_bottom_of_belt_idler_stack-gantry_pos_z-extrusion_si
 ab_pod_upper_thickness = 6;
 frame_anchor_plastic_thickness = 6;
 
+leadscrew_diam = 8;
+lead_screw_length = 200;
+leadscrew_nut_shaft_diam = 10.2;
+leadscrew_nut_base_diam = 22;
+leadscrew_nut_base_thickness = 3.5;
+leadscrew_nut_base_inset = 1.5;
+leadscrew_nut_shaft_length = leadscrew_nut_base_inset+leadscrew_nut_base_thickness+10;
+
+leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_screw_spacing/2+m3_head_diam/2+2);
+//leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_side/2);
+//leadscrew_base_motor_offset_y = rear*(extrusion_side/2+z_motor_screw_spacing/2+m3_head_diam/2);
+leadscrew_base_motor_offset_y = rear*(extrusion_side/2+z_motor_screw_spacing/2+m3_head_diam/2+2);
+//leadscrew_rear_motor_offset_x = left*(extrusion_side/2+leadscrew_nut_base_diam/2);
+//leadscrew_rear_motor_offset_x = left*(z_motor_side/2);
+leadscrew_rear_motor_offset_x = left*(carriage_width(z_carriage)/2+1+leadscrew_nut_base_diam/2);
+leadscrew_rear_motor_offset_y = extrusion_side/2+carriage_height(z_carriage);
+//leadscrew_rear_motor_offset_x = 0;
+//leadscrew_rear_motor_offset_y = extrusion_side/2+mgn_height+leadscrew_nut_shaft_diam+1;
+
 //rear_z_offset_x = motor_xy_width/2;
 //rear_z_offset_x = right*(5+extrusion_side/2);
 //rear_z_offset_x = left*5;
@@ -432,7 +459,10 @@ frame_anchor_plastic_thickness = 6;
 rear_brace_pos_y = motor_xy_pos_y+rear_brace_offset_y;
 rear_brace_pos_z = motor_xy_pos_z+extrusion_width(extrusion_shortest_type)/2+xy_motor_plate_thickness;
 rear_brace_distance_from_rear = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
-rear_z_offset_x = 0;
+//rear_z_offset_x = 0;
+//rear_z_offset_x = ceil(leadscrew_rear_motor_offset_x*0.7);
+rear_z_offset_x = -12;
+echo("rear_z_offset_x: ", rear_z_offset_x);
 rear_z_pos_y = extrusion_vertical_spacing_y/2-extrusion_side;
 //rear_z_pos_y = extrusion_vertical_spacing_y/2;
 //rear_z_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length/2;
@@ -449,6 +479,67 @@ center_brace_anchor_length = 18;
 
 max_center_brace_width = 45;
 center_brace_width = min(max_center_brace_width,2*(motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount-center_brace_anchor_length)-0.2);
+
+y_endstop_type = small_microswitch;
+y_endstop_thickness = microswitch_thickness(y_endstop_type);
+y_endstop_length = microswitch_length(y_endstop_type);
+y_endstop_width = microswitch_width(y_endstop_type);
+y_endstop_dist_from_extrusion_center_x = y_endstop_thickness/2+extrusion_side/2;
+y_endstop_dist_from_extrusion_center_y = ab_corner_anchor_depth-y_endstop_width/2-extrusion_side/2;
+
+/*
+module corner_y_endstop_mount() {
+  mount_thickness = 3;
+  mount_height = y_endstop_length+2;
+
+  endstop_area_depth = ab_corner_anchor_depth-extrusion_side;
+
+  module position_microswitch() {
+    translate([-y_endstop_dist_from_extrusion_center_x,-y_endstop_dist_from_extrusion_center_y,y_endstop_length/2+1]) {
+      rotate([0,-90,0]) {
+        rotate([180,0,0]) {
+          children();
+        }
+      }
+    }
+  }
+
+  module body() {
+    translate([0,-extrusion_side/2,mount_height/2+1]) {
+      translate([0,-mount_thickness/2,0]) {
+        rounded_cube(extrusion_side,mount_thickness,mount_height,mount_thickness);
+      }
+      translate([-extrusion_side/2+mount_thickness,-endstop_area_depth/2,0]) {
+        rounded_cube(mount_thickness*2,endstop_area_depth,mount_height,mount_thickness);
+      }
+    }
+  }
+
+  module holes() {
+    position_microswitch() {
+      % microswitch(y_endstop_type);
+      microswitch_hole_positions(y_endstop_type) {
+        hole(1.8,40*2,resolution);
+      }
+    }
+
+    translate([0,-extrusion_side/2-mount_thickness,mount_height/2]) {
+      rotate([90,0,0]) {
+        hole(3.2,50,resolution);
+
+        translate([0,0,20/2]) {
+          //hole(m3_head_diam,20,resolution);
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+*/
 
 module bridged_hole(od,id,length=50,is_final=1,num_sides=resolution) {
   render() {
@@ -469,6 +560,7 @@ module bridged_hole(od,id,length=50,is_final=1,num_sides=resolution) {
   }
 }
 
+/*
 module x_carriage() {
   translate([0,0,0]) {
     rotate([0,0,0]) {
@@ -476,14 +568,19 @@ module x_carriage() {
     }
   }
 }
+*/
+
+print_color = "#0094a4"; // polymaker teal
+//print_color = "#008dc3"; // polymaker pop blue
+frame_color = "#333";
 
 module extrusion_l(length) {
   if (extrusion_side == 15) {
     //% extrusion(MakerbeamXL, length); // very different from makerbeam xl
-    extrusion_makerbeam_xl(length);
+    color(frame_color) extrusion_makerbeam_xl(length);
   } else if (extrusion_side == 20) {
     //% extrusion_2020(length);
-    extrusion(E2020t, length);
+    color(frame_color) extrusion(E2020t, length);
   } else {
     // wat
   }
@@ -686,12 +783,14 @@ module assembly(pct_x,pct_y,pct_z) {
   pos_y = pct_y*build_volume[y]-x_axis_offset_y;
   pos_z = pct_z*build_volume[z];
 
+  echo("pos_z: ", pos_z);
+
   y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
 
-  panel_thickness = 3;
+  //panel_thickness = 3;
   //side_panel_height = 332;
   side_panel_height = extrusion_vertical_length-9*2;
-  panel_width = 212;
+  //panel_width = 212;
 
   frame_assembly();
 
@@ -703,18 +802,12 @@ module assembly(pct_x,pct_y,pct_z) {
       if (printed_height_extension_height > 0) {
         translate([extrusion_vertical_spacing_x-6.5,-extrusion_vertical_spacing_y-3.5,top_pos_z-80]) {
           rotate([0,0,90]) {
-            % color("orange") import("./external/box-zero-Top_Corner_x4.stl");
+            // % color(print_color) import("./external/box-zero-Top_Corner_x4.stl");
           }
         }
       }
     }
   }
-
-  z_axis_assembly(pos_z);
-  for(x=[left,right]) {
-    ab_pod_assembly(x,is_final);
-  }
-  y_axis_assembly(pos_y,is_final);
 
   module position_x_axis() {
     translate([0,x_axis_offset_y,gantry_pos_z+extrusion_side/2+carriage_height(y_carriage)]) {
@@ -734,6 +827,9 @@ module assembly(pct_x,pct_y,pct_z) {
           rotate([90,0,0]) {
             % carriage(x_carriage);
           }
+          translate([0,-3.5,-carriage_width(x_carriage)/2-6.25]) {
+            // carriage_cowl_bottom_anchor();
+          }
           translate([0,1,0]) {
             translate([0,0,-extrusion_side/2]) {
               translate([0,-nozzle_x_extrusion_dist_y,-nozzle_x_extrusion_dist_z+1]) {
@@ -743,10 +839,10 @@ module assembly(pct_x,pct_y,pct_z) {
             }
             translate([0,front*(15/2+carriage_height(x_carriage)),0]) {
               rotate([-90,0,0]) {
-                % color("orange") import("../Pandoras_Box/STLs/Gantry/x_carriage.stl");
+                % color(print_color) import("../Pandoras_Box/STLs/Gantry/x_carriage.stl");
               }
             }
-            % color("lightblue") toolhead();
+            % color(print_color) toolhead();
           }
         }
       }
@@ -755,7 +851,8 @@ module assembly(pct_x,pct_y,pct_z) {
 
   module belt_path(side,belt_tension_amount=0) {
     anchor_for = [-pos_x,0,pos_x];
-    color_for = ["blue", 0, "red"];
+    //color_for = ["blue", 0, "red"];
+    color_for = ["#777", 0, "#777"];
 
     x_carriage_pos_x = anchor_for[side+1];
     x_carriage_pos_y = y_carriage_pos_y+x_carriage_offset_y;
@@ -819,7 +916,6 @@ module assembly(pct_x,pct_y,pct_z) {
 
   % belt_path(left);
   % belt_path(right);
-  //% belt_path(right,motor_xy_adjustment_amount);
 
   translate([0,0,gantry_pos_z-15/2]) {
     rotate([0,0,0]) {
@@ -828,4 +924,26 @@ module assembly(pct_x,pct_y,pct_z) {
   }
 
   electronics_assembly();
+
+  /*
+  translate([extrusion_vertical_spacing_x/2,extrusion_vertical_spacing_y/2,ab_top_pos_z+ab_pod_upper_thickness]) {
+    corner_y_endstop_mount();
+  }
+  */
+
+  for(x=[left,right]) {
+    ab_pod_assembly(x,is_final);
+  }
+  y_axis_assembly(pos_y,is_final);
+  z_axis_assembly(pos_z);
 }
+
+module dummy() {
+  translate([-148,105,-85.4]) {
+    rotate([0,0,0]) {
+      // % color(print_color) import("./external/cartographer_mount_long.stl");
+    }
+  }
+}
+
+//dummy();

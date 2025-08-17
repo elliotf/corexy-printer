@@ -110,6 +110,9 @@ module xy_joint_single_piece(side, is_final) {
   meat_beside_rail_at_end_of_support = 5;
   rail_body_meat = meat_behind_rail+meat_below_carriage;
 
+  endstop_screw_hole_diam = m3_thread_into_plastic_diam;
+  mgn_carriage_offset_y = -1;
+
   module position_rail() {
     translate([-side*(extrusion_side/2+x_rail_length/2),rail_pos_y,rail_pos_z]) {
       rotate([90,0,0]) {
@@ -144,14 +147,31 @@ module xy_joint_single_piece(side, is_final) {
   }
 
   module position_mgn() {
-    translate([0,0,-y_rail_sunk_into_extrusion]) {
+    translate([0,mgn_carriage_offset_y,-y_rail_sunk_into_extrusion]) {
       rotate([0,0,90]) {
         children();
       }
     }
   }
 
+  module position_endstop_trigger() {
+    if (side == right) {
+      translate([-y_endstop_dist_from_extrusion_center_x,mgn_area_depth/2-rail_body_meat/2,mgn_height+overall_height+y_endstop_thickness/2-1]) {
+        rotate([90,0,0]) {
+          children();
+        }
+      }
+    }
+  }
+
   module body() {
+    position_endstop_trigger() {
+      endstop_screw_mount_body_diam = endstop_screw_hole_diam+2*2;
+      body_length = y_endstop_length+endstop_screw_mount_body_diam*2;
+      translate([0,-body_length/2+endstop_screw_mount_body_diam/2,0]) {
+        rounded_cube(endstop_screw_mount_body_diam,body_length,rail_body_meat,endstop_screw_mount_body_diam);
+      }
+    }
     translate([0,0,mgn_height+overall_height/2-y_rail_sunk_into_extrusion]) {
       translate([0,0,0]) {
         rotate([90,0,0]) {
@@ -195,10 +215,9 @@ module xy_joint_single_piece(side, is_final) {
       hole(belt_idler_belt_cavity_diam,belt_cavity_height,resolution);
     }
   }
-
   module holes() {
-    position_mgn() {
-      % carriage(y_carriage);
+    position_endstop_trigger() {
+      hole(endstop_screw_hole_diam,40,resolution);
     }
 
     module elongated_hex_hole() {
@@ -357,30 +376,52 @@ module xy_joint_single_piece(side, is_final) {
       }
     }
 
+
     translate([0,0,mgn_height]) { // FIXME: mgn_height-y_rail_sunk_into_extrusion ?
       screw_head_height=7;
 
-      for(x=[left,right],y=[front,rear]) {
-        translate([x*(hole_spacing_x/2),y*(hole_spacing_y/2),0]) {
-          translate([0,0,xy_carriage_base_thickness]) {
-            countersunk_m2(xy_carriage_base_thickness+1,screw_head_height);
+      translate([0,mgn_carriage_offset_y,0]) {
+        for(x=[left,right],y=[front,rear]) {
+          translate([x*(hole_spacing_x/2),y*(hole_spacing_y/2),0]) {
+            translate([0,0,xy_carriage_base_thickness]) {
+              countersunk_m2(xy_carriage_base_thickness+1,screw_head_height);
+            }
           }
         }
-      }
-      translate([-side*hole_spacing_x/2,-hole_spacing_y/2,xy_carriage_base_thickness+screw_head_height/2]) {
-        hull() {
-          hole(m2_head_diam,screw_head_height,resolution);
-
-          translate([-side*m2_head_diam,0,0]) {
+        translate([-side*hole_spacing_x/2,-hole_spacing_y/2,xy_carriage_base_thickness+screw_head_height/2]) {
+          hull() {
             hole(m2_head_diam,screw_head_height,resolution);
+
+            translate([-side*m2_head_diam,0,0]) {
+              hole(m2_head_diam,screw_head_height,resolution);
+            }
           }
         }
-      }
-      all_the_way=100;
-      translate([-side*hole_spacing_x/2,hole_spacing_y/2,xy_carriage_base_thickness+all_the_way/2]) {
-        hole(m2_head_diam,all_the_way,resolution);
+        all_the_way=100;
+        translate([-side*hole_spacing_x/2,hole_spacing_y/2,xy_carriage_base_thickness+all_the_way/2]) {
+          hole(m2_head_diam,all_the_way,resolution);
+        }
       }
     }
+
+    /*
+    // clearance for right rear belt idler
+    // does not appear to be needed at the moment because the carriage collides first
+    translate([idler_rear_pos_x+side*(1),mgn_area_depth/2,xy_belt_center_extrusion_offset_z]) {
+      hull() {
+        translate([0,1,0]) {
+          rotate([90,0,0]) {
+            rounded_cube(belt_idler_cavity_diam,belt_return_path_side_cut_height,2,2);
+          }
+        }
+        translate([side*20,1-20,0]) {
+          rotate([90,0,0]) {
+            rounded_cube(belt_idler_cavity_diam,belt_return_path_side_cut_height,2,2);
+          }
+        }
+      }
+    }
+    */
   }
 
   module bridges() {
@@ -406,11 +447,17 @@ module xy_joint_single_piece(side, is_final) {
     }
   }
 
-  difference() {
-    body();
-    holes();
+
+  position_mgn() {
+    % carriage(y_carriage);
   }
-  bridges();
+  color(print_color) {
+    difference() {
+      body();
+      holes();
+    }
+    bridges();
+  }
 }
 
 module y_carriage_assembly(side,is_final) {
@@ -639,7 +686,7 @@ module front_idler_bottom(side,is_final) {
 }
 
 module y_axis_assembly(pos_y,is_final) {
-  for(x=[left,right]) {
+  color(print_color) for(x=[left,right]) {
     front_idler_top(x,is_final);
     front_idler_bottom(x,is_final);
   }

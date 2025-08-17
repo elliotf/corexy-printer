@@ -30,8 +30,24 @@ space_between_spar_and_elongated_holes_y = motor_xy_hole_spacing/2-m3_through_ho
 center_brace_rear_wall_thickness = m3_through_hole_diam+space_between_spar_and_elongated_holes_y;
 center_brace_rear_wall_length = 8.5;
 
-module ab_pod_upper(is_final) {
+module ab_pod_upper(side,is_final) {
   top_pos_z = ab_top_pos_z;
+
+  module position_endstop() {
+    if (side == right) {
+      translate([
+        extrusion_vertical_spacing_x/2-y_endstop_dist_from_extrusion_center_x+2,
+        extrusion_vertical_spacing_y/2-y_endstop_dist_from_extrusion_center_y,
+        top_pos_z+ab_pod_upper_thickness+y_endstop_thickness/2,
+      ]) {
+        rotate([0,0,0]) {
+          rotate([180,0,0]) {
+            children();
+          }
+        }
+      }
+    }
+  }
 
   module body() {
     translate([0,0,top_pos_z]) {
@@ -88,6 +104,11 @@ module ab_pod_upper(is_final) {
   }
 
   module holes() {
+    position_endstop() {
+      microswitch_hole_positions(y_endstop_type) {
+        hole(1.7,2*(y_endstop_thickness/2+ab_pod_upper_thickness-1),resolution);
+      }
+    }
     motor_holes(top_pos_z);
     translate([motor_xy_pos_x,motor_xy_pos_y,top_pos_z]) {
       hull() {
@@ -138,14 +159,17 @@ module ab_pod_upper(is_final) {
       }
     }
   }
+  position_endstop() {
+    % microswitch(y_endstop_type);
+  }
 
-  difference() {
+  color(print_color) difference() {
     body();
     holes();
   }
 }
 
-module ab_pod_lower(is_final) {
+module ab_pod_lower(side,is_final) {
   module body() {
     translate([0,0,motor_xy_pos_z+xy_motor_plate_thickness-ab_pod_lower_thickness/2]) {
       linear_extrude(height=ab_pod_lower_thickness,center=true,convexity=2) {
@@ -287,7 +311,7 @@ module ab_pod_lower(is_final) {
     }
   }
 
-  difference() {
+  color(print_color) difference() {
     body();
     holes();
   }
@@ -587,8 +611,8 @@ module ab_pod_assembly(side,is_final) {
   }
 
   mirror([side-1,0,0]) {
-    ab_pod_lower(is_final);
-    ab_pod_upper(is_final);
+    ab_pod_lower(side,is_final);
+    ab_pod_upper(side,is_final);
   }
 }
 

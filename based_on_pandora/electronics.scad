@@ -342,16 +342,42 @@ module psu_mount_non_terminal_side(side=right) {
 
 module electronics_assembly() {
   for(x=[left,right]) {
-    //psu_mount_non_terminal_side(x);
+    color(print_color) psu_mount_non_terminal_side(x);
   }
 
-  //psu_mount_terminal_side();
+  color(print_color) psu_mount_terminal_side();
 
 
+  psu_length = 194;
+  psu_width = 55;
   psu_height = 26;
   translate([0,0,extrusion_side-psu_height/2-deck_panel_thickness]) {
     rotate([0,0,0]) {
-      % color("#ccc") cube([194,55,psu_height],center=true);
+      //% color("#ccc") cube([psu_length,psu_width,psu_height],center=true);
+    }
+  }
+  // across, on its belly
+  translate([0,-extrusion_vertical_spacing_y/2+extrusion_side/2+5+z_motor_side+psu_width/2,extrusion_side-psu_height/2-deck_panel_thickness]) {
+    rotate([0,0,0]) {
+      rotate([0,0,0]) {
+        //% color("#ccc") cube([psu_length,psu_width,psu_height],center=true);
+      }
+    }
+  }
+  // front to back, on its side
+  translate([43,0,extrusion_side-psu_width/2-deck_panel_thickness]) {
+    rotate([0,0,90]) {
+      rotate([90,0,0]) {
+        //% color("#ccc") cube([psu_length,psu_width,psu_height],center=true);
+      }
+    }
+  }
+  // across, on its side
+  translate([0,-extrusion_vertical_spacing_y/2+extrusion_side/2+z_motor_side+5+psu_height/2,extrusion_side-psu_width/2-deck_panel_thickness]) {
+    rotate([0,0,0]) {
+      rotate([90,0,0]) {
+        //% color("#ccc") cube([psu_length,psu_width,psu_height],center=true);
+      }
     }
   }
 
@@ -361,7 +387,7 @@ module electronics_assembly() {
     }
     for(x=[left,right]) {
       translate([x*psu_length_delta/2,0,0]) {
-        //psu(psu_type);
+        psu(psu_type);
       }
     }
     translate([0,0,psu_height/2]) {
@@ -372,11 +398,11 @@ module electronics_assembly() {
   position_mcu() {
     //mcu_type = BTT_SKR_MINI_E3_V2_0; // only four steppers, would need two
     //% color("blue", 0.3) cube([90,64,20],center=true); // mellow fly d5
-    //% pcb(mcu_type);
+    % pcb(mcu_type);
   }
 
   position_pi() {
-    //% pcb(pi_type);
+    % pcb(pi_type);
   }
 }
 
