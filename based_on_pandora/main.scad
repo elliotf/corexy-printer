@@ -165,6 +165,7 @@ sizes = [
       [200,E2020t],
       [150,MakerbeamXL],
       [100,MakerbeamXL],
+      //[100,E2020t], // too cramped
     ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,200], // X axis
@@ -181,7 +182,7 @@ sizes = [
       [120,120,6],
     ],
   ],
-  [
+  [ // med 2020
     [
       [450,E2020t],
       [250,E2020t],
@@ -203,7 +204,7 @@ sizes = [
       [180,180,6],
     ],
   ],
-  [
+  [ // large 2020
     [
       [500,E2020t],
       [300,E2020t],
@@ -212,8 +213,8 @@ sizes = [
     ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,300], // X axis
-      [MGN7H_carriage,MGN7,250], // Y axis
-      [MGN7H_carriage,MGN7,250], // Z axis
+      [MGN9H_carriage,MGN9,250], // Y axis
+      [MGN9H_carriage,MGN9,250], // Z axis
     ],
     [NEMA17_47,NEMA17_47,NEMA17_27,300],
     //[NEMA14_52,NEMA17_47,NEMA17_27,200], // untested
@@ -293,6 +294,7 @@ bottom_pos_z = 0;
 
 z_motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
 z_base_motor_mount_overall_height = abs(z_motor_pos_z)+z_motor_side/2+height_below_z_motor;
+echo("z_base_motor_mount_overall_height: ", z_base_motor_mount_overall_height);
 
 extrusion_vertical_spacing_x = extrusion_main_length+extrusion_side;
 extrusion_vertical_spacing_y = extrusion_vertical_spacing_x;
@@ -416,7 +418,8 @@ motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box,
 //rear_brace_offset_y = (extrusion_vertical_spacing_y/2-rear_brace_dist_from_back)-motor_xy_pos_y;
 //rear_brace_offset_y = 5;
 //rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y;
-rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y+(20-15)/2;
+//rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y+(20-15)/2;
+rear_brace_offset_y = (extrusion_vertical_spacing_y/2-ab_corner_anchor_depth+extrusion_width(extrusion_vertical_type)/2+extrusion_width(extrusion_shortest_type)/2)-motor_xy_pos_y;
 
 motor_xy_adjustment_amount = 7;
 

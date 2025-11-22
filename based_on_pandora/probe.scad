@@ -398,4 +398,41 @@ module probe_assembly() {
   }
 }
 
-probe_assembly();
+offset_probe_width = 0;
+
+module offset_probe_assembly() {
+  translate([0,0,0]) {
+    offset_probe_body();
+  }
+  translate([0,0,-plunger_stickout]) {
+    offset_probe_plunger();
+  }
+}
+
+module offset_probe_body() {
+  module body() {
+  }
+
+  module holes() {
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module offset_probe_plunger() {
+  module body() {
+  }
+
+  module holes() {
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+//probe_assembly();
