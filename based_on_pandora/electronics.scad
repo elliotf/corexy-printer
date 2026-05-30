@@ -16,6 +16,14 @@ module position_pi() {
       }
     }
   }
+
+  translate([-10,front*(extrusion_main_length/2-pcb_width(pi_type)/2),-20]) {
+    rotate([0,0,0]) {
+      rotate([180,0,0]) {
+        //children();
+      }
+    }
+  }
 }
 
 //mcu_type = BTT_SKR_V1_4_TURBO;
@@ -36,7 +44,16 @@ module position_skr_e3_mini() {
 
 module position_mcu() {
   // stacked below PSU
-  translate([0,0,extrusion_side/2-psu_height]) {
+  translate([10,-10,extrusion_side/2-psu_height]) {
+    rotate([0,0,-90]) {
+      rotate([180,0,0]) {
+        //children();
+      }
+    }
+  }
+
+  // stacked below PSU with room for pi
+  translate([10,-20,extrusion_side/2-psu_height]) {
     rotate([0,0,-90]) {
       rotate([180,0,0]) {
         children();

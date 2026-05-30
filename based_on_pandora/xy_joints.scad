@@ -67,10 +67,11 @@ module elongated_bridged_hole(hole_diam,elongation_length,depth=30,is_final) {
   }
 }
 
-module xy_joint_single_piece(side, is_final) {
+module xy_joint_single_piece(side, is_final) { // unified xy joint
   idler_bevel_height = 0.5;
 
   rail_tolerance = 0.1;
+  x_rail_width = rail_width(x_rail)+rail_tolerance;
 
   hole_spacing_x = y_carriage[7];
   hole_spacing_y = y_carriage[6];
@@ -103,11 +104,13 @@ module xy_joint_single_piece(side, is_final) {
   rail_support_length = rail_hole_spacing*3;
 
   rail_pos_y = x_carriage_offset_y+x_axis_offset_y+carriage_height(x_carriage);
-  rail_pos_z = mgn_height+x_extrusion_above_y_carriage+extrusion_side/2;
+  //rail_pos_z = mgn_height+x_extrusion_above_y_carriage+extrusion_side/2;
+  rail_pos_z = mgn_height+x_rail_offset_from_y_carriage_top;
+
 
   meat_behind_rail = mgn_area_depth/2-rail_pos_y;
   meat_below_carriage = 1.4;
-  meat_beside_rail_at_end_of_support = 5;
+  meat_beside_rail_at_end_of_support = 3.5;
   rail_body_meat = meat_behind_rail+meat_below_carriage;
 
   endstop_screw_hole_diam = m3_thread_into_plastic_diam;
@@ -154,24 +157,24 @@ module xy_joint_single_piece(side, is_final) {
     }
   }
 
-  module position_endstop_trigger() {
-    if (side == right) {
-      translate([-y_endstop_dist_from_extrusion_center_x,mgn_area_depth/2-rail_body_meat/2,mgn_height+overall_height+y_endstop_thickness/2-1]) {
-        rotate([90,0,0]) {
-          children();
-        }
-      }
-    }
-  }
+  // module position_endstop_trigger() {
+  //   if (side == right) {
+  //     translate([-y_endstop_dist_from_extrusion_center_x,mgn_area_depth/2-rail_body_meat/2,mgn_height+overall_height+y_endstop_thickness/2-1]) {
+  //       rotate([90,0,0]) {
+  //         children();
+  //       }
+  //     }
+  //   }
+  // }
 
   module body() {
-    position_endstop_trigger() {
-      endstop_screw_mount_body_diam = endstop_screw_hole_diam+2*2;
-      body_length = y_endstop_length+endstop_screw_mount_body_diam*2;
-      translate([0,-body_length/2+endstop_screw_mount_body_diam/2,0]) {
-        rounded_cube(endstop_screw_mount_body_diam,body_length,rail_body_meat,endstop_screw_mount_body_diam);
-      }
-    }
+    // position_endstop_trigger() {
+    //   endstop_screw_mount_body_diam = endstop_screw_hole_diam+2*2;
+    //   body_length = y_endstop_length+endstop_screw_mount_body_diam*2;
+    //   translate([0,-body_length/2+endstop_screw_mount_body_diam/2,0]) {
+    //     //rounded_cube(endstop_screw_mount_body_diam,body_length,rail_body_meat,endstop_screw_mount_body_diam);
+    //   }
+    // }
     translate([0,0,mgn_height+overall_height/2-y_rail_sunk_into_extrusion]) {
       translate([0,0,0]) {
         rotate([90,0,0]) {
@@ -202,7 +205,7 @@ module xy_joint_single_piece(side, is_final) {
         }
         translate([-side*(extrusion_side/2+rail_support_length-meat_beside_rail_at_end_of_support/2),0,rail_pos_z]) {
           rotate([90,0,0]) {
-            rounded_cube(meat_beside_rail_at_end_of_support,meat_beside_rail_at_end_of_support*2+rail_width(x_rail),rail_body_meat,2);
+            rounded_cube(meat_beside_rail_at_end_of_support,meat_beside_rail_at_end_of_support*2+x_rail_width,rail_body_meat,2);
           }
         }
       }
@@ -216,8 +219,53 @@ module xy_joint_single_piece(side, is_final) {
     }
   }
   module holes() {
-    position_endstop_trigger() {
-      hole(endstop_screw_hole_diam,40,resolution);
+    // position_endstop_trigger() {
+    //   hole(endstop_screw_hole_diam,40,resolution);
+    // }
+
+    // round innermost tips
+    translate([0,mgn_area_depth/2-rail_body_meat,0]) {
+      translate([-side*(extrusion_side/2+rail_support_length),0,rail_pos_z]) {
+        for(z=[top,bottom]) {
+          mirror([side-1,0,0]) {
+            mirror([0,0,z-1]) {
+              translate([0,0,x_rail_width/2]) {
+                rotate([90,0,0]) {
+                  round_corner_filler(4,meat_below_carriage*2);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // round inner bottom by y carriage
+    translate([-side*(mgn_width/2),mgn_area_depth/2,mgn_height-y_rail_sunk_into_extrusion]) {
+      mirror([-side-1,0,0]) {
+        rotate([90,0,0]) {
+          rotate([0,0,90]) {
+            round_corner_filler(1,rail_body_meat*2+1);
+          }
+        }
+      }
+    }
+
+    // round belt opening
+    translate([side*mgn_width/2,0,xy_belt_center_extrusion_offset_z]) {
+      mirror([side+1,0,0]) {
+        for(z=[top,bottom]) {
+          mirror([0,0,z-1]) {
+            translate([0,0,belt_return_path_side_cut_height/2]) {
+              rotate([90,0,0]) {
+                rotate([0,0,0]) {
+                  round_corner_filler(1,mgn_length*2+1);
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
     module elongated_hex_hole() {
@@ -246,7 +294,8 @@ module xy_joint_single_piece(side, is_final) {
               rounded_cube(meat_beside_rail_at_end_of_support,40,rail_body_meat+1,2);
             }
           }
-          translate([-side*(mgn_width+0.5),0,0]) {
+          // clearance around motor mounts, likely not needed as much for nema14
+          translate([-side*(mgn_width*0.75),0,0]) {
             rotate([90,0,0]) {
               rounded_cube(2,40,rail_body_meat+1,2);
             }
@@ -451,13 +500,13 @@ module xy_joint_single_piece(side, is_final) {
   position_mgn() {
     % carriage(y_carriage);
   }
-  color(print_color) {
+  //color(print_color) {
     difference() {
       body();
       holes();
     }
     bridges();
-  }
+  //}
 }
 
 module y_carriage_assembly(side,is_final) {
@@ -728,7 +777,9 @@ module y_axis_assembly(pos_y,is_final) {
   }
 }
 
-y_axis_assembly(-2,false);
+pos_y = 50;
+
+y_axis_assembly(pos_y,false);
 translate([0,0,gantry_pos_z]) {
   for(x=[left,right]) {
     translate([x*(extrusion_vertical_spacing_x/2),0,0]) {
@@ -738,6 +789,11 @@ translate([0,0,gantry_pos_z]) {
     }
   }
 }
+y_carriage_pos_y = y_rail_pos_y-y_rail_length/2+carriage_length(y_carriage)/2+pos_y;
+position_x_axis(y_carriage_pos_y) {
+  x_axis_assembly(1);
+}
+
 
 for(x=[left,right]) {
   position_compacting_idler(x) {

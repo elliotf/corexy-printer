@@ -53,7 +53,7 @@ module ab_pod_upper(side,is_final) {
     translate([0,0,top_pos_z]) {
       translate([0,0,ab_pod_upper_thickness/2]) {
         linear_extrude(height=ab_pod_upper_thickness,center=true,convexity=3) {
-          //corner_anchor_profile();
+          corner_anchor_profile();
           upper_center_anchor_profile();
           upper_motor_area_profile();
           extrusion_lock_profile();
@@ -166,7 +166,8 @@ module ab_pod_upper(side,is_final) {
     % microswitch(y_endstop_type);
   }
 
-  color(print_color) difference() {
+  //color(print_color) difference() {
+  difference() {
     body();
     holes();
   }
@@ -300,21 +301,67 @@ module ab_pod_lower(side,is_final) {
     }
 
     // belt tensioner set screw
-    set_screw_pos_x = extrusion_vertical_spacing_x/2+extrusion_side/2;
+    //set_screw_pos_x = extrusion_vertical_spacing_x/2+extrusion_side/2;
+    set_screw_nut_thickness = 4;
+    //set_screw_pos_x = extrusion_vertical_spacing_x/2 - extrusion_side/2 - side_anchor_thickness;
+    set_screw_pos_x = extrusion_vertical_spacing_x/2 - extrusion_side/2 - space_between_motor_and_corner + set_screw_nut_thickness - 0.05;
     set_screw_pos_y = outer_idler_pos_y+m3_through_hole_diam/2+extrude_width*2+m3_through_hole_diam/2;
-    set_screw_pos_z = gantry_pos_z+extrusion_side/2+extrude_height*5+m3_through_hole_diam/2;
+    //set_screw_pos_z = gantry_pos_z+extrusion_side/2+extrude_height*5+m3_through_hole_diam/2;
+    set_screw_pos_z = motor_xy_pos_z - m3_through_hole_diam/2;
     translate([set_screw_pos_x,set_screw_pos_y,set_screw_pos_z]) {
       set_screw_cavity_length = space_between_motor_and_corner+extrusion_side;
       threaded_length = 14;
 
+      nut_diam = 5.6; // nominally 5.5mm max, so this _should_ be a mild press fit
+      nut_sides = 6;
       rotate([0,90,0]) {
-        hole(m3_thread_into_plastic_diam,2*(set_screw_cavity_length+1),8);
-        hole(m3_through_hole_diam,2*(set_screw_cavity_length-threaded_length),8);
+        translate([0,0,set_screw_cavity_length/2]) {
+          hole(m3_through_hole_diam,2*(set_screw_cavity_length+1),8);
+        }
+        // migrating to a square nut for now
+        //hole(m3_thread_into_plastic_diam,2*(set_screw_cavity_length+1),8);
+        //hole(m3_through_hole_diam,2*(set_screw_cavity_length-threaded_length),8);
+
+        translate([0,0,-set_screw_nut_thickness/2 ]) {
+          rotate([0,0,90]) {
+            hull() {
+              for(y=[0,-1]) {
+                translate([0,y*(nut_diam),0]) {
+                  hole(nut_diam,set_screw_nut_thickness,nut_sides);
+                }
+              }
+            }
+          }
+        }
       }
     }
+    /*
+    translate([set_screw_pos_x,set_screw_pos_y,set_screw_pos_z]) {
+      set_screw_cavity_length = space_between_motor_and_corner+extrusion_side;
+      threaded_length = 14;
+
+      nut_diam = 5.7;
+      nut_thickness = 3.5;
+      nut_sides = 6;
+            % debug_axes(1);
+      rotate([0,90,0]) {
+        // migrating to a square nut for now
+        //hole(m3_thread_into_plastic_diam,2*(set_screw_cavity_length+1),8);
+        //hole(m3_through_hole_diam,2*(set_screw_cavity_length-threaded_length),8);
+        hole(m3_through_hole_diam,2*(set_screw_cavity_length+1),8);
+
+        translate([0,0,- set_screw_cavity_length + nut_thickness/2-0.02 ]) {
+          rotate([0,0,90]) {
+            hole(nut_diam,nut_thickness,nut_sides);
+          }
+        }
+      }
+    }
+    */
   }
 
-  color(print_color) difference() {
+  //color(print_color) difference() {
+  difference() {
     body();
     holes();
   }
@@ -602,7 +649,7 @@ module ab_pod_assembly(side,is_final) {
     //for(a=[0]) {
       translate([-side*a,0,motor_xy_pos_z]) {
         rotate([0,0,side*90]) {
-          % NEMA(motor_type_xy); // AB motor
+          //% NEMA(motor_type_xy); // AB motor
         }
         translate([0,0,16-side*4.5]) {
           rotate([0,90+side*90,0]) {
@@ -617,11 +664,25 @@ module ab_pod_assembly(side,is_final) {
     ab_pod_lower(side,is_final);
     ab_pod_upper(side,is_final);
   }
+
+  translate([0,rear_brace_pos_y,rear_brace_pos_z]) {
+    translate([0,front*(extrusion_shortest_side/2+5),extrusion_shortest_side/2+y_endstop_thickness/2]) {
+      rotate([180,0,0]) {
+        % microswitch(y_endstop_type);
+      }
+    }
+  }
+
+  translate([0,rear_brace_pos_y,rear_brace_pos_z]) {
+    rotate([0,90,0]) {
+      % color(frame_color) extrusion(extrusion_shortest_type,extrusion_shortest_length);
+    }
+  }
 }
 
-translate([0,rear_brace_pos_y,motor_xy_pos_z+extrusion_side/2+xy_motor_plate_thickness]) {
+translate([0,rear_brace_pos_y,motor_xy_pos_z+ extrusion_shortest_side /2+xy_motor_plate_thickness]) {
   rotate([0,90,0]) {
-    % extrusion_l(extrusion_shortest_length);
+    % color(frame_color) extrusion(extrusion_shortest_type,extrusion_shortest_length);
   }
 }
 ab_pod_assembly(right,is_final);

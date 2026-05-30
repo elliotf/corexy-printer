@@ -4,4 +4,4 @@ include <./main.scad>;
 pct_x = 0;
 
 assembly(1,1,0);
-//assembly(1,0,0);
+//assembly(0.5,0.5,0);

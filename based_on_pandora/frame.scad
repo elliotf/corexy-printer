@@ -21,7 +21,7 @@ module frame_assembly() {
     }
   }
 
-  hole_diam = extrusion_center_hole(extrusion_vertical_type) - 0.5;
+  hole_diam = extrusion_center_hole(extrusion_vertical_type) - 2;
 
   translate([rear_z_offset_x,rear_z_pos_y,rear_z_pos_z]) {
     % difference() {
@@ -33,12 +33,6 @@ module frame_assembly() {
       }
     }
   }
-  translate([0,rear_brace_pos_y,rear_brace_pos_z]) {
-    rotate([0,90,0]) {
-      % color(frame_color) extrusion(extrusion_shortest_type,extrusion_shortest_length);
-    }
-  }
-
 
   for(x=[left,right]) {
     for(y=[front,rear]) {
@@ -48,10 +42,30 @@ module frame_assembly() {
           //extrusion(extrusion_vertical_type,extrusion_vertical_length);
           translate([0,0,-extrusion_vertical_pos_z+gantry_pos_z]) {
             rotate([90,0,0]) {
-              hole(hole_diam,extrusion_side,resolution);
+              //hole(hole_diam,extrusion_side,resolution);
             }
           }
-          for(z=[top,bottom],r=[0,90]) {
+          //for(z=[top,bottom],r=[0,90]) {
+          vertical_holes = [
+            [top*(extrusion_vertical_length/2-extrusion_side/2), [0,90]],
+            [bottom*(extrusion_vertical_length/2-extrusion_side/2- z_base_motor_mount_overall_height), [0,90]],
+            [-extrusion_vertical_pos_z+gantry_pos_z, [0]],
+          ];
+          for(hole=vertical_holes) {
+            z = hole[0];
+            translate([0,0,z]) {
+              for(r=hole[1]) {
+                rotate([0,0,r]) {
+                  rotate([90,0,0]) {
+                    hole(hole_diam,extrusion_side,resolution);
+                  }
+                }
+              }
+            }
+          }
+          echo("vertical_holes: ", vertical_holes);
+          /*
+          for(z=[top],r=[0,90]) {
             translate([0,0,z*(extrusion_vertical_length/2-extrusion_side/2)]) {
               rotate([0,0,r]) {
                 rotate([90,0,0]) {
@@ -60,6 +74,8 @@ module frame_assembly() {
               }
             }
           }
+          */
+
         }
       }
     }
@@ -85,6 +101,7 @@ module frame_assembly() {
       }
     }
   }
+  /*
   plug_side = right;
   mirror([plug_side-1,0,0]) {
     translate([-extrusion_vertical_spacing_x/2,extrusion_vertical_spacing_y/2,0]) {
@@ -99,7 +116,9 @@ module frame_assembly() {
       }
     }
   }
+  */
 
+  echo("extrusion_vertical_spacing_x: ", extrusion_vertical_spacing_x);
 }
 
 frame_assembly();
