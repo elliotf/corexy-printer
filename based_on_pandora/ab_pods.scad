@@ -33,21 +33,21 @@ center_brace_rear_wall_length = 8.5;
 module ab_pod_upper(side,is_final) {
   top_pos_z = ab_top_pos_z;
 
-  module position_endstop() {
-    if (side == right) {
-      translate([
-        extrusion_vertical_spacing_x/2-y_endstop_dist_from_extrusion_center_x+2,
-        extrusion_vertical_spacing_y/2-y_endstop_dist_from_extrusion_center_y,
-        top_pos_z+ab_pod_upper_thickness+y_endstop_thickness/2,
-      ]) {
-        rotate([0,0,0]) {
-          rotate([180,0,0]) {
-            children();
-          }
-        }
-      }
-    }
-  }
+  // module position_endstop() {
+  //   if (side == right) {
+  //     translate([
+  //       extrusion_vertical_spacing_x/2-y_endstop_dist_from_extrusion_center_x+2,
+  //       extrusion_vertical_spacing_y/2-y_endstop_dist_from_extrusion_center_y,
+  //       top_pos_z+ab_pod_upper_thickness+y_endstop_thickness/2,
+  //     ]) {
+  //       rotate([0,0,0]) {
+  //         rotate([180,0,0]) {
+  //           children();
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   module body() {
     translate([0,0,top_pos_z]) {
@@ -107,11 +107,11 @@ module ab_pod_upper(side,is_final) {
   }
 
   module holes() {
-    position_endstop() {
-      microswitch_hole_positions(y_endstop_type) {
-        hole(1.7,2*(y_endstop_thickness/2+ab_pod_upper_thickness-1),resolution);
-      }
-    }
+    // position_endstop() {
+    //   microswitch_hole_positions(y_endstop_type) {
+    //     hole(1.7,2*(y_endstop_thickness/2+ab_pod_upper_thickness-1),resolution);
+    //   }
+    // }
     motor_holes(top_pos_z);
     translate([motor_xy_pos_x,motor_xy_pos_y,top_pos_z]) {
       hull() {
@@ -162,9 +162,9 @@ module ab_pod_upper(side,is_final) {
       }
     }
   }
-  position_endstop() {
-    % microswitch(y_endstop_type);
-  }
+  // position_endstop() {
+  //   % microswitch(y_endstop_type);
+  // }
 
   //color(print_color) difference() {
   difference() {
@@ -292,7 +292,7 @@ module ab_pod_lower(side,is_final) {
         translate(p) {
           hull() {
             hole(m3_through_hole_diam,lead_in_height*2,resolution);
-            hole(0.1,(lead_in_height+m3_through_hole_diam)*2,resolution);
+            # hole(0.1,(lead_in_height+m3_through_hole_diam)*20,resolution);
           }
 
           hole(m3_thread_into_plastic_diam,thread_depth*2,resolution);
@@ -643,13 +643,152 @@ module motor_holes(z) {
   }
 }
 
+module y_endstop_mount() {
+  // FIXME: offset (or make adjustable) so that the trigger is centered in X
+  // FIXME: offset so that the trigger is centered in Z
+
+  extrusion_width = 15; // FIXME: pull from config
+  dist_from_brace_to_x_rail_y = 12;
+  dist_from_brace_to_x_rail_z = 1.5;
+  //overall_width = y_endstop_length+2*(wall_thickness*2+tolerance);
+  backstop_height = 1; // avoid interfering with the pins
+  pin_spacing = 5.08;
+
+  switch_pos_y = front*(extrusion_shortest_side/2 + dist_from_brace_to_x_rail_y - y_endstop_width/2);
+  switch_pos_z = dist_from_brace_to_x_rail_z;
+  dist_between_switch_and_extrusion = abs(switch_pos_y)-y_endstop_width/2-extrusion_width/2;
+
+  between_pin_thickness = 1.6;
+  between_pin_length = dist_between_switch_and_extrusion-tolerance;
+  between_pin_height = extrusion_width/2 - switch_pos_z + y_endstop_thickness/2 - tolerance*2;
+
+  front_pos_y = switch_pos_y - y_endstop_width/2;
+
+  outside_switch_length = abs(front_pos_y) - extrusion_width/2 - tolerance;
+  outside_switch_thickness = wall_thickness*2;
+  outside_switch_height = between_pin_height;
+
+  roof_thickness = 1.4;
+  height_above_extrusion = 3;
+
+  thickness_above_switch = extrusion_width/2 - switch_pos_z - y_endstop_thickness/2;
+
+  switch_area_overall_width = y_endstop_length + 2*(tolerance + outside_switch_thickness);
+  switch_area_overall_depth = extrusion_width + tolerance + outside_switch_length;
+  switch_area_overall_height = outside_switch_height + height_above_extrusion + roof_thickness;
+
+  cable_retention_area_width = 5;
+  cable_retention_area_depth = extrusion_width + tolerance + outside_switch_length/2;
+  overall_width = switch_area_overall_width + 2*(cable_retention_area_width + outside_switch_thickness);
+
+  top_pos_z = extrusion_width/2 + height_above_extrusion + roof_thickness;
+
+  module position_endstop() {
+    // in front of rear brace, to hit x rail directly
+    translate([0,switch_pos_y,switch_pos_z]) {
+      rotate([0,0,0]) {
+        rotate([180,0,0]) {
+          children();
+        }
+      }
+    }
+    /*
+    // on top of rear brace
+    translate([1.95,front*(extrusion_shortest_side/2 - y_endstop_width/2),extrusion_shortest_side/2+y_endstop_width/2+1]) {
+      rotate([0,0,0]) {
+        rotate([180,0,0]) {
+          children();
+        }
+      }
+    }
+    */
+  }
+
+  module body() {
+    // beside the switch
+    // between the pins
+    for(x=[left,right]) {
+      translate([x*(pin_spacing/2),-extrusion_width/2-tolerance - between_pin_length/2,extrusion_width/2 - between_pin_height/2]) {
+        rounded_cube(between_pin_thickness, between_pin_length, between_pin_height, between_pin_thickness);
+      }
+      translate([x*(switch_area_overall_width/2 - outside_switch_thickness/2),front_pos_y + outside_switch_length/2,extrusion_width/2 - outside_switch_height/2]) {
+        rounded_cube(outside_switch_thickness, outside_switch_length, outside_switch_height, outside_switch_thickness);
+      }
+
+      translate([0,extrusion_width/2 - switch_area_overall_depth/2,extrusion_width/2 + height_above_extrusion/2 + roof_thickness/2]) {
+        rounded_cube(switch_area_overall_width, switch_area_overall_depth, height_above_extrusion + roof_thickness, outside_switch_thickness);
+      }
+
+      translate([0,0,top_pos_z]) {
+        translate([x*(overall_width/2 - outside_switch_thickness/2),extrusion_width/2 - cable_retention_area_depth/2,-(roof_thickness + height_above_extrusion)/2]) {
+          rounded_cube(outside_switch_thickness, cable_retention_area_depth, height_above_extrusion + roof_thickness, outside_switch_thickness);
+        }
+        mirror([x-1,0,0]) {
+          points = [
+            [switch_area_overall_width/2 - outside_switch_thickness/2,front_pos_y + outside_switch_thickness/2,0],
+            [overall_width/2 - outside_switch_thickness/2,extrusion_width/2 - cable_retention_area_depth + outside_switch_thickness/2,0],
+            [overall_width/2 - outside_switch_thickness/2,- extrusion_width/2 - outside_switch_thickness/2,0],
+          ];
+          translate([0,0,-switch_area_overall_height/2]) {
+            for(p=[0:len(points) - 2]) {
+              hull() {
+                translate(points[p]) {
+                  hole(outside_switch_thickness, switch_area_overall_height, resolution);
+                }
+                translate(points[p+1]) {
+                  hole(outside_switch_thickness, switch_area_overall_height, resolution);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    translate([0,- extrusion_width/2 - tolerance - outside_switch_length/2,extrusion_width/2 - thickness_above_switch/2 + height_above_extrusion/2 + roof_thickness/2]) {
+      rounded_cube(switch_area_overall_width, outside_switch_length, thickness_above_switch + height_above_extrusion + roof_thickness, outside_switch_thickness);
+    }
+    translate([0,0,top_pos_z]) {
+      translate([0,extrusion_width/2 - switch_area_overall_depth/2,-1 * (height_above_extrusion/2 + roof_thickness/2)]) {
+        rounded_cube(switch_area_overall_width, switch_area_overall_depth, height_above_extrusion + roof_thickness, outside_switch_thickness);
+      }
+      translate([0,0,- roof_thickness/2]) {
+        hull() {
+          translate([0,extrusion_width/2 - switch_area_overall_depth/2,0]) {
+            rounded_cube(switch_area_overall_width, switch_area_overall_depth, roof_thickness, outside_switch_thickness);
+          }
+          translate([0,extrusion_width/2 - cable_retention_area_depth/2,0]) {
+            rounded_cube(overall_width, cable_retention_area_depth, roof_thickness, outside_switch_thickness);
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    position_endstop() {
+      % microswitch(y_endstop_type);
+
+      microswitch_hole_positions(y_endstop_type) {
+        hole(microswitch_hole_d(y_endstop_type), 20, resolution);
+      }
+    }
+
+    hole(3.4,30,resolution);
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module ab_pod_assembly(side,is_final) {
   translate([side*motor_xy_pos_x,motor_xy_pos_y,0]) {
     for(a=[0,motor_xy_adjustment_amount]) {
     //for(a=[0]) {
       translate([-side*a,0,motor_xy_pos_z]) {
-        rotate([0,0,side*90]) {
-          //% NEMA(motor_type_xy); // AB motor
+        rotate([0,0,-side*90]) {
+          % NEMA(motor_type_xy); // AB motor
         }
         translate([0,0,16-side*4.5]) {
           rotate([0,90+side*90,0]) {
@@ -662,15 +801,11 @@ module ab_pod_assembly(side,is_final) {
 
   mirror([side-1,0,0]) {
     ab_pod_lower(side,is_final);
-    ab_pod_upper(side,is_final);
+    //ab_pod_upper(side,is_final);
   }
 
   translate([0,rear_brace_pos_y,rear_brace_pos_z]) {
-    translate([0,front*(extrusion_shortest_side/2+5),extrusion_shortest_side/2+y_endstop_thickness/2]) {
-      rotate([180,0,0]) {
-        % microswitch(y_endstop_type);
-      }
-    }
+    y_endstop_mount();
   }
 
   translate([0,rear_brace_pos_y,rear_brace_pos_z]) {

@@ -129,6 +129,7 @@ module position_psu() {
     }
   }
 
+  // most recent (2026-09-25)
   union() {
     translate([psu_pos_x,psu_pos_y,psu_pos_z]) {
       rotate([0,0,180]) {
@@ -359,10 +360,10 @@ module psu_mount_non_terminal_side(side=right) {
 
 module electronics_assembly() {
   for(x=[left,right]) {
-    color(print_color) psu_mount_non_terminal_side(x);
+    // color(print_color) psu_mount_non_terminal_side(x);
   }
 
-  color(print_color) psu_mount_terminal_side();
+  // color(print_color) psu_mount_terminal_side();
 
 
   psu_length = 194;
@@ -415,11 +416,11 @@ module electronics_assembly() {
   position_mcu() {
     //mcu_type = BTT_SKR_MINI_E3_V2_0; // only four steppers, would need two
     //% color("blue", 0.3) cube([90,64,20],center=true); // mellow fly d5
-    % pcb(mcu_type);
+    //% pcb(mcu_type);
   }
 
   position_pi() {
-    % pcb(pi_type);
+    //% pcb(pi_type);
   }
 }
 

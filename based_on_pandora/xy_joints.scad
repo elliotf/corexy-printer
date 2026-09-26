@@ -28,6 +28,12 @@ screw_bevel_large_od = screw_bevel_small_od+screw_bevel_height*2;
 
 overall_height = xy_carriage_base_thickness+belt_idler_spacer_length*2+xy_carriage_top_thickness+y_rail_sunk_into_extrusion;
 
+// have printed parts have a lip around the rail without colliding with the carriage
+meat_below_carriage = 1.4;
+meat_beside_rail_at_end_of_support = 3.5;
+rail_tolerance = 0.1;
+x_rail_width = rail_width(x_rail)+rail_tolerance;
+
 function front_idler_pos_z(side) = (gantry_pos_z+extrusion_side/2+xy_belt_center_extrusion_offset_z)-xy_belt_spacing/2*side;
 
 module countersunk_m2(depth=50,head_height=40) {
@@ -67,11 +73,117 @@ module elongated_bridged_hole(hole_diam,elongation_length,depth=30,is_final) {
   }
 }
 
+module y_axis_endstop_trigger(is_final) {
+  // FIXME: ensure aligned in Z axis
+  // FIXME: ensure carriage does not hit y endstop flag
+  trigger_offset_z = 10.35;
+  rail_hole_spacing = rail_pitch(x_rail);
+  screw_hole_diam = m3_through_hole_diam;
+  nut_diam = m3_nut_diam;
+  nut_height = 4;
+
+  extend_to_reach_endstop = 1.8;
+  body_thickness = 10.5; // FIXME: should be based on XY joint
+  //rail_retaining_lip = meat_below_carriage;
+  rail_retaining_lip = 0;
+  overall_width = rail_hole_spacing + nut_diam + wall_thickness*4;
+  overall_thickness = body_thickness+rail_retaining_lip;
+  //overall_height = x_rail_width + meat_beside_rail_at_end_of_support*2;
+  trigger_thickness = 3;
+  overall_height = meat_beside_rail_at_end_of_support + x_rail_width/2 + trigger_offset_z + trigger_thickness/2;
+
+  body_pos_z = - x_rail_width/2 - meat_beside_rail_at_end_of_support + overall_height/2;
+
+  //flag_thickness = 4;
+  flag_diam = m3_thread_into_plastic_diam+wall_thickness*4;
+
+  rounded_diam = 2;
+
+  module position_adjuster_screw() {
+    translate([0,0,trigger_offset_z]) {
+      rotate([-90,0,0]) {
+        children();
+      }
+    }
+  }
+
+  module position_rail_holes() {
+    for(x=[left,right]) {
+      translate([rail_hole_spacing/2*x,0,0]) {
+        rotate([-90,0,0]) {
+          children();
+        }
+      }
+    }
+  }
+
+  module body() {
+    translate([0,body_thickness/2,body_pos_z]) {
+      rounded_cube(overall_width,overall_thickness,overall_height,rounded_diam);
+    }
+    translate([0,0,trigger_offset_z]) {
+      hull() {
+        translate([0,body_thickness/2,0]) {
+          rounded_cube(overall_width,overall_thickness,trigger_thickness,rounded_diam);
+        }
+        translate([0,body_thickness + extend_to_reach_endstop - rounded_diam/2,0]) {
+          rounded_cube(overall_width/2,rounded_diam,trigger_thickness,rounded_diam);
+        }
+      }
+    }
+    /*
+    hull() {
+      translate([0,body_thickness-flag_thickness/2,trigger_offset_z]) {
+        rotate([-90,0,0]) {
+          hole(flag_diam,flag_thickness,resolution);
+        }
+      }
+      translate([0,body_thickness/2 - rail_retaining_lip/2,0]) {
+        rotate([-90,0,0]) {
+          rounded_cube(overall_width,overall_height,overall_thickness,meat_beside_rail_at_end_of_support);
+        }
+      }
+    }
+    */
+  }
+
+  module holes() {
+    position_rail_holes() {
+      translate([0,0,body_thickness - nut_height]) {
+        rotate([0,0,0]) {
+          bridged_hole(nut_diam,screw_hole_diam,nut_height*4,is_final,6);
+        }
+      }
+    }
+    /*
+    position_adjuster_screw() {
+      hole(screw_hole_diam,overall_thickness*2,resolution);
+    }
+    for(x=[0,1],z=[0,1]) {
+      mirror([x,0,0]) {
+        mirror([0,0,z]) {
+          translate([overall_width/2,-rail_retaining_lip,x_rail_width/2]) {
+            rotate([90,0,0]) {
+              rotate([0,0,90]) {
+                round_corner_filler(meat_beside_rail_at_end_of_support,rail_retaining_lip*2);
+              }
+            }
+          }
+        }
+      }
+    }
+    */
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module xy_joint_single_piece(side, is_final) { // unified xy joint
   idler_bevel_height = 0.5;
 
-  rail_tolerance = 0.1;
-  x_rail_width = rail_width(x_rail)+rail_tolerance;
 
   hole_spacing_x = y_carriage[7];
   hole_spacing_y = y_carriage[6];
@@ -109,8 +221,6 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
 
 
   meat_behind_rail = mgn_area_depth/2-rail_pos_y;
-  meat_below_carriage = 1.4;
-  meat_beside_rail_at_end_of_support = 3.5;
   rail_body_meat = meat_behind_rail+meat_below_carriage;
 
   endstop_screw_hole_diam = m3_thread_into_plastic_diam;
@@ -212,10 +322,11 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
     }
   }
 
-  module bearing_cavity() {
+  module bearing_cavity(height=idler_cavity_height) {
+    delta = idler_cavity_height-belt_cavity_height;
     hull() {
-      hole(belt_idler_cavity_diam,idler_cavity_height,resolution);
-      hole(belt_idler_belt_cavity_diam,belt_cavity_height,resolution);
+      hole(belt_idler_cavity_diam,height,resolution);
+      hole(belt_idler_belt_cavity_diam,height-delta,resolution);
     }
   }
   module holes() {
@@ -239,6 +350,22 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
         }
       }
     }
+
+    // make room for outer rear idlers
+    /*
+    translate([idler_rear_pos_x, mgn_area_depth/2+belt_idler_belt_cavity_diam/2, xy_belt_center_extrusion_offset_z]) {
+      cut_in_by = 3;
+      translate([0,-cut_in_by,0]) {
+        hull() {
+          bearing_cavity(belt_return_path_side_cut_height);
+
+          translate([side*20,0,0]) {
+            bearing_cavity(belt_return_path_side_cut_height);
+          }
+        }
+      }
+    }
+    */
 
     // round inner bottom by y carriage
     translate([-side*(mgn_width/2),mgn_area_depth/2,mgn_height-y_rail_sunk_into_extrusion]) {

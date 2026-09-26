@@ -1,6 +1,13 @@
 include <./main.scad>;
 
 module frame_assembly() {
+  translate([extrusion_vertical_spacing_x/2+extrusion_side+1,extrusion_side,top_pos_z - extrusion_main_length/2]) {
+    % extrusion_l(extrusion_main_length);
+  }
+  translate([extrusion_vertical_spacing_x/2+extrusion_side+1,-extrusion_side,extrusion_main_length/2]) {
+    % extrusion_l(extrusion_main_length);
+  }
+
   for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
   //for(z=[bottom_pos_z+extrusion_side/2]) {
     translate([0,0,z]) {
@@ -21,7 +28,7 @@ module frame_assembly() {
     }
   }
 
-  hole_diam = extrusion_center_hole(extrusion_vertical_type) - 2;
+  hole_diam = extrusion_center_hole(extrusion_vertical_type);
 
   translate([rear_z_offset_x,rear_z_pos_y,rear_z_pos_z]) {
     % difference() {
@@ -48,7 +55,7 @@ module frame_assembly() {
           //for(z=[top,bottom],r=[0,90]) {
           vertical_holes = [
             [top*(extrusion_vertical_length/2-extrusion_side/2), [0,90]],
-            [bottom*(extrusion_vertical_length/2-extrusion_side/2- z_base_motor_mount_overall_height), [0,90]],
+            [bottom*(extrusion_vertical_length/2-extrusion_side/2- extrusion_length_as_leg), [0,90]],
             [-extrusion_vertical_pos_z+gantry_pos_z, [0]],
           ];
           for(hole=vertical_holes) {
