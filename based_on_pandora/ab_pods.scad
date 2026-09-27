@@ -2,7 +2,7 @@ include <./main.scad>;
 
 rounded_diam = 4;
 anchor_width = motor_xy_width;
-narrow_anchor_depth = ab_corner_anchor_depth-extrusion_width(extrusion_main_type);
+narrow_anchor_depth = ab_corner_anchor_depth-extrusion_width(extrusion_main_type)-stick_ab_steppers_out_back;
 side_anchor_thickness = 6;
 
 motor_xy_dist_to_center = motor_xy_pos_x-motor_xy_width/2-motor_xy_adjustment_amount;
@@ -32,22 +32,6 @@ center_brace_rear_wall_length = 8.5;
 
 module ab_pod_upper(side,is_final) {
   top_pos_z = ab_top_pos_z;
-
-  // module position_endstop() {
-  //   if (side == right) {
-  //     translate([
-  //       extrusion_vertical_spacing_x/2-y_endstop_dist_from_extrusion_center_x+2,
-  //       extrusion_vertical_spacing_y/2-y_endstop_dist_from_extrusion_center_y,
-  //       top_pos_z+ab_pod_upper_thickness+y_endstop_thickness/2,
-  //     ]) {
-  //       rotate([0,0,0]) {
-  //         rotate([180,0,0]) {
-  //           children();
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
 
   module body() {
     translate([0,0,top_pos_z]) {
@@ -193,7 +177,7 @@ module ab_pod_lower(side,is_final) {
         }
       }
     }
-    translate([extrusion_vertical_spacing_x/2-extrusion_side/2,extrusion_vertical_spacing_y/2+extrusion_side/2-ab_corner_anchor_depth/2,0]) {
+    translate([extrusion_vertical_spacing_x/2-extrusion_side/2,extrusion_vertical_spacing_y/2+extrusion_side/2-ab_corner_anchor_depth/2+ab_corner_offset_y,0]) {
       translate([-side_anchor_thickness/2,0,gantry_pos_z]) {
         rounded_cube(side_anchor_thickness,ab_corner_anchor_depth,extrusion_side,wall_thickness*2);
       }
@@ -402,7 +386,7 @@ module extrusion_lock_profile() {
 module corner_anchor_profile() {
   module body() {
     translate([extrusion_vertical_spacing_x/2,extrusion_vertical_spacing_y/2,0]) {
-      translate([-extrusion_side/2-space_between_motor_and_corner/2,extrusion_side/2-ab_corner_anchor_depth/2,0]) {
+      translate([-extrusion_side/2-space_between_motor_and_corner/2,extrusion_side/2-ab_corner_anchor_depth/2+ab_corner_offset_y,0]) {
         rounded_square(space_between_motor_and_corner,ab_corner_anchor_depth,wall_thickness*2);
       }
       combined_width = space_between_motor_and_corner+extrusion_side;
@@ -508,7 +492,7 @@ module upper_center_anchor_profile() {
 
 module upper_motor_area_profile() {
   hull() {
-    translate([0,extrusion_vertical_spacing_y/2+extrusion_width(extrusion_vertical_type)/2-ab_corner_anchor_depth/2,0]) {
+    translate([0,extrusion_vertical_spacing_y/2+extrusion_width(extrusion_vertical_type)/2-ab_corner_anchor_depth/2+ab_corner_offset_y,0]) {
       translate([extrusion_vertical_spacing_x/2-extrusion_width(extrusion_vertical_type)/2-space_between_motor_and_corner/2,0,0]) {
         rounded_square(space_between_motor_and_corner,ab_corner_anchor_depth,wall_thickness*2);
       }
@@ -648,7 +632,7 @@ module y_endstop_mount() {
   // FIXME: offset so that the trigger is centered in Z
 
   extrusion_width = 15; // FIXME: pull from config
-  dist_from_brace_to_x_rail_y = 12;
+  dist_from_brace_to_x_rail_y = 15;
   dist_from_brace_to_x_rail_z = 1.5;
   //overall_width = y_endstop_length+2*(wall_thickness*2+tolerance);
   backstop_height = 1; // avoid interfering with the pins
@@ -801,7 +785,7 @@ module ab_pod_assembly(side,is_final) {
 
   mirror([side-1,0,0]) {
     ab_pod_lower(side,is_final);
-    //ab_pod_upper(side,is_final);
+    ab_pod_upper(side,is_final);
   }
 
   translate([0,rear_brace_pos_y,rear_brace_pos_z]) {

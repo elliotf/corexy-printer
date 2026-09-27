@@ -1,12 +1,14 @@
 include <./main.scad>;
 
 module frame_assembly() {
+  /*
   translate([extrusion_vertical_spacing_x/2+extrusion_side+1,extrusion_side,top_pos_z - extrusion_main_length/2]) {
     % extrusion_l(extrusion_main_length);
   }
   translate([extrusion_vertical_spacing_x/2+extrusion_side+1,-extrusion_side,extrusion_main_length/2]) {
     % extrusion_l(extrusion_main_length);
   }
+  */
 
   for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
   //for(z=[bottom_pos_z+extrusion_side/2]) {

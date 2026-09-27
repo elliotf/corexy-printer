@@ -8,6 +8,7 @@ use <./probe.scad>;
 use <./frame.scad>;
 use <./ab_pods.scad>;
 use <./electronics.scad>;
+use <./skirts.scad>;
 
 // FIXME:
 // * bed cable chain mounts
@@ -51,7 +52,7 @@ printer_size = size_small; // a little b0rken
 //printer_size = size_medium_2020; // mostly b0rken
 //printer_size = size_large_2020; // mostly b0rken
 
-m3_through_hole_diam = 3.3;
+m3_through_hole_diam = 3.2;
 m3_thread_into_plastic_diam = 2.9;
 m3_head_diam = 6; // very loose
 
@@ -291,7 +292,6 @@ echo("build_volume: ", build_volume);
 
 build_plate_dimensions = printer_config[MISC][0];
 
-skirt_height = 0;
 bottom_pos_z = 0;
 
 //z_motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
@@ -380,9 +380,11 @@ outer_idler_pos_x = front_idler_pos_x;
 //outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-10; // for 1515 extrusion
 outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-7.5; // for 2020 extrusion
 
+stick_ab_steppers_out_back = 1;
 //ab_corner_anchor_depth = 30; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
 //ab_corner_anchor_depth = 28.4; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
-ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-3);
+ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-3)+stick_ab_steppers_out_back;
+ab_corner_offset_y = stick_ab_steppers_out_back;
 
 //non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-23;
 //non_motor_idler_pos_y = outer_idler_pos_y+5.8;
@@ -419,7 +421,7 @@ motor_xy_rounded = motor_xy_width-motor_xy_hole_spacing;
 //motor_xy_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-motor_xy_width/2-20; // inside chamber
 motor_xy_pos_x = non_motor_idler_pos_x-motor_xy_hole_spacing/2+0.5-idler_motor_delta;
 //motor_xy_pos_x = motor_xy_width/2 + 12/2; // outside chamber on the back
-motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-motor_xy_width/2; // inside chamber
+motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-motor_xy_width/2+stick_ab_steppers_out_back; // inside chamber
 //motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2+motor_xy_width/2+panel_thickness+3; // outside chamber on the  back
 //motor_xy_pos_z = gantry_pos_z+extrusion_side/2+carriage_height(y_carriage);
 motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box, yielding a motor plate thickness of 6
@@ -1182,6 +1184,7 @@ module assembly(pct_x,pct_y,pct_z) {
   }
   */
   z_axis_assembly(pos_z);
+  skirt_assembly();
 }
 
 module dummy() {

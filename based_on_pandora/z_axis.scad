@@ -208,7 +208,8 @@ rear_z_leadscrew_chain_face_width = rear_z_chain_width+2;
 rear_z_chain_mounting_hole_spacing = 8;
 rear_z_chain_mount_thickness = 4;
 clear_z_top_idler = 3; // not sure if we need this, but just in case
-rear_z_chain_pos_x = belt_plane_offset+mgn_width/2+0.2+rear_z_chain_width/2+clear_z_top_idler;
+rear_z_chain_pos_x = belt_plane_offset+max(mgn_width,extrusion_side)/2+0.2+rear_z_chain_width/2+clear_z_top_idler;
+rear_z_chain_dist_from_extrusion = max(mgn_width,extrusion_side)/2+rear_z_chain_width/2+1;
 
 // bend radius is 15, theoretically at centerline, so:
 //   30mm diameter at centerline, 35mm for margin
@@ -655,191 +656,6 @@ module rear_vertical_center_brace_mount(is_final) {
               }
             }
           }
-        }
-      }
-    }
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
-
-module rear_z_chain_fixed_anchor() {
-  translate([0,0,70]) {
-    //rear_z_chain_fixed_anchor_mounted_on_rear_center_vertical();
-  }
-  rear_z_chain_fixed_anchor_mounted_on_rear_bottom_extrusion();
-}
-
-module rear_z_chain_fixed_anchor_mounted_on_rear_bottom_extrusion() {
-  extra_height_above_mounting_holes = 15;
-  chain_mount_height_above_extrusion = 32;
-  //mount_height = rear_z_chain_mounting_hole_spacing+m3_threaded_insert_od*2+extra_height;
-  mount_height = chain_mount_height_above_extrusion+rear_z_chain_mounting_hole_spacing/2+m3_threaded_insert_od/2+extra_height_above_mounting_holes;
-  mount_thickness = 6;
-  rounded_diam = 4;
-  extrusion_pos_y = extrusion_vertical_spacing_y/2;
-  anchor_pos_y = extrusion_pos_y-extrusion_side*1.5-rear_carriage_mount_depth+31;
-  brace_wall_thickness = rounded_diam;
-  anchor_width = rear_z_chain_width+brace_wall_thickness;
-  extrusion_mount_width = abs(rear_z_chain_pos_x)-extrusion_side/2+anchor_width/2;
-  extrusion_mount_offset = -rear_z_chain_pos_x+extrusion_side/2+extrusion_mount_width/2;
-  extrusion_mount_depth = extrusion_vertical_spacing_y/2+extrusion_side/2-anchor_pos_y+mount_thickness;
-
-  module position_z_chain_anchor() {
-    translate([right*(rear_z_chain_pos_x),anchor_pos_y,chain_mount_height_above_extrusion]) {
-      rotate([90,0,0]) {
-        children();
-      }
-    }
-  }
-
-  module position_extrusion_mount() {
-    position_z_chain_anchor() {
-      translate([extrusion_mount_offset,-chain_mount_height_above_extrusion,0]) {
-        children();
-      }
-    }
-  }
-
-  module position_extrusion_mount_holes() {
-    hole_spacing = extrusion_mount_width-2*(m3_head_diam/2+4);
-    translate([rear_z_chain_pos_x+extrusion_mount_offset,extrusion_pos_y,z_axis_screw_mount_thickness]) {
-      for(x=[left,right]) {
-        translate([x*hole_spacing/2,0,0]) {
-          children();
-        }
-      }
-    }
-  }
-
-  module position_z_chain_holes() {
-    position_z_chain_anchor() {
-      for(y=[top,bottom]) {
-        translate([0,y*rear_z_chain_mounting_hole_spacing/2,0]) {
-          children();
-        }
-      }
-    }
-  }
-
-  module body() {
-    position_z_chain_anchor() {
-      sample_height = 50;
-      translate([0,sample_height/2-rear_z_chain_mounting_hole_spacing/2,0]) {
-        translate([0,0,-rear_z_chain_depth/2]) {
-          % cube([rear_z_chain_width,sample_height,rear_z_chain_depth],center=true);
-        }
-        translate([0,0,30]) {
-          % cube([rear_z_chain_width,sample_height,rear_z_chain_depth],center=true);
-        }
-      }
-      translate([-brace_wall_thickness/2,mount_height/2-chain_mount_height_above_extrusion,mount_thickness/2]) {
-        rounded_cube(anchor_width,mount_height,mount_thickness,rounded_diam);
-
-        hull() {
-          translate([-anchor_width/2+brace_wall_thickness/2,0,0]) {
-            rounded_cube(brace_wall_thickness,mount_height,mount_thickness,rounded_diam);
-
-            translate([0,-mount_height/2+mount_thickness/2,mount_thickness/2-extrusion_mount_depth/2]) {
-              rounded_cube(brace_wall_thickness,mount_thickness,extrusion_mount_depth,rounded_diam);
-            }
-          }
-        }
-      }
-    }
-    position_extrusion_mount() {
-      translate([0,mount_thickness/2,mount_thickness-extrusion_mount_depth/2]) {
-        rounded_cube(extrusion_mount_width,mount_thickness,extrusion_mount_depth,rounded_diam);
-      }
-    }
-  }
-
-  module holes() {
-    position_z_chain_holes() {
-      hole(m3_threaded_insert_od,20,resolution);
-    }
-    position_extrusion_mount_holes() {
-      translate([0,0,-mount_thickness/2+z_axis_screw_mount_thickness]) {
-        rotate([0,0,0]) {
-          bridged_hole(m3_head_diam,m3_through_hole_diam,30,false);
-        }
-      }
-    }
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
-module rear_z_chain_fixed_anchor_mounted_on_rear_center_vertical() {
-  extra_height = 12;
-  mount_height = rear_z_chain_mounting_hole_spacing+m3_threaded_insert_od*2+extra_height;
-  mount_thickness = extrusion_side-rear_z_chain_depth;
-  rounded_diam = 4;
-  pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2+mount_thickness/2;
-
-  module position_extrusion_mount() {
-    translate([0,pos_y,0]) {
-      rotate([-90,0,0]) {
-        children();
-      }
-    }
-  }
-
-  module position_extrusion_mount_holes() {
-    position_extrusion_mount() {
-      for(z=[top,bottom]) {
-        translate([0,z*(mount_height/2-m3_through_hole_diam/2-4),0]) {
-          children();
-        }
-      }
-    }
-  }
-
-  module position_z_chain_anchor() {
-    translate([right*(rear_z_chain_pos_x),pos_y,0]) {
-      rotate([90,0,0]) {
-        children();
-      }
-    }
-  }
-
-  module position_z_chain_holes() {
-    position_z_chain_anchor() {
-      for(y=[top,bottom]) {
-        translate([0,-extra_height/2+y*rear_z_chain_mounting_hole_spacing/2,0]) {
-          children();
-        }
-      }
-    }
-  }
-
-  module body() {
-    hull() {
-      width = rear_z_chain_width;
-      position_z_chain_anchor() {
-        rounded_cube(extrusion_side,mount_height,mount_thickness,rounded_diam);
-      }
-      position_extrusion_mount() {
-        rounded_cube(extrusion_side,mount_height,mount_thickness,rounded_diam);
-      }
-    }
-  }
-
-  module holes() {
-    position_z_chain_holes() {
-      hole(m3_threaded_insert_od,20,resolution);
-    }
-    position_extrusion_mount_holes() {
-      translate([0,0,-mount_thickness/2+z_axis_screw_mount_thickness]) {
-        rotate([0,0,0]) {
-          bridged_hole(m3_head_diam,m3_through_hole_diam,30,is_final);
         }
       }
     }
@@ -1641,6 +1457,10 @@ module z_carrier_rear_leadscrew(motor_offset_x,motor_offset_y,is_final) {
   drag_chain_anchor_thickness = rear_z_chain_mount_thickness+2;
   drag_chain_anchor_overlap = mgn_width/2;
 
+  anchor_face_pos_y = -rear_z_leadscrew_chain_face_offset_y+rear_z_chain_safe_bend_diam;
+
+  dist_between_mgn_and_chain_anchor = anchor_face_pos_y-(extrusion_side/2+mgn_height);
+
   module position_extrusion_anchor() {
     translate([rear_z_offset_x,extrusion_side/2+mgn_height+rear_bed_extrusion_dist_from_z_carriage,extrusion_base_pos_z-0.01]) {
       children();
@@ -1691,9 +1511,8 @@ module z_carrier_rear_leadscrew(motor_offset_x,motor_offset_y,is_final) {
 
   module position_z_chain_anchor() {
     //anchor_pos_y = rear_z_pos_y-rear_z_leadscrew_chain_face_offset_y-rear_z_chain_safe_bend_diam;
-    anchor_face_pos_y = -rear_z_leadscrew_chain_face_offset_y+rear_z_chain_safe_bend_diam;
     //translate([0,extrusion_side/2+mgn_height,0]) {
-    translate([extrusion_side/2+rear_z_leadscrew_chain_face_width/2,anchor_face_pos_y,-z_carriage_mount_height/2+drag_chain_anchor_height/2]) {
+    translate([max(extrusion_side, mgn_width)/2+rear_z_leadscrew_chain_face_width/2,anchor_face_pos_y,-z_carriage_mount_height/2+drag_chain_anchor_height/2]) {
       children();
     }
   }
@@ -1749,23 +1568,6 @@ module z_carrier_rear_leadscrew(motor_offset_x,motor_offset_y,is_final) {
 
   module body() {
     z_carrier_base_leadscrew(motor_offset_x,motor_offset_y,is_final) {
-      translate([0,max_depth_of_z_carrier-adjust_rear_belt_whatnots-rear_carriage_mount_depth/2,13/2]) {
-        rotate([90,0,0]) {
-          //rounded_cube(mgn_width,z_carriage_fastener_hole_spacing+6+wall_thickness*3*2,rear_carriage_mount_depth,2);
-        }
-      }
-      hull() {
-        width = rear_z_chain_width;
-        position_z_chain_holes() {
-          rounded_diam = 2;
-          //rounded_cube(width,width*0.6,rear_z_chain_mount_thickness,rounded_diam);
-        }
-        position_z_chain_anchor() {
-          translate([rear_z_chain_pos_x-belt_plane_offset-mgn_width/2+rounded_diam/2-0.2,0,0]) {
-            //rounded_cube(rounded_diam,z_carriage_mount_height,rear_z_chain_mount_thickness,rounded_diam);
-          }
-        }
-      }
       position_bed_pivot() {
         cube([z_carrier_pivot_side,z_carrier_pivot_length*2,z_carrier_pivot_side],center=true);
       }
@@ -1780,8 +1582,31 @@ module z_carrier_rear_leadscrew(motor_offset_x,motor_offset_y,is_final) {
           }
         }
       }
-      position_z_chain_anchor() {
-        z_chain_anchor();
+      difference() {
+        union() {
+          room_for_cables = 5;
+          bridge_height = drag_chain_anchor_height- room_for_cables;
+          translate([mgn_width/2,extrusion_side/2+mgn_height,-z_carriage_mount_height/2+room_for_cables+bridge_height/2]) {
+            translate([-mgn_width/4,z_carrier_mount_thickness/2+dist_between_mgn_and_chain_anchor/2,0]) {
+              rounded_cube(mgn_width/2,dist_between_mgn_and_chain_anchor,bridge_height,2);
+            }
+            translate([0,dist_between_mgn_and_chain_anchor,0]) {
+              rotate([0,0,-90]) {
+                round_corner_filler(2,bridge_height);
+              }
+            }
+          }
+          position_z_chain_anchor() {
+            z_chain_anchor();
+          }
+        }
+        position_z_chain_anchor() {
+          translate([-rear_z_leadscrew_chain_face_width/2- drag_chain_anchor_overlap,drag_chain_anchor_thickness,0]) {
+            rotate([0,0,-90]) {
+              round_corner_filler(mgn_width*0.5,drag_chain_anchor_height+2);
+            }
+          }
+        }
       }
       position_extrusion_anchor() {
         extrusion_anchor();
@@ -1939,12 +1764,14 @@ module z_carrier_base_leadscrew(motor_offset_x,motor_offset_y,is_final) {
     }
   }
 
-  color(print_color) difference() {
-    union() {
-      children();
-      body();
+  color(print_color) {
+    difference() {
+      union() {
+        children();
+        body();
+      }
+      holes();
     }
-    holes();
   }
 }
 
@@ -2298,11 +2125,6 @@ module z_motor_mount_leadscrew_front(is_final) {
   z_motor_mount_leadscrew_extrusion_mount_thickness = 5;
   extrusion_mount_hole_spacing = z_motor_mount_side-extrusion_side;
   extrusion_mount_length = z_motor_mount_side-corner_room;
-  bevel_height = 0.6;
-
-  slot_depth = 1.5;
-  slot_width = 5.1;
-  tab_length = 2+m3_head_diam+1;
 
   motor_pos_z = -z_motor_plate_thickness;
 
@@ -2348,10 +2170,10 @@ module z_motor_mount_leadscrew_front(is_final) {
           hull() {
             translate([-mount_thickness/2,0,0]) {
               translate([0,extrusion_side/2+mount_side+m3_head_diam/2+1,extrusion_side/2]) {
-                rounded_cube(mount_thickness,m3_socket_head_diam+4,extrusion_side,2);
+                rounded_cube(mount_thickness,m3_socket_head_diam+4,extrusion_side,mount_thickness/2);
               }
               translate([0,motor_offset_y,extrusion_side-overall_height/2]) {
-                rounded_cube(mount_thickness,mount_thickness,overall_height,2);
+                rounded_cube(mount_thickness,mount_thickness,overall_height,mount_thickness/2);
               }
             }
           }
@@ -2469,7 +2291,7 @@ module z_motor_mount_leadscrew_front(is_final) {
       z_motor_mount_leadscrew_holes();
     }
     position_mounting_holes() {
-      hole(3.2,40,resolution);
+      hole(m3_through_hole_diam,40,resolution);
       translate([0,0,4+20/2]) {
         hole(m3_head_diam,20,resolution);
       }
@@ -2507,7 +2329,7 @@ module z_motor_mount_leadscrew_front(is_final) {
   }
 }
 
-module z_motor_mount_leadscrew_rear(is_final) {
+module old_z_motor_mount_leadscrew_rear(is_final) {
   motor_offset_x = leadscrew_rear_motor_offset_x;
   motor_offset_y = leadscrew_rear_motor_offset_y;
   z_motor_plate_thickness = 10;
@@ -2680,6 +2502,324 @@ module z_motor_mount_leadscrew_rear(is_final) {
       children();
     }
     holes();
+  }
+}
+
+module z_motor_mount_leadscrew_rear(is_final) {
+  motor_offset_x = leadscrew_rear_motor_offset_x;
+  motor_offset_y = leadscrew_rear_motor_offset_y;
+  motor_offset_z = -z_motor_plate_thickness;
+  motor_shoulder_diam = 2*NEMA_boss_radius(z_motor_type)+1;
+
+  z_motor_mount_rounded_diam = m3_head_diam+4;
+
+  //rounded_diam = 3;
+  rounded_diam = z_motor_side - z_motor_hole_spacing;
+
+  corner_room = 0.5;
+
+  z_motor_mount_height = z_motor_plate_thickness+extrusion_side+z_motor_mount_leadscrew_extrusion_mount_thickness;
+  bevel_height = 0.6;
+
+  slot_depth = 1.5;
+  slot_width = 5.1;
+  tab_length = 2+m3_head_diam+1;
+
+  side = z_motor_side;
+  delta = 6;
+  thickness = abs(motor_offset_z) - delta;
+  overall_height = thickness + delta + extrusion_side;
+
+  //ventilation_cavity_height = z_motor_plate_thickness+extrusion_side/2;
+  ventilation_cavity_height = z_motor_plate_thickness; // more meat so that we can put more screws in
+
+  mount_thickness = 4;
+  wing_offset = m3_socket_head_diam/2+1;
+  wing_width = m3_socket_head_diam+4;
+  stepper_full_depth_width = abs(motor_offset_x) - extrusion_side/2 + side/2;
+  rear_extrusion_mount_width = stepper_full_depth_width + wing_offset + wing_width/2;
+
+  module position_motor() {
+    translate([motor_offset_x,motor_offset_y,motor_offset_z]) {
+      rotate([0,0,0]) {
+        children();
+      }
+    }
+  }
+
+  module motor_mount_base(height) {
+    position_motor() {
+      translate([0,0,height/2]) {
+        rounded_cube(side,side,height,rounded_diam);
+      }
+    }
+  }
+
+  module rear_extrusion_mount_delta_area() {
+    translate([left*(extrusion_side/2+side/2),0,-delta/2]) {
+      rounded_cube(side,extrusion_side,delta,rounded_diam);
+    }
+  }
+
+  module rear_extrusion_mount() {
+    translate([left*(extrusion_side/2+side/2),0,extrusion_side/2-delta/2]) {
+      rounded_cube(side,extrusion_side,extrusion_side+delta,rounded_diam);
+    }
+  }
+
+  module body() {
+    // mounting wings
+    /*
+    for(r=[0,1]) {
+      mirror([r,r,0]) {
+        mount_thickness = 4;
+        translate([-extrusion_side/2,0,0]) {
+          // fill in rounded area
+          translate([-20/2,extrusion_side/2+mount_side-20/2,extrusion_side/2-delta]) {
+            cube([20,20,extrusion_side+delta*2],center=true);
+          }
+          // mounting wing
+          hull() {
+            translate([-mount_thickness/2,0,0]) {
+              translate([0,extrusion_side/2+mount_side+m3_head_diam/2+1,extrusion_side/2]) {
+                rounded_cube(mount_thickness,m3_socket_head_diam+4,extrusion_side,2);
+              }
+              translate([0,motor_offset_y,extrusion_side-overall_height/2]) {
+                rounded_cube(mount_thickness,mount_thickness,overall_height,2);
+              }
+            }
+          }
+        }
+      }
+    }
+    */
+
+    echo("motor_offset_x: ", motor_offset_x);
+
+    motor_mount_base(overall_height);
+    // rear extrusion_mount
+    hull() {
+      translate([-(extrusion_side/2+rear_extrusion_mount_width/2),-extrusion_side/2+mount_thickness/2,extrusion_side/2]) {
+        rounded_cube(rear_extrusion_mount_width,mount_thickness,extrusion_side,mount_thickness/2);
+      }
+      translate([-extrusion_side/2- stepper_full_depth_width/2,-extrusion_side/2+mount_thickness/2,motor_offset_z+1]) {
+        rounded_cube(stepper_full_depth_width,mount_thickness,2,mount_thickness/2);
+      }
+    }
+    translate([-(extrusion_side/2+stepper_full_depth_width-10/2),mount_thickness/2,motor_offset_z+overall_height/2]) {
+      cube([10,extrusion_side,overall_height],center=true);
+    }
+
+    // vertical extrusion mount
+    translate([0,extrusion_side/2+mount_thickness/2,0]) {
+      hull() {
+        translate([0,0,extrusion_side/2]) {
+          rounded_cube(extrusion_side,mount_thickness,extrusion_side,mount_thickness/2);
+        }
+        translate([motor_offset_x+side/2-extrusion_side/2,0,motor_offset_z+extrusion_side/2]) {
+          rounded_cube(extrusion_side,mount_thickness,extrusion_side,mount_thickness/2);
+        }
+      }
+    }
+
+    /*
+    hull() {
+      motor_mount_base(thickness);
+      rear_extrusion_mount_delta_area();
+    }
+    hull() {
+      rear_extrusion_mount();
+      position_motor() {
+        translate([0,side/2-rounded_diam/2,overall_height/2]) {
+          rounded_cube(side,rounded_diam,overall_height,rounded_diam);
+        }
+      }
+    }
+    */
+
+    // main load bearing surface, tabs into slots
+    translate([-extrusion_side/2- stepper_full_depth_width/2,-extrusion_side/2,extrusion_side/2]) {
+      support_width = 3;
+      rounded_cube(stepper_full_depth_width,extrusion_slot_depth*2,extrusion_slot_width,extrusion_slot_depth);
+
+      translate([0,0,extrusion_slot_width/2]) {
+        // built in supports -- bridge
+        translate([0,0,-extrude_height/2]) {
+          rounded_cube(stepper_full_depth_width,2*(extrusion_slot_depth+support_width),extrude_height,support_width);
+        }
+        // built in supports -- touch build plate
+        support_height = extrusion_side/2- extrusion_slot_width/2;
+        translate([0,-(extrusion_slot_depth+support_width/2),-extrude_height/2+(support_height/2)]) {
+          rounded_cube(stepper_full_depth_width,support_width,support_height+extrude_height,support_width);
+        }
+        translate([0,-(extrusion_slot_depth+support_width/2),-extrude_height/2+(support_height/2)]) {
+          rounded_cube(stepper_full_depth_width,support_width,support_height+extrude_height,support_width);
+        }
+      }
+      
+    }
+
+    /*
+    position_motor() {
+      // main load bearing surface, tabs into slots
+      translate([0,0,-motor_pos_z+extrusion_side/2]) {
+        for(r=[0,1]) {
+          mirror([r,r,0]) {
+            translate([-z_motor_side/2+mount_side,z_motor_side/2-mount_side/2,0]) {
+              translate([-10/2,0,0]) {
+                rounded_cube(extrusion_slot_depth*2+10,z_motor_screw_spacing,extrusion_slot_width,extrusion_slot_depth);
+              }
+
+              support_width = 3;
+              translate([0,0,extrusion_slot_width/2]) {
+                // built in supports -- bridge
+                translate([0,0,-extrude_height/2]) {
+                  rounded_cube(2*(extrusion_slot_depth+support_width),z_motor_screw_spacing,extrude_height,support_width);
+                }
+                // built in supports -- touch build plate
+                support_height = extrusion_side/2- extrusion_slot_width/2;
+                translate([extrusion_slot_depth+support_width/2,0,-extrude_height/2+(support_height/2)]) {
+                  rounded_cube(support_width,z_motor_screw_spacing,support_height+extrude_height,support_width);
+                }
+                translate([extrusion_slot_depth+support_width/2,0,-extrude_height/2+(support_height/2)]) {
+                  rounded_cube(support_width,z_motor_screw_spacing,support_height+extrude_height,support_width);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    */
+  }
+
+  module z_motor_mount_leadscrew_holes() {
+    // leadscrew / motor shoulder cavity
+    tolerance_around_leadscrew = 1;
+    opening_diam = z_motor_hole_spacing - rounded_diam;
+    small_opening_side = opening_diam * 0.8;
+    large_opening_side = z_motor_side-2*4;
+
+    hull() {
+      translate([0,0,0]) {
+        hole(opening_diam,overall_height*2-4,resolution);
+      }
+      for(r=[0,90]) {
+        rotate([0,0,r]) {
+          rounded_cube(small_opening_side, large_opening_side, 2*3, 5);
+        }
+      }
+    }
+    hole(leadscrew_diam+2*tolerance_around_leadscrew,overall_height*3,resolution);
+    // prove an exit for anything that might fall in
+    translate([0,z_motor_side/2,0]) {
+      opening_height = thickness - 2;
+      cube([small_opening_side,large_opening_side,opening_height*2],center=true);
+    }
+
+    support_thickness = 6;
+    // x,y,z,offset,angle
+    holes = [
+      [left,rear,0,0],
+      [right,rear,0,0],
+      [right,front,0,0], // toughest
+      [left,front,0,0],
+    ];
+
+    for(h=holes) {
+      translate([h[x]*z_motor_hole_spacing/2,h[y]*z_motor_hole_spacing/2,0]) {
+        translate([0,0,support_thickness]) {
+          bridged_hole(m3_head_diam,m3_through_hole_diam,10,is_final);
+          translate([0,0,-support_thickness/2]) {
+            hole(m3_through_hole_diam,support_thickness*2,resolution);
+          }
+        }
+        translate([0,0,0]) {
+          max_screw_length = 8;
+          rotate([0,0,h[3]]) {
+            hull() {
+              translate([0,0,support_thickness+max_screw_length/2]) {
+                hole(m3_head_diam,max_screw_length,resolution);
+              }
+              translate([h[2],0,overall_height-1-max_screw_length/2]) {
+                hole(m3_head_diam,max_screw_length,resolution);
+              }
+            }
+            translate([h[2],0,overall_height]) {
+              hole(m3_head_diam,max_screw_length+1,resolution);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  module holes() {
+    position_motor() {
+      z_motor_mount_leadscrew_holes();
+    }
+
+    // clearance for vertical extrusion
+    hull() {
+      translate([0,0,100/2]) {
+        cube([extrusion_side,extrusion_side,100],center=true);
+      }
+      down_by = delta+thickness*0.7;
+      rotate([0,0,-45]) {
+        translate([down_by*0.7,0,100/2-down_by]) {
+          cube([extrusion_side,extrusion_side,100],center=true);
+        }
+      }
+    }
+
+    // rear extrusion mounting hole
+    translate([motor_offset_x-(side/2 + wing_offset),-extrusion_side/2+mount_thickness,extrusion_side/2]) {
+      rotate([90,0,0]) {
+        hole(m3_through_hole_diam,100,resolution);
+      }
+    }
+
+    // vertical extrusion mounting hole
+    translate([0,extrusion_side/2+mount_thickness,extrusion_side/2]) {
+      rotate([-90,0,0]) {
+        hole(m3_through_hole_diam,mount_thickness*3,resolution);
+      }
+      screw_clearance_length = 13;
+      hull() {
+        translate([0,screw_clearance_length/2,0]) {
+          rotate([-90,0,0]) {
+            hole(m3_head_diam,screw_clearance_length,resolution);
+          }
+          translate([m3_head_diam/2+1/2,0,0]) {
+            cube([1,screw_clearance_length,m3_head_diam*2],center=true);
+          }
+        }
+        translate([5,(screw_clearance_length+m3_head_diam)/2+10,0]) {
+          rotate([-90,0,0]) {
+            hole(m3_through_hole_diam,screw_clearance_length+m3_head_diam,resolution);
+          }
+        }
+      }
+    }
+  }
+
+  position_motor() {
+    rotate([0,0,-90]) {
+      % NEMA(z_motor_type);
+    }
+    translate([0,0,lead_screw_length/2]) {
+      % color("lightgrey") hole(8,lead_screw_length,resolution);
+    }
+  }
+
+  color(print_color) {
+    difference() {
+      union() {
+        body();
+        children();
+      }
+      holes();
+    }
   }
 }
 
@@ -3369,15 +3509,15 @@ module leadscrew_dragchain_anchor() {
   mount_width = extrusion_side+material_behind_extrusion-3;
 
   module position_chain_face() {
-    translate([0,rear_z_leadscrew_chain_face_offset_y,height/2]) {
-      translate([-rear_z_leadscrew_chain_face_width/2,0,0]) {
+    translate([-rear_z_chain_dist_from_extrusion,rear_z_leadscrew_chain_face_offset_y,height/2]) {
+      translate([0,0,0]) {
         children();
       }
     }
   }
 
   module body() {
-    translate([0,rear_z_leadscrew_chain_face_offset_y,height/2]) {
+    translate([-extrusion_side/2,rear_z_leadscrew_chain_face_offset_y,height/2]) {
       translate([-mount_thickness/2,-mount_width/2,0]) {
         rotate([90,0,0]) {
           hull() {
@@ -3401,7 +3541,7 @@ module leadscrew_dragchain_anchor() {
 
   module holes() {
     for(z=[top,bottom]) {
-      translate([-rear_z_leadscrew_chain_face_width/2,0,6+rear_z_chain_mounting_hole_spacing/2+z*rear_z_chain_mounting_hole_spacing/2]) {
+      translate([-rear_z_chain_dist_from_extrusion,0,6+rear_z_chain_mounting_hole_spacing/2+z*rear_z_chain_mounting_hole_spacing/2]) {
         rotate([90,0,0]) {
           hole(m3_thread_into_plastic_diam,100,resolution);
         }
@@ -3426,9 +3566,11 @@ module leadscrew_dragchain_anchor() {
     }
   }
 
-  color(print_color) difference() {
-    body();
-    holes();
+  color(print_color) {
+    difference() {
+      body();
+      holes();
+    }
   }
 }
 
@@ -3436,7 +3578,7 @@ module z_axis_assembly_leadscrew(pos_z,is_final) {
   color(print_color) rear_vertical_center_brace_mount(is_final);
   color(print_color) umbilical_wire_guard(is_final);
 
-  translate([rear_z_offset_x-extrusion_side/2,rear_z_pos_y,extrusion_side+10]) {
+  translate([rear_z_offset_x,rear_z_pos_y,extrusion_side+10]) {
     leadscrew_dragchain_anchor();
   }
 
@@ -3942,13 +4084,13 @@ module z_axis_assembly(pos_z) {
 
   translate([extrusion_vertical_spacing_x/2,extrusion_main_length/2- extrusion_based_skirt_length/2,0]) {
     rotate([0,0,90]) {
-      extrusion_based_skirt_plug_mount();
+      //extrusion_based_skirt_plug_mount();
     }
   }
 }
 
-//z_axis_assembly(30);
-//frame_assembly();
+z_axis_assembly(30);
+frame_assembly();
 /*
 translate([rear_z_offset_x,extrusion_vertical_spacing_y/2-extrusion_side,bottom_pos_z+extrusion_main_length/2]) {
   % extrusion_l(extrusion_main_length);

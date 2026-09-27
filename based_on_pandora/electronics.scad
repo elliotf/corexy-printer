@@ -12,6 +12,14 @@ module position_pi() {
   translate([left*(extrusion_main_length/2-pcb_width(pi_type)/2),20,-20]) {
     rotate([0,0,-90]) {
       rotate([180,0,0]) {
+        //children();
+      }
+    }
+  }
+
+  translate([left*(extrusion_main_length/2-pcb_width(pi_type)/2),20,-20]) {
+    rotate([0,0,0]) {
+      rotate([90,0,0]) {
         children();
       }
     }
@@ -134,17 +142,24 @@ module position_psu() {
     translate([psu_pos_x,psu_pos_y,psu_pos_z]) {
       rotate([0,0,180]) {
         rotate([180,0,0]) {
-          children();
+          //children();
         }
       }
     }
   }
 
   // on the very bottom
-  translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2-psu_mount_gap),-10,extrusion_side/2]) {
-    rotate([0,0,0]) {
-      rotate([180,0,0]) {
-        //children();
+  union() {
+    psu_pos_x = left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2);
+    //psu_pos_y = extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-psu_width/2-24;
+    psu_pos_y = 0; // extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-psu_width/2-24;
+    //psu_pos_z = extrusion_side-deck_panel_thickness-psu_mount_wall_thickness-tolerance;
+    psu_pos_z = -z_base_motor_mount_overall_height + psu_height + 1;
+    translate([psu_pos_x,psu_pos_y,psu_pos_z]) {
+      rotate([0,0,180]) {
+        rotate([180,0,0]) {
+          children();
+        }
       }
     }
   }
@@ -403,11 +418,8 @@ module electronics_assembly() {
     translate([0,0,psu_height(psu_type)/2]) {
       //% color("#ccc") cube([psu_length(psu_type),psu_width(psu_type),psu_height(psu_type)],center=true);
     }
-    for(x=[left,right]) {
-      translate([x*psu_length_delta/2,0,0]) {
-        psu(psu_type);
-      }
-    }
+    //for(x=[left,right]) {
+    psu(psu_type);
     translate([0,0,psu_height/2]) {
       //color("#ccc",0.2) cube([psu_length,psu_width,psu_height],center=true);
     }
