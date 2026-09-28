@@ -2313,7 +2313,9 @@ module z_motor_mount_leadscrew_front(is_final) {
   }
 
   position_motor() {
-    % NEMA(z_motor_type);
+    rotate([0,0,90]) {
+      % NEMA(z_motor_type);
+    }
     translate([0,0,lead_screw_length/2]) {
       % color("lightgrey") hole(8,lead_screw_length,resolution);
     }

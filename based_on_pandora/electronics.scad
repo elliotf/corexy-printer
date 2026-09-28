@@ -8,6 +8,77 @@ psu_clamp_screw_area_width = 10;
 //pi_type = RPI3A;
 pi_type = RPI3;
 
+ssr_height = 27.9;
+ssr_width = 12.7;
+ssr_depth = 29;
+
+// TODO:
+// * rpi mount
+// * psu mount
+// * mcu mount
+// * SSR mount
+
+module mock_ssr() { // ED24D3 3A, from dimensions on https://www.sensata.com/sites/default/files/a/sensata-ed-series-ac-output-plug-in-ssr-datasheet.pdf
+  spade_width = 4.8;
+  spade_thickness = 0.5;
+  spade_length = 5.1;
+
+  front_spade_spacing = 7.6;
+  rear_spade_spacing = 5.3;
+
+  latch_from_bottom = 20.8;
+  latch_width = 3;
+  latch_depth = 2.5;
+  latch_spacing = 9.9-latch_width;
+
+  color("#777") {
+    cube([ssr_width,ssr_depth,ssr_height],center=true);
+
+    translate([0,-ssr_depth/2,-ssr_height/2+latch_from_bottom]) {
+      for(x=[left,right]) {
+        translate([x*(latch_spacing/2),0,0]) {
+          hull() {
+            translate([0,0,-0.5]) {
+              cube([latch_width,latch_depth*2,1],center=true);
+            }
+            translate([0,1,-2.5/2-0.5]) {
+              cube([latch_width,2,2.5+0.5],center=true);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  translate([front_spade_spacing/2,-ssr_depth/2+spade_width,ssr_height/2]) {
+    color("lightgreen") hole(2.5,2,resolution);
+  }
+
+  translate([0,-ssr_depth/2+2+spade_width/2,-ssr_height/2]) {
+    for(x=[left,right]) {
+      translate([x*(front_spade_spacing/2),0,0]) {
+        color("silver") cube([spade_thickness,spade_width,spade_length*2],center=true);
+      }
+    }
+  }
+
+  translate([0,ssr_depth/2-2,-ssr_height/2]) {
+    for(y=[0,-1]) {
+      translate([0,y*rear_spade_spacing,0]) {
+        color("silver") cube([spade_width,spade_thickness,spade_length*2],center=true);
+      }
+    }
+  }
+}
+
+module position_ssr() {
+  translate([0,0,0]) {
+    rotate([0,0,0]) {
+      children();
+    }
+  }
+}
+
 module position_pi() {
   translate([left*(extrusion_main_length/2-pcb_width(pi_type)/2),20,-20]) {
     rotate([0,0,-90]) {
@@ -150,7 +221,7 @@ module position_psu() {
 
   // on the very bottom
   union() {
-    psu_pos_x = left*(extrusion_vertical_spacing_x/2-extrusion_side/2-psu_length/2);
+    psu_pos_x = 0;
     //psu_pos_y = extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-psu_width/2-24;
     psu_pos_y = 0; // extrusion_vertical_spacing_y/2-extrusion_side-z_motor_side/2-psu_width/2-24;
     //psu_pos_z = extrusion_side-deck_panel_thickness-psu_mount_wall_thickness-tolerance;

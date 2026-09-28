@@ -16,8 +16,10 @@ bottom_panel_rounded_diam = 8;
 bottom_panel_hole_spacing = 197;
 bottom_panel_thickness = 3;
 
-//room_for_z_stepper_x = leadscrew_base_motor_offset_x;
-//room_for_z_stepper_y = leadscrew_base_motor_offset_y;
+// TODO:
+// * panel lip
+// * panel mounting holes
+// * skirt reinforcement
 
 module interlock_feature(thickness = extrusion_side, shrink_by = 0) {
   rounded_diam = 10;
