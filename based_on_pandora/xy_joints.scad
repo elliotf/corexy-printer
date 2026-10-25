@@ -184,7 +184,6 @@ module y_axis_endstop_trigger(is_final) {
 module xy_joint_single_piece(side, is_final) { // unified xy joint
   idler_bevel_height = 0.5;
 
-
   hole_spacing_x = y_carriage[7];
   hole_spacing_y = y_carriage[6];
 
@@ -219,12 +218,13 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
   //rail_pos_z = mgn_height+x_extrusion_above_y_carriage+extrusion_side/2;
   rail_pos_z = mgn_height+x_rail_offset_from_y_carriage_top;
 
-
   meat_behind_rail = mgn_area_depth/2-rail_pos_y;
   rail_body_meat = meat_behind_rail+meat_below_carriage;
 
   endstop_screw_hole_diam = m3_thread_into_plastic_diam;
   mgn_carriage_offset_y = -1;
+
+  rounded_diam = 1;
 
   module position_rail() {
     translate([-side*(extrusion_side/2+x_rail_length/2),rail_pos_y,rail_pos_z]) {
@@ -277,6 +277,22 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
   //   }
   // }
 
+  x_endstop_trigger_from_rear = 6;
+  x_endstop_trigger_dist_above_top = 4.8;
+  x_endstop_trigger_depth = x_endstop_trigger_from_rear + m3_head_diam/2 + wall_thickness;
+  x_endstop_trigger_width = mgn_area_width/2 + hole_spacing_x/2 - m2_head_diam/2 - rounded_diam/2;
+  x_endstop_trigger_height = x_endstop_trigger_dist_above_top + m3_thread_into_plastic_diam/2 + m3_head_diam/2 + 2.4;
+
+  module position_x_endstop_trigger() {
+    if (side == right) {
+      translate([mgn_area_width/2-x_endstop_trigger_width,mgn_area_depth/2 - x_endstop_trigger_from_rear,mgn_height+overall_height+x_endstop_trigger_dist_above_top]) {
+        //rotate([90,0,0]) {
+          children();
+        //}
+      }
+    }
+  }
+
   module body() {
     // position_endstop_trigger() {
     //   endstop_screw_mount_body_diam = endstop_screw_hole_diam+2*2;
@@ -288,7 +304,7 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
     translate([0,0,mgn_height+overall_height/2-y_rail_sunk_into_extrusion]) {
       translate([0,0,0]) {
         rotate([90,0,0]) {
-          rounded_cube(mgn_area_width,overall_height,mgn_area_depth,1);
+          rounded_cube(mgn_area_width,overall_height,mgn_area_depth,rounded_diam);
         }
       }
       hull() {
@@ -300,7 +316,22 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
         }
         translate([0,front*(mgn_area_depth/2-1),0]) {
           rotate([90,0,0]) {
-            rounded_cube(mgn_area_width,overall_height,2,1);
+            rounded_cube(mgn_area_width,overall_height,2,rounded_diam);
+          }
+        }
+      }
+    }
+
+    position_x_endstop_trigger() {
+      translate([0,x_endstop_trigger_from_rear - x_endstop_trigger_depth/2,-x_endstop_trigger_dist_above_top]) {
+        translate([x_endstop_trigger_width/2,0,0]) {
+          rotate([90,0,0]) {
+            rounded_cube(x_endstop_trigger_width,x_endstop_trigger_height*2,x_endstop_trigger_depth,rounded_diam);
+          }
+        }
+        rotate([90,0,0]) {
+          rotate([0,0,90]) {
+            round_corner_filler(rounded_diam, x_endstop_trigger_depth);
           }
         }
       }
@@ -310,7 +341,7 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
       translate([0,mgn_area_depth/2-rail_body_meat/2,0]) {
         translate([0,0,mgn_height+overall_height/2-y_rail_sunk_into_extrusion]) {
           rotate([90,0,0]) {
-            rounded_cube(mgn_area_width,overall_height,rail_body_meat,1);
+            rounded_cube(mgn_area_width,overall_height,rail_body_meat,rounded_diam);
           }
         }
         translate([-side*(extrusion_side/2+rail_support_length-meat_beside_rail_at_end_of_support/2),0,rail_pos_z]) {
@@ -333,6 +364,15 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
     // position_endstop_trigger() {
     //   hole(endstop_screw_hole_diam,40,resolution);
     // }
+    position_x_endstop_trigger() {
+      rotate([0,90,0]) {
+        //hole(m3_thread_into_plastic_diam,40,resolution);
+        hole(m3_threaded_insert_od,40,resolution);
+        translate([0,0,m3_threaded_insert_height+1+40/2]) {
+          hole(m3_head_diam,40,resolution);
+        }
+      }
+    }
 
     // round innermost tips
     translate([0,mgn_area_depth/2-rail_body_meat,0]) {
@@ -492,7 +532,7 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
 
     translate([side*mgn_width/2,0,xy_belt_center_extrusion_offset_z]) {
       rotate([90,0,0]) {
-        rounded_cube(belt_return_path_side_cut_width*2,belt_return_path_side_cut_height,mgn_length*2,1);
+        rounded_cube(belt_return_path_side_cut_width*2,belt_return_path_side_cut_height,mgn_length*2,rounded_diam);
       }
     }
 
@@ -536,6 +576,7 @@ module xy_joint_single_piece(side, is_final) { // unified xy joint
         }
       }
     }
+
     translate([0,0,side*add_material_between_cavities/2]) {
       position_idler_rear() {
         hull() {

@@ -1,14 +1,15 @@
 include <./main.scad>;
 
 module frame_assembly() {
-  /*
-  translate([extrusion_vertical_spacing_x/2+extrusion_side+1,extrusion_side,top_pos_z - extrusion_main_length/2]) {
-    % extrusion_l(extrusion_main_length);
+  // show gantry drill position location relative to main extrusion length
+  if (true) {
+    translate([extrusion_vertical_spacing_x/2+extrusion_side+1,extrusion_side,top_pos_z - extrusion_main_length/2]) {
+      % extrusion_l(extrusion_main_length);
+    }
+    translate([extrusion_vertical_spacing_x/2+extrusion_side+1,-extrusion_side,extrusion_main_length/2]) {
+      % extrusion_l(extrusion_main_length);
+    }
   }
-  translate([extrusion_vertical_spacing_x/2+extrusion_side+1,-extrusion_side,extrusion_main_length/2]) {
-    % extrusion_l(extrusion_main_length);
-  }
-  */
 
   for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
   //for(z=[bottom_pos_z+extrusion_side/2]) {
@@ -32,12 +33,14 @@ module frame_assembly() {
 
   hole_diam = extrusion_center_hole(extrusion_vertical_type);
 
-  translate([rear_z_offset_x,rear_z_pos_y,rear_z_pos_z]) {
-    % difference() {
-      extrusion_l(extrusion_main_length);
-      translate([0,0,-extrusion_main_length/2+extrusion_side/2]) {
-        rotate([90,0,0]) {
-          hole(hole_diam,extrusion_side,resolution);
+  mirror([1,0,0]) {
+    translate([rear_z_offset_x,rear_z_pos_y,rear_z_pos_z]) {
+      % difference() {
+        extrusion_l(extrusion_main_length);
+        translate([0,0,-extrusion_main_length/2+extrusion_side/2]) {
+          rotate([90,0,0]) {
+            hole(hole_diam,extrusion_side,resolution);
+          }
         }
       }
     }

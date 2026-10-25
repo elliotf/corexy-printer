@@ -627,7 +627,7 @@ module motor_holes(z) {
   }
 }
 
-module y_endstop_mount() {
+module old_y_endstop_mount() {
   // FIXME: offset (or make adjustable) so that the trigger is centered in X
   // FIXME: offset so that the trigger is centered in Z
 
@@ -766,6 +766,117 @@ module y_endstop_mount() {
   }
 }
 
+module y_endstop_mount() { // smaller
+  extrusion_width = 15; // FIXME: pull from config
+
+  microswitch_backstop_height = 1.6; // avoid interfering with the pins
+  microswitch_backstop_thickness = 5; // avoid interfering with the pins
+  pin_spacing = 5.08;
+
+  // NOTE: adjust this value to compensate for y endstop position
+  dist_from_brace_to_x_rail_y = 14.7; // FIXME: determine rather than hardcode
+  //dist_from_brace_to_x_rail_y = y_endstop_width + microswitch_backstop_thickness; // FIXME: determine rather than hardcode
+
+  switch_pos_y = front*(extrusion_shortest_side/2 + dist_from_brace_to_x_rail_y - y_endstop_width/2);
+  switch_pos_z = 3.2; // FIXME: determine rather than hardcode
+  dist_between_switch_and_extrusion = abs(switch_pos_y)-y_endstop_width/2-extrusion_width/2;
+
+  front_pos_y = switch_pos_y - y_endstop_width/2 + 1;
+
+  thickness = 1;
+
+  hole_depth = 5;
+  mount_width = 20;
+  mount_deep_width = hole_depth+thickness;
+  mount_deep_depth = abs(switch_pos_y)-extrusion_width/2+3;
+  mount_narrow_depth = 6;
+  mount_height = 13;
+
+  extrusion_slot_width = 3;
+  extrusion_slot_depth = 1;
+
+  module position_endstop() {
+    // in front of rear brace, to hit x rail directly
+    translate([0,switch_pos_y,switch_pos_z]) {
+      rotate([0,-90,0]) {
+        rotate([180,0,0]) {
+          children();
+        }
+      }
+    }
+  }
+
+  position_endstop() {
+    % microswitch(y_endstop_type);
+  }
+
+  module body() {
+    translate([y_endstop_thickness/2+mount_width/2,-extrusion_width/2,0]) {
+      rotate([0,90,0]) {
+        rounded_cube(extrusion_slot_width,extrusion_slot_depth*2,mount_width,thickness);
+      }
+    }
+    hull() {
+      translate([y_endstop_thickness/2+mount_width/2,-extrusion_width/2-mount_narrow_depth/2,0]) {
+        rotate([0,90,0]) {
+          rounded_cube(mount_height,mount_narrow_depth,mount_width,thickness);
+        }
+      }
+      translate([y_endstop_thickness/2+mount_deep_width/2,0,0]) {
+        translate([0,switch_pos_y+microswitch_backstop_thickness/2,switch_pos_z]) {
+          rotate([0,90,0]) {
+            rounded_cube(y_endstop_length,y_endstop_width+microswitch_backstop_thickness,mount_deep_width,thickness);
+          }
+        }
+      }
+    }
+    translate([y_endstop_thickness/2,switch_pos_y+y_endstop_width/2+microswitch_backstop_thickness/2,switch_pos_z]) {
+      rotate([0,90,0]) {
+        rounded_cube(y_endstop_length,microswitch_backstop_thickness,microswitch_backstop_height*2,thickness);
+      }
+    }
+  }
+
+  module holes() {
+    screw_head_meat = 2;
+
+    translate([y_endstop_thickness/2+mount_width/2,-extrusion_width/2,0]) {
+      // increase ease of printing; clear out slot near screw hole to reduce 90deg overhang
+      hull() {
+        translate([0,20/2,0]) {
+          cube([4,20,20],center=true);
+
+          translate([0,3,0]) {
+            cube([4+3*2,20,20],center=true);
+            
+          }
+        }
+      }
+
+      // screw hole
+      translate([0,-screw_head_meat,0]) {
+        rotate([-90,0,0]) {
+          hole(m3_through_hole_diam,mount_deep_depth,resolution);
+          translate([0,0,-mount_deep_depth/2]) {
+            hole(m3_head_diam+0.4,mount_deep_depth,8);
+          }
+        }
+      }
+    }
+
+    position_endstop() {
+      microswitch_hole_positions(y_endstop_type) {
+        hole(2,y_endstop_thickness+2*(hole_depth),resolution);
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module ab_pod_assembly(side,is_final) {
   translate([side*motor_xy_pos_x,motor_xy_pos_y,0]) {
     for(a=[0,motor_xy_adjustment_amount]) {
@@ -788,7 +899,8 @@ module ab_pod_assembly(side,is_final) {
     ab_pod_upper(side,is_final);
   }
 
-  translate([0,rear_brace_pos_y,rear_brace_pos_z]) {
+  //translate([9.8,rear_brace_pos_y,rear_brace_pos_z]) {
+  translate([15,rear_brace_pos_y,rear_brace_pos_z]) {
     y_endstop_mount();
   }
 
@@ -804,5 +916,6 @@ translate([0,rear_brace_pos_y,motor_xy_pos_z+ extrusion_shortest_side /2+xy_moto
     % color(frame_color) extrusion(extrusion_shortest_type,extrusion_shortest_length);
   }
 }
+
 ab_pod_assembly(right,is_final);
 //ab_pod_assembly(right,is_final);

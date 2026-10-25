@@ -93,7 +93,7 @@ z_motor_type = NEMA17_27; // leadscrew
 z_motor_side = NEMA_width(z_motor_type);
 z_motor_hole_spacing = NEMA_hole_pitch(z_motor_type);
 z_motor_screw_spacing = z_motor_hole_spacing;
-z_axis_screw_mount_thickness = 4;
+z_axis_screw_mount_thickness = 3; // same as tri zero
 
 sizes = [
   [
@@ -294,10 +294,17 @@ build_plate_dimensions = printer_config[MISC][0];
 
 bottom_pos_z = 0;
 
-//z_motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
+bottom_panel_rounded_diam = 8;
+bottom_panel_hole_spacing = 197;
+bottom_panel_thickness = 3;
+
+height_above_z_motor = 2;
+z_motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
 //z_base_motor_mount_overall_height = abs(z_motor_pos_z)+z_motor_side/2+height_below_z_motor;
 z_base_motor_mount_overall_height = 50;
 echo("z_base_motor_mount_overall_height: ", z_base_motor_mount_overall_height);
+skirt_height = z_base_motor_mount_overall_height + 4; // this tall to accomodate the PSU plug
+echo("skirt_height: ", skirt_height);
 
 extrusion_vertical_spacing_x = extrusion_main_length+extrusion_side;
 extrusion_vertical_spacing_y = extrusion_vertical_spacing_x;
@@ -459,6 +466,7 @@ leadscrew_nut_shaft_length = leadscrew_nut_base_inset+leadscrew_nut_base_thickne
 
 //leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_screw_spacing/2+m3_head_diam/2+2);
 //leadscrew_base_motor_offset_x = left*(max(carriage_width(z_carriage), extrusion_side)/2 + leadscrew_nut_base_diam/2);
+//z_motor_under_extrusion = ceil(z_motor_side/2-(z_motor_screw_spacing/2+m3_head_diam/2));
 z_motor_under_extrusion = ceil(z_motor_side/2-(z_motor_screw_spacing/2+m3_head_diam/2));
 leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_side/2-z_motor_under_extrusion);
 //leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_side/2);
@@ -482,7 +490,7 @@ rear_brace_pos_z = motor_xy_pos_z+extrusion_width(extrusion_shortest_type)/2+xy_
 rear_brace_distance_from_rear = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
 //rear_z_offset_x = 0;
 //rear_z_offset_x = ceil(leadscrew_rear_motor_offset_x*0.7);
-rear_z_offset_x = -12;
+rear_z_offset_x = -0;
 echo("rear_z_offset_x: ", rear_z_offset_x);
 rear_z_pos_y = extrusion_vertical_spacing_y/2-extrusion_side;
 //rear_z_pos_y = extrusion_vertical_spacing_y/2;
@@ -972,10 +980,23 @@ module x_axis_assembly(pct_x = 0) {
             }
             translate([0,front*(15/2+carriage_height(x_carriage)),0]) {
               rotate([-90,0,0]) {
-                % color(print_color) import("../Pandoras_Box/STLs/Gantry/x_carriage.stl");
+                //% color(print_color) import("../Pandoras_Box/STLs/Gantry/x_carriage.stl");
+              }
+            }
+            translate([0,front*(29.1),-42.58]) {
+              rotate([0,0,0]) {
+                % color(print_color) import("./external/chirpy-micron-pandora-carriage.stl");
               }
             }
             % color(print_color) toolhead();
+
+            translate([23.52,3.4,carriage_width(z_carriage)/2+13.41]) {
+              rotate([-90,0,0]) {
+                rotate([0,0,-90]) {
+                  % microswitch(y_endstop_type);
+                }
+              }
+            }
           }
         }
       }

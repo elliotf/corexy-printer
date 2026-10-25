@@ -5,7 +5,7 @@ define render_stl_template
 stls: stl/$(1)
 
 stl/$(1) : parts/$(1).scad
-	echo $$^ && openscad --enable=predictible-output -D debug=0 -m make -o $$@.stl $$^ && (notify-send "$$@ done" || true)
+	echo $$^ && openscad --enable=predictible-output -D debug=0 -m make -o $$@.stl $$^ && (notify-send "$$@ done" || true) || (notify-send -u critical "$$@ FAILED"; false)
 
 .PHONY : stl/$(1)
 

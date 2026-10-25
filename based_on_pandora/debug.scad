@@ -5,4 +5,4 @@ use <./electronics.scad>;
 
 //psu(psu_type);
 
-fake_ssr();
+mock_ssr();
