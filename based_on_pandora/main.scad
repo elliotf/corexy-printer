@@ -335,6 +335,34 @@ echo("new_gantry_pos_z: ", new_gantry_pos_z);
 gantry_pos_z = new_gantry_pos_z;
 //gantry_pos_z = 180+15/2;
 
+psu_mount_wall_thickness = 2;
+tolerance = 0.2;
+psu_type = sizes[printer_size][ELECTRONICS][0];
+//psu_length = (psu_type == LRS_150_24) ? 159  : psu_length(psu_type);
+psu_length = psu_length(psu_type);
+psu_width = psu_width(psu_type);
+psu_height = psu_height(psu_type);
+
+//psu_pos_y = 0;
+//psu_pos_z = - skirt_height;
+psu_cavity_width = psu_width+tolerance;
+psu_cavity_height = psu_height+tolerance;
+psu_air_gap = 4;
+//crossbar_pos_x = -rear_z_offset_x+extrusion_side+15;
+crossbar_pos_x = 0;
+//crossbar_pos_y = -25;
+//crossbar_pos_y = extrusion_main_length/2 - 45 - extrusion_side/2;
+crossbar_pos_y = 45;
+//crossbar_pos_z = -extrusion_side/2;
+crossbar_pos_z = - skirt_height + psu_air_gap + psu_height + tolerance + psu_mount_wall_thickness + extrusion_side/2;
+
+psu_pos_x = -extrusion_main_length/2 + psu_length/2+10;
+//psu_pos_x = -10;
+psu_pos_y = 0;
+psu_pos_z = crossbar_pos_z - extrusion_side/2 - tolerance - psu_mount_wall_thickness;
+//psu_pos_z = extrusion_side - 5;
+
+
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
 
 front_idler_room_y = 32; // 35;
@@ -1205,7 +1233,9 @@ module assembly(pct_x,pct_y,pct_z) {
   }
   */
   z_axis_assembly(pos_z);
-  skirt_assembly();
+  //skirt_assembly();
+
+  tool_assembly();
 }
 
 module dummy() {

@@ -94,7 +94,7 @@ module skirt_holes() {
   }
 }
 
-module skirt_blank(shrink_by = 0) {
+module skirt_base(shrink_by = 0) {
   module body() {
     translate([0, 0, 0]) {
       rounded_cube(skirt_cover_side - shrink_by * 2, skirt_height - shrink_by * 2, skirt_thickness, over_extrusion_by * 2);
@@ -119,12 +119,12 @@ module skirt_blank(shrink_by = 0) {
   }
 }
 
-module skirt_mesh() {
+module skirt_blank() {
   mesh_thickness = 3;
 
   module body() {
     translate([0, 0, over_extrusion_by / 2]) {
-      skirt_blank();
+      skirt_base();
     }
 
     slot_filler_length = top_skirt_hole_spacing-30; // -30 to leave room for t slot nuts
@@ -158,7 +158,58 @@ module skirt_mesh() {
 
   module holes() {
     translate([0, 0, over_extrusion_by / 2 + mesh_thickness]) {
-      skirt_blank(skirt_wall_thickness);
+      //skirt_base(skirt_wall_thickness);
+    }
+
+    skirt_holes();
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module psu_skirt_mount_non_terminal() {
+  module body() {
+    skirt_blank();
+  }
+
+  module holes() {
+    skirt_holes();
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module psu_skirt_mount_terminal() {
+  module body() {
+    skirt_blank();
+  }
+
+  module holes() {
+    skirt_holes();
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module skirt_mesh() {
+  mesh_thickness = 3;
+
+  module body() {
+    skirt_blank();
+  }
+
+  module holes() {
+    translate([0, 0, over_extrusion_by / 2 + mesh_thickness]) {
+      skirt_base(skirt_wall_thickness);
     }
 
     skirt_holes();
@@ -200,9 +251,9 @@ module skirt_plug_panel() {
   module body() {
     translate([0, 0, over_extrusion_by / 2]) {
       difference() {
-        skirt_blank();
+        skirt_base();
         translate([0, 0, -mesh_thickness]) {
-          skirt_blank(skirt_wall_thickness);
+          skirt_base(skirt_wall_thickness);
         }
       }
     }
@@ -452,7 +503,7 @@ module foot() {
   }
 
   module position_mounting_holes() {
-    translate([0, 0, -foot_plate_thickness]) {
+    translate([0, 0, 0]) {
       children();
       translate([-foot_hole_spacing, 0, 0]) {
         children();
@@ -465,10 +516,20 @@ module foot() {
 
   module holes() {
     position_mounting_holes() {
-      hole(m3_through_hole_diam, skirt_height * 2, resolution);
+      translate([0,0,-foot_plate_thickness]) {
+        hole(m3_through_hole_diam, skirt_height * 2, resolution);
 
-      translate([0, 0, -skirt_height]) {
-        hole(m3_head_diam, skirt_height * 2, resolution);
+        translate([0, 0, -skirt_height]) {
+          hole(m3_head_diam, skirt_height * 2, resolution);
+        }
+      }
+      translate([0, 0, -skirt_height - panel_lip_height]) {
+        hull() {
+          hole(m3_head_diam, panel_lip_height * 2, resolution);
+          translate([0,0,-0.2/2]) {
+            hole(m3_head_diam+2*panel_lip_height, 0.2, resolution);
+          }
+        }
       }
     }
 
@@ -541,13 +602,29 @@ module skirt_assembly() {
     }
   }
 
-  for (r = [0, 90, -90, 180]) {
+  // 0 == front
+  // 90 == right
+  // -90 == left
+  // 180 == rear
+  module position_skirt(r) {
     rotate([0, 0, r]) {
       translate([0, -extrusion_vertical_spacing_y / 2, -skirt_height / 2]) {
         rotate([90, 0, 0]) {
-          //skirt_mesh();
+          children();
         }
       }
+    }
+  }
+  position_skirt(90) {
+    psu_skirt_mount_terminal();
+  }
+  position_skirt(-90) {
+    psu_skirt_mount_non_terminal();
+  }
+
+  for (r = [0,180]) {
+    position_skirt(r) {
+      //skirt_mesh();
     }
   }
 

@@ -13,32 +13,19 @@ ssr_height = 27.9;
 ssr_width = 12.7;
 ssr_depth = 29;
 
-psu_type = sizes[printer_size][ELECTRONICS][0];
-nopscadlib_psu_length = psu_length(psu_type); // this seems to be incorrect; NopSCADlib has 152.5
-psu_length = (psu_type == LRS_150_24) ? 159  : psu_length(psu_type);
-psu_length_delta = psu_length-nopscadlib_psu_length;
-psu_width = psu_width(psu_type);
-psu_height = psu_height(psu_type);
-
 tolerance = 0.5;
+
 psu_cavity_width = psu_width+tolerance;
 psu_cavity_height = psu_height+tolerance;
 psu_mount_wall_thickness = 2;
-
 psu_air_gap = 4;
 //crossbar_pos_x = -rear_z_offset_x+extrusion_side+15;
 crossbar_pos_x = 0;
 //crossbar_pos_y = -25;
 //crossbar_pos_y = extrusion_main_length/2 - 45 - extrusion_side/2;
-crossbar_pos_y = 0;
+crossbar_pos_y = 45;
 //crossbar_pos_z = -extrusion_side/2;
 crossbar_pos_z = - skirt_height + psu_air_gap + psu_height + tolerance + psu_mount_wall_thickness + extrusion_side/2;
-
-psu_pos_x = -10;
-psu_pos_y = 5;
-psu_pos_z = crossbar_pos_z - extrusion_side/2 - tolerance/2 - psu_mount_wall_thickness;
-//psu_pos_y = 0;
-//psu_pos_z = - skirt_height;
 
 
 pi_width = pcb_width(pi_type);
@@ -327,6 +314,22 @@ module fan_4010() {
   }
 }
 
+module fan_4020() {
+  // 52.82 - 46.16
+  // 3.33
+  //translate([0,0,7]) {
+  //translate([0,0,-12.5]) {
+  fan_height = 20;
+  translate([0,0,fan_height/2]) {
+    x_adjust = 0;
+    y_adjust = 0;
+    z_adjust = 0;
+    translate([x_adjust,y_adjust,z_adjust]) {
+      import("external/turbo_fan_35x18.stl", convexity=2);
+    }
+  }
+}
+
 module electronics_assembly() {
   translate([0,crossbar_pos_y,crossbar_pos_z]) {
     rotate([0,90,0]) {
@@ -334,18 +337,16 @@ module electronics_assembly() {
     }
   }
 
-  /*
   // right rear position
-  translate([crossbar_pos_x + extrusion_side/2 - 2,15,crossbar_pos_z+extrusion_side/2+15/2]) {
+  translate([extrusion_main_length/2 - 50 - 2,0,crossbar_pos_z+extrusion_side/2+15/2]) {
     translate([0,0,0]) {
       rotate([0,0,90]) {
         rotate([180,0,0]) {
-          % color("#333") fan_5015();
+          //% color("#333") fan_5015();
         }
       }
     }
   }
-  */
   // left position
   //translate([- extrusion_main_length/2+50,45,crossbar_pos_z+extrusion_side/2+15/2]) {
   translate([- extrusion_main_length/2+50,crossbar_pos_y - extrusion_side/2 - 1,crossbar_pos_z+extrusion_side/2+15/2]) {
@@ -357,11 +358,25 @@ module electronics_assembly() {
       }
     }
   }
+
+  // fan is vertical pointing back
+  //translate([crossbar_pos_x - extrusion_side/2 - 2 - 15/2 - 8, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
+  translate([extrusion_main_length/2 - 42 - 12.5 - 15/2, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
+    translate([0,0,0]) {
+      rotate([0,-90,0]) {
+        rotate([0,0,180]) {
+          //% color("#333") fan_5015();
+        }
+      }
+    }
+  }
+
+  // fan is in front pointing back
   translate([crossbar_pos_x - extrusion_side/2 - 2 - 15/2 - 8, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
     translate([0,0,0]) {
       rotate([0,-90,0]) {
         rotate([0,0,180]) {
-          % color("#333") fan_5015();
+          //% color("#333") fan_5015();
         }
       }
     }
@@ -379,6 +394,43 @@ module electronics_assembly() {
     }
   }
 
+  // behind crossbar
+  translate([-extrusion_main_length/2+50+15+pcb_length(mcu_type)/2,20,crossbar_pos_z-extrusion_side/2+2]) {
+    rotate([0,0,0]) {
+      rotate([0,0,180]) {
+        //% pcb(mcu_type);
+      }
+    }
+  }
+
+  // left side
+  translate([- extrusion_main_length/2 + pi_width/2 + 1,-10, crossbar_pos_z - extrusion_side/2+2]) {
+    rotate([0,0,0]) {
+      rotate([0,0,90]) {
+        //% pcb(pi_type);
+      }
+    }
+  }
+
+  crossbar_pos_x = rear_z_offset_x + extrusion_side * 2 + 5;
+  // on top of psu
+  mcu_width = pcb_width(mcu_type);
+  mcu_length = pcb_length(mcu_type);
+  translate([extrusion_main_length/2-50-4-mcu_length/2,-10,crossbar_pos_z-extrusion_side/2+2]) {
+    rotate([0,0,0]) {
+      rotate([0,0,180]) {
+        //% pcb(mcu_type);
+      }
+    }
+  }
+  translate([mcu_width/2 - 10,-extrusion_main_length / 2 + 50 + mcu_length/2,crossbar_pos_z-extrusion_side/2+2]) {
+    rotate([0,0,0]) {
+      rotate([0,0,90]) {
+        //% pcb(mcu_type);
+      }
+    }
+  }
+
   //mirror([1,0,0]) {
     //translate([rear_z_offset_x-extrusion_side-15,0,crossbar_pos_z]) {
     translate([crossbar_pos_x,crossbar_pos_y,crossbar_pos_z]) {
@@ -387,12 +439,36 @@ module electronics_assembly() {
       }
     }
   //}
-  crossbar_pos_x = rear_z_offset_x + extrusion_side * 2.5;
-    translate([crossbar_pos_x,crossbar_pos_y,crossbar_pos_z]) {
-      rotate([90,0,0]) {
-        % extrusion_l(extrusion_main_length);
+  translate([crossbar_pos_x,0,crossbar_pos_z]) {
+    rotate([90,0,0]) {
+      % extrusion_l(extrusion_main_length);
+    }
+  }
+  translate([crossbar_pos_x - extrusion_side/2 - 2 - mcu_width/2,-extrusion_main_length / 2 + 50 + mcu_length/2,crossbar_pos_z-extrusion_side/2+2]) {
+    rotate([0,0,0]) {
+      rotate([0,0,90]) {
+        % pcb(mcu_type);
       }
     }
+  }
+  translate([crossbar_pos_x - extrusion_side/2 - 10 - 15/2, - extrusion_main_length/2 + 5 + 40/2,crossbar_pos_z]) {
+    translate([0,0,0]) {
+      rotate([0,-90,0]) {
+        rotate([0,0,180]) {
+          //% color("#333") fan_4020();
+        }
+      }
+    }
+  }
+  translate([crossbar_pos_x - extrusion_side/2 - 10 - 15/2, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
+    translate([0,0,0]) {
+      rotate([0,-90,0]) {
+        rotate([0,0,180]) {
+          % color("#333") fan_5015();
+        }
+      }
+    }
+  }
 
   // back left corner
   translate([- extrusion_main_length/2 + pi_width/2 + 1,extrusion_main_length/2- pi_length/2 - 5,extrusion_side-5]) {
@@ -402,12 +478,11 @@ module electronics_assembly() {
       }
     }
   }
-
-  // figuring it out
-  translate([- extrusion_main_length/2 + pi_width/2 + 1,extrusion_main_length/2- pi_length/2 - 5,extrusion_side-5]) {
+  // left side, upside down
+  translate([- extrusion_main_length/2 + pi_width/2 + 1,pi_length/2-26,extrusion_side-5]) {
     rotate([180,0,0]) {
       rotate([0,0,90]) {
-        //% pcb(pi_type);
+        % pcb(pi_type);
       }
     }
   }
@@ -421,33 +496,6 @@ module electronics_assembly() {
             //% pcb(pi_type);
           }
         }
-      }
-    }
-  }
-
-  // behind crossbar
-  translate([-extrusion_main_length/2+50+15+pcb_length(mcu_type)/2,20,crossbar_pos_z-extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,180]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-
-  // in front of crossbar
-  mcu_width = pcb_width(mcu_type);
-  mcu_length = pcb_length(mcu_type);
-  translate([-extrusion_main_length/2+50+10+pcb_length(mcu_type)/2,crossbar_pos_y - extrusion_side/2 - 2 - mcu_width/2,crossbar_pos_z-extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,180]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-  translate([crossbar_pos_x - extrusion_side/2 - 2 - mcu_width/2,-extrusion_main_length / 2 + 50 + mcu_length/2,crossbar_pos_z-extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,90]) {
-        % pcb(mcu_type);
       }
     }
   }
