@@ -122,7 +122,7 @@ module tool_assembly() {
   translate([-extrusion_vertical_spacing_x/2 + extrusion_side/2 + dist_between_vertical_brace_and_side/2,extrusion_vertical_spacing_y/2 - extrusion_side, bottom_pos_z]) {
     translate([0,0,0]) {
       rotate([0,0,0]) {
-        rear_vertical_beam_spacer();
+        //rear_vertical_beam_spacer();
       }
     }
   }

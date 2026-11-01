@@ -798,9 +798,9 @@ module front_idler_top(side,is_final) {
       translate([0,-m3_head_diam/2,target_height-m3_head_diam/2]) {
         depth = m3_head_diam;
         translate([0,depth/2,0]) {
-          slot_length = m3_head_diam+z_axis_screw_mount_thickness;
+          slot_length = m3_head_diam+z_axis_screw_mount_thickness*1.5;
           hull() {
-            translate([0,-z_axis_screw_mount_thickness/2,0]) {
+            translate([0,-z_axis_screw_mount_thickness,0]) {
               rotate([-90,0,0]) {
                 hole(m3_through_hole_diam,slot_length,resolution);
               }

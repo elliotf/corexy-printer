@@ -404,7 +404,7 @@ x_carriage_offset_y = carriage_length(y_carriage)/2-x_carriage_offset_space-carr
 
 rear_idler_pos_x = extrusion_vertical_spacing_x/2-extrusion_side/2-front_idler_extrusion_dist_y;
 //rear_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-front_idler_extrusion_dist_y+1;
-rear_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-rear_idler_dist_from_end;
+rear_idler_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-rear_idler_dist_from_end+0.5;
 
 outer_idler_pos_x = front_idler_pos_x;
 //outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-front_idler_extrusion_dist_y;
@@ -418,7 +418,9 @@ outer_idler_pos_y = extrusion_vertical_spacing_y/2-extrusion_side/2-7.5; // for 
 stick_ab_steppers_out_back = 1;
 //ab_corner_anchor_depth = 30; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
 //ab_corner_anchor_depth = 28.4; //-rear_brace_offset_y; // FIXME: take rear central brace offset into account?
-ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-3)+stick_ab_steppers_out_back;
+
+//ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-3)+stick_ab_steppers_out_back;
+ab_corner_anchor_depth = (extrusion_vertical_spacing_y/2+extrusion_side/2)-(outer_idler_pos_y-m3_through_hole_diam/2-5)+stick_ab_steppers_out_back;
 ab_corner_offset_y = stick_ab_steppers_out_back;
 
 //non_motor_idler_pos_x = extrusion_vertical_spacing_x/2-23;
@@ -459,7 +461,7 @@ motor_xy_pos_x = non_motor_idler_pos_x-motor_xy_hole_spacing/2+0.5-idler_motor_d
 motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2-motor_xy_width/2+stick_ab_steppers_out_back; // inside chamber
 //motor_xy_pos_y = extrusion_vertical_spacing_y/2+extrusion_side/2+motor_xy_width/2+panel_thickness+3; // outside chamber on the  back
 //motor_xy_pos_z = gantry_pos_z+extrusion_side/2+carriage_height(y_carriage);
-motor_xy_pos_z = gantry_pos_z+extrusion_side/2+4.2; // it's +4 on pandora's box, yielding a motor plate thickness of 6
+motor_xy_pos_z = gantry_pos_z+extrusion_side/2+6; // it's +4 on pandora's box, yielding a motor plate thickness of 6
 
 //rear_brace_dist_from_back = 10;
 //rear_brace_offset_y = (extrusion_vertical_spacing_y/2-rear_brace_dist_from_back)-motor_xy_pos_y;
@@ -485,6 +487,8 @@ ab_pod_upper_thickness = 6;
 frame_anchor_plastic_thickness = 6;
 
 leadscrew_diam = 8;
+tolerance_around_leadscrew = 1;
+leadscrew_hole_diam = leadscrew_diam + 2 * tolerance_around_leadscrew;
 lead_screw_length = 200;
 leadscrew_nut_shaft_diam = 10.2;
 leadscrew_nut_base_diam = 22;
@@ -492,19 +496,30 @@ leadscrew_nut_base_thickness = 3.5;
 leadscrew_nut_base_inset = 1.5;
 leadscrew_nut_shaft_length = leadscrew_nut_base_inset+leadscrew_nut_base_thickness+10;
 
+z_motor_mount_screw_head_hole_diam = m3_head_diam+tolerance*2;
+z_motor_mount_large_rounded_diam = z_motor_mount_screw_head_hole_diam + wall_thickness*2;
+z_motor_mount_small_rounded_diam = 3;
+z_motor_mount_side = z_motor_hole_spacing + z_motor_mount_large_rounded_diam;
+
+floor_plate_lip_width = 6;
+
 //leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_screw_spacing/2+m3_head_diam/2+2);
 //leadscrew_base_motor_offset_x = left*(max(carriage_width(z_carriage), extrusion_side)/2 + leadscrew_nut_base_diam/2);
 //z_motor_under_extrusion = ceil(z_motor_side/2-(z_motor_screw_spacing/2+m3_head_diam/2));
 z_motor_under_extrusion = ceil(z_motor_side/2-(z_motor_screw_spacing/2+m3_head_diam/2));
-leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_side/2-z_motor_under_extrusion);
+//leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_side/2-z_motor_under_extrusion);
+leadscrew_base_motor_offset_x = left*(extrusion_side/2+leadscrew_diam/2+4);
 //leadscrew_base_motor_offset_x = left*(extrusion_side/2+z_motor_side/2);
 //leadscrew_base_motor_offset_y = rear*(extrusion_side/2+z_motor_screw_spacing/2+m3_head_diam/2);
 //leadscrew_base_motor_offset_y = rear*(extrusion_side/2+z_motor_screw_spacing/2+m3_head_diam/2);
-leadscrew_base_motor_offset_y = rear*(extrusion_side/2+z_motor_side/2-z_motor_under_extrusion);
+//leadscrew_base_motor_offset_y = rear*(extrusion_side/2+z_motor_side/2-z_motor_under_extrusion);
+leadscrew_base_motor_offset_y = rear*(extrusion_side/2+z_motor_mount_side/2);
 //leadscrew_rear_motor_offset_x = left*(extrusion_side/2+leadscrew_nut_base_diam/2);
 //leadscrew_rear_motor_offset_x = left*(z_motor_side/2);
-leadscrew_rear_motor_offset_x = left*(carriage_width(z_carriage)/2+1+leadscrew_nut_base_diam/2);
-leadscrew_rear_motor_offset_y = extrusion_side/2+carriage_height(z_carriage);
+//leadscrew_rear_motor_offset_x = left*(carriage_width(z_carriage)/2+leadscrew_nut_base_diam/2);
+leadscrew_rear_motor_offset_x = 0;
+//leadscrew_rear_motor_offset_y = extrusion_side/2+carriage_height(z_carriage);
+leadscrew_rear_motor_offset_y = extrusion_side/2+z_motor_mount_side/2;
 //leadscrew_rear_motor_offset_x = 0;
 //leadscrew_rear_motor_offset_y = extrusion_side/2+mgn_height+leadscrew_nut_shaft_diam+1;
 
@@ -520,10 +535,11 @@ rear_brace_distance_from_rear = extrusion_vertical_spacing_y/2-rear_brace_pos_y;
 //rear_z_offset_x = ceil(leadscrew_rear_motor_offset_x*0.7);
 rear_z_offset_x = -0;
 echo("rear_z_offset_x: ", rear_z_offset_x);
-rear_z_pos_y = extrusion_vertical_spacing_y/2-extrusion_side;
+//rear_z_pos_y = extrusion_vertical_spacing_y/2-extrusion_side;
+rear_z_pos_y = extrusion_vertical_spacing_y/2;
 //rear_z_pos_y = extrusion_vertical_spacing_y/2;
 //rear_z_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length/2;
-rear_z_pos_z = bottom_pos_z+extrusion_main_length/2;
+rear_z_pos_z = bottom_pos_z+extrusion_side+extrusion_main_length/2;
 
 //nozzle_x_extrusion_dist_y = 27.35;
 nozzle_x_extrusion_dist_y = 29;
@@ -1233,7 +1249,7 @@ module assembly(pct_x,pct_y,pct_z) {
   }
   */
   z_axis_assembly(pos_z);
-  //skirt_assembly();
+  skirt_assembly();
 
   tool_assembly();
 }

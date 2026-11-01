@@ -2,7 +2,7 @@ include <./main.scad>;
 
 module frame_assembly() {
   // show gantry drill position location relative to main extrusion length
-  if (true) {
+  if (false) {
     translate([extrusion_vertical_spacing_x/2+extrusion_side+1,extrusion_side,top_pos_z - extrusion_main_length/2]) {
       % extrusion_l(extrusion_main_length);
     }

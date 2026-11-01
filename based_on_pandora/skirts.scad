@@ -2,10 +2,11 @@ include <./main.scad>;
 use <./z_axis.scad>;
 
 //foot_hole_spacing = z_motor_side + 10;
-foot_hole_spacing = max(leadscrew_base_motor_offset_x, leadscrew_base_motor_offset_y) + 1 + z_motor_side / 2;
+foot_hole_spacing = max(leadscrew_base_motor_offset_x, leadscrew_base_motor_offset_y) + 4 + z_motor_side / 2 + 6/2;
 skirt_lock_feature_length = 8;
 foot_plate_thickness = 6;
-over_extrusion_by = 0.5; // ensure we cover the sharp corner
+over_extrusion_by = 2; // ensure we cover the sharp corner
+skirt_rounded_diam = 2;
 foot_cover_side = ceil(extrusion_side / 2 + foot_hole_spacing + m3_head_diam / 2 + 1 + skirt_lock_feature_length); // 65*2 = 130, leaving 100mm side/front skirt, which fits well on the bed
 gap_between = 0.4;
 skirt_cover_side = extrusion_main_length + 2 * extrusion_side - 2 * (foot_cover_side + gap_between);
@@ -97,7 +98,7 @@ module skirt_holes() {
 module skirt_base(shrink_by = 0) {
   module body() {
     translate([0, 0, 0]) {
-      rounded_cube(skirt_cover_side - shrink_by * 2, skirt_height - shrink_by * 2, skirt_thickness, over_extrusion_by * 2);
+      rounded_cube(skirt_cover_side - shrink_by * 2, skirt_height - shrink_by * 2, skirt_thickness, skirt_rounded_diam);
 
       for (x = [left, right]) {
         mirror([x - 1, 0, 0]) {
@@ -143,13 +144,12 @@ module skirt_blank() {
 
     // panel retention lip
     translate([0,-skirt_height/2,skirt_thickness/2+over_extrusion_by/2]) {
-      rounded_diam = over_extrusion_by*2;
       translate([0,0,-panel_lip_depth/2]) {
         hull() {
-          rounded_cube(skirt_cover_side,panel_lip_height*2,panel_lip_depth,rounded_diam);
+          rounded_cube(skirt_cover_side,panel_lip_height*2,panel_lip_depth,skirt_rounded_diam);
 
           translate([0,panel_lip_height/2,-panel_lip_height]) {
-            rounded_cube(skirt_cover_side,panel_lip_height,panel_lip_depth,rounded_diam);
+            rounded_cube(skirt_cover_side,panel_lip_height,panel_lip_depth,skirt_rounded_diam);
           }
         }
       }
@@ -307,9 +307,9 @@ module skirt_plug_foot() {
   module position_plug() {
     //translate([extrusion_side / 2 + over_extrusion_by, foot_cover_side / 2 - skirt_lock_feature_length, -skirt_height / 2]) {
     //translate([extrusion_side / 2 + over_extrusion_by, plug_hole_height/2, -skirt_height / 2]) {
-    translate([extrusion_side / 2 + over_extrusion_by, foot_hole_spacing / 2 + 4, -skirt_height + plug_hole_length / 2 + skirt_wall_thickness]) {
+    translate([extrusion_side / 2 + over_extrusion_by, foot_hole_spacing / 2, -skirt_height + plug_hole_length / 2 + skirt_wall_thickness]) {
       rotate([0, 90, 0]) {
-        rotate([0, 0, 270]) {
+        rotate([0, 0, 90]) {
           children();
         }
       }
@@ -321,7 +321,7 @@ module skirt_plug_foot() {
   }
 
   module body() {
-    foot() {
+    z_stepper_foot() {
       position_plug() {
         translate([0, 0, -plug_wall_height / 2]) {
           plug_hole(plug_wall_height, skirt_wall_thickness);
@@ -395,10 +395,10 @@ module psu_mount_non_terminal_end() {
   }
 }
 
-module foot() {
+module foot(stepper_carveout=false) {
   overall_length = foot_cover_side + over_extrusion_by;
 
-  foot_screw_area_thickness = 6;
+  foot_screw_area_thickness = 8;
 
   fat_panel_lip_depth = panel_lip_depth + panel_lip_height;
 
@@ -411,26 +411,28 @@ module foot() {
         // front
         translate([extrusion_side / 2 + over_extrusion_by - overall_length / 2, -over_extrusion_by / 2, -skirt_height / 2]) {
           rotate([0, 90, 0]) {
-            rounded_cube(skirt_height, extrusion_side + over_extrusion_by, overall_length, over_extrusion_by * 2);
+            rounded_cube(skirt_height, extrusion_side + over_extrusion_by, overall_length, skirt_rounded_diam);
           }
         }
         // side
         translate([over_extrusion_by / 2, -over_extrusion_by - extrusion_side / 2 + overall_length / 2, -skirt_height / 2]) {
           rotate([0, 0, 90]) {
             rotate([90, 0, 0]) {
-              rounded_cube(overall_length, skirt_height, extrusion_side + over_extrusion_by, over_extrusion_by * 2);
+              rounded_cube(overall_length, skirt_height, extrusion_side + over_extrusion_by, skirt_rounded_diam);
             }
           }
         }
       }
 
-      translate([leadscrew_base_motor_offset_x, leadscrew_base_motor_offset_y, 0]) {
-        extra_room = 2;
-        rounded_diam = z_motor_side - z_motor_hole_spacing + extra_room;
-        hull() {
-          rounded_cube(z_motor_side + extra_room, z_motor_side + extra_room, skirt_height * 3, rounded_diam);
-          translate([-10, 10, 0]) {
+      if (stepper_carveout) {
+        translate([leadscrew_base_motor_offset_x, leadscrew_base_motor_offset_y, 0]) {
+          extra_room = 2;
+          rounded_diam = z_motor_side - z_motor_hole_spacing + extra_room;
+          hull() {
             rounded_cube(z_motor_side + extra_room, z_motor_side + extra_room, skirt_height * 3, rounded_diam);
+            translate([-5, 0, 0]) {
+              rounded_cube(z_motor_side + extra_room, z_motor_side + extra_room, skirt_height * 3, rounded_diam);
+            }
           }
         }
       }
@@ -439,14 +441,14 @@ module foot() {
     // screw_foot bridge
     hull() {
       translate([0,0,- skirt_height + foot_screw_area_thickness/2]) {
-        translate([extrusion_side/4,dist_to_panel_hole_y+extrusion_side/2,0]) {
+        translate([extrusion_side/2+over_extrusion_by-skirt_rounded_diam/2,dist_to_panel_hole_y+extrusion_side/2,0]) {
           rotate([0,90,0]) {
-            rounded_cube(foot_screw_area_thickness,2*dist_to_panel_hole_y,extrusion_side/2,over_extrusion_by*2);
+            rounded_cube(foot_screw_area_thickness,4*dist_to_panel_hole_y,skirt_rounded_diam,skirt_rounded_diam);
           }
         }
-        translate([-dist_to_panel_hole_x-extrusion_side/2,-extrusion_side/4,0]) {
+        translate([-dist_to_panel_hole_x-extrusion_side/2,-extrusion_side/2- over_extrusion_by + skirt_rounded_diam/2,0]) {
           rotate([0,90,0]) {
-            rounded_cube(foot_screw_area_thickness,extrusion_side/2,2*dist_to_panel_hole_y,over_extrusion_by*2);
+            rounded_cube(foot_screw_area_thickness,skirt_rounded_diam,4*dist_to_panel_hole_y,skirt_rounded_diam);
           }
         }
       }
@@ -486,14 +488,14 @@ module foot() {
       // front
       translate([extrusion_side / 2 + over_extrusion_by - overall_length / 2, -extrusion_side/2-over_extrusion_by + fat_panel_lip_depth/2, -skirt_height]) {
         rotate([0, 90, 0]) {
-          rounded_cube(panel_lip_height*2, fat_panel_lip_depth, overall_length, over_extrusion_by * 2);
+          rounded_cube(panel_lip_height*2, fat_panel_lip_depth, overall_length, skirt_rounded_diam);
         }
       }
       // side
       translate([extrusion_side/2 + over_extrusion_by - fat_panel_lip_depth/2, -over_extrusion_by - extrusion_side / 2 + overall_length / 2, -skirt_height]) {
         rotate([0, 0, 90]) {
           rotate([90, 0, 0]) {
-            rounded_cube(overall_length, panel_lip_height*2, fat_panel_lip_depth, over_extrusion_by * 2);
+            rounded_cube(overall_length, panel_lip_height*2, fat_panel_lip_depth, skirt_rounded_diam);
           }
         }
       }
@@ -515,6 +517,13 @@ module foot() {
   }
 
   module holes() {
+    // section view
+    translate([0,0,-skirt_height+2]) {
+      translate([0,0,-100/2]) {
+        //cube([100,100,100],center=true);
+      }
+    }
+
     position_mounting_holes() {
       translate([0,0,-foot_plate_thickness]) {
         hole(m3_through_hole_diam, skirt_height * 2, resolution);
@@ -554,6 +563,24 @@ module foot() {
   }
 }
 
+module z_stepper_foot() {
+  module body() {
+    foot(true) {
+      children();
+    }
+  }
+
+  module holes() {
+  }
+
+  difference() {
+    body() {
+      children();
+    }
+    holes();
+  }
+}
+
 module bottom_panel() {
   module body() {
     rounded_square(bottom_panel_side, bottom_panel_side, bottom_panel_rounded_diam);
@@ -577,14 +604,17 @@ module skirt_assembly() {
   echo("foot_cover_side:  ", foot_cover_side);
   echo("skirt_cover_side: ", skirt_cover_side);
 
-  for (x = [left, right], y = [front, rear]) {
+  for (x = [left, right]) {
     mirror([x - 1, 0, 0]) {
-      mirror([0, y - 1, 0]) {
-        if (x != 1 || y != -1) {
-          translate([extrusion_vertical_spacing_x / 2, -extrusion_vertical_spacing_y / 2, 0]) {
-            foot();
-          }
-        }
+      translate([extrusion_vertical_spacing_x / 2, -extrusion_vertical_spacing_y / 2, 0]) {
+        z_stepper_foot();
+      }
+    }
+  }
+  mirror([1, 0, 0]) {
+    mirror([0,1,0]) {
+      translate([extrusion_vertical_spacing_x / 2, -extrusion_vertical_spacing_y / 2, 0]) {
+        z_stepper_foot();
       }
     }
   }
