@@ -356,12 +356,7 @@ crossbar_pos_y = 45;
 //crossbar_pos_z = -extrusion_side/2;
 crossbar_pos_z = - skirt_height + psu_air_gap + psu_height + tolerance + psu_mount_wall_thickness + extrusion_side/2;
 
-psu_pos_x = -extrusion_main_length/2 + psu_length/2+10;
-//psu_pos_x = -10;
-psu_pos_y = 0;
-psu_pos_z = crossbar_pos_z - extrusion_side/2 - tolerance - psu_mount_wall_thickness;
-//psu_pos_z = extrusion_side - 5;
-
+deck_plate_thickness = 3;
 
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
 
@@ -522,6 +517,17 @@ leadscrew_rear_motor_offset_x = 0;
 leadscrew_rear_motor_offset_y = extrusion_side/2+z_motor_mount_side/2;
 //leadscrew_rear_motor_offset_x = 0;
 //leadscrew_rear_motor_offset_y = extrusion_side/2+mgn_height+leadscrew_nut_shaft_diam+1;
+
+z_motor_mount_leadscrew_inside_extrusion_width = abs(leadscrew_base_motor_offset_x)-extrusion_side/2+z_motor_mount_side/2;
+z_motor_mount_leadscrew_inside_extrusion_depth = abs(leadscrew_base_motor_offset_y)-extrusion_side/2+z_motor_mount_side/2;
+
+psu_pos_x = -extrusion_main_length/2 + psu_length/2+10;
+//psu_pos_x = -10;
+//psu_pos_y = 0;
+psu_pos_y = extrusion_vertical_spacing_y/2 - leadscrew_base_motor_offset_y - z_motor_side/2 - psu_width/2- 4;
+echo("psu_pos_y: ", psu_pos_y);
+//psu_pos_z = crossbar_pos_z - extrusion_side/2 - tolerance - psu_mount_wall_thickness;
+psu_pos_z = extrusion_side - deck_plate_thickness - psu_mount_wall_thickness;
 
 //rear_z_offset_x = motor_xy_width/2;
 //rear_z_offset_x = right*(5+extrusion_side/2);

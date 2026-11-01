@@ -153,7 +153,7 @@ bed_plate_insulation_spacer_diam = 8;
 bed_plate_insulation_spacer_length = 10;
 //bed_plate_insulation_spacer_length = 6; // 10mm spacer, but sunk down some amount. Really only to leave room for bed heater
 //bed_plate_offset_y = -extrusion_side/2-bed_plate_insulation_spacer_diam-1;
-bed_plate_offset_y = -18;
+bed_plate_offset_y = -17;
 
 adjust_rear_belt_whatnots = 1+belt_idler_od/2+extrusion_side/2;
 
@@ -1718,13 +1718,10 @@ module z_motor_mount_leadscrew_front(is_final) {
   side = z_motor_side;
   overall_height = abs(motor_pos_z)+ extrusion_side + z_leadscrew_extrusion_mount_thickness;
 
-  inside_extrusion_width = abs(motor_offset_x)-extrusion_side/2+z_motor_mount_side/2;
-  inside_extrusion_depth = abs(motor_offset_y)-extrusion_side/2+z_motor_mount_side/2;
-
   height_under_extrusion_clearance = abs(motor_pos_z) - z_motor_mount_extrusion_clearance;
 
-  overall_lip_width = floor_plate_lip_width + inside_extrusion_width + extrusion_side;
-  overall_lip_depth = floor_plate_lip_width + inside_extrusion_depth + extrusion_side;
+  overall_lip_width = floor_plate_lip_width + z_motor_mount_leadscrew_inside_extrusion_width + extrusion_side;
+  overall_lip_depth = floor_plate_lip_width + z_motor_mount_leadscrew_inside_extrusion_depth + extrusion_side;
   inside_extrusion_lip_width = overall_lip_width - extrusion_side;
   inside_extrusion_lip_depth = overall_lip_depth - extrusion_side;
 
@@ -1748,13 +1745,13 @@ module z_motor_mount_leadscrew_front(is_final) {
         translate([0,0,z_motor_mount_thickness/2]) {
           rounded_cube(z_motor_mount_side,z_motor_mount_side,z_motor_mount_thickness,z_motor_mount_large_rounded_diam);
         }
-        translate([-z_motor_mount_side/2+inside_extrusion_width/2,z_motor_mount_side/2 - inside_extrusion_depth/2,height_under_extrusion_clearance/2]) {
-          rounded_cube(inside_extrusion_width,inside_extrusion_depth,height_under_extrusion_clearance,z_motor_mount_large_rounded_diam);
+        translate([-z_motor_mount_side/2+z_motor_mount_leadscrew_inside_extrusion_width/2,z_motor_mount_side/2 - z_motor_mount_leadscrew_inside_extrusion_depth/2,height_under_extrusion_clearance/2]) {
+          rounded_cube(z_motor_mount_leadscrew_inside_extrusion_width,z_motor_mount_leadscrew_inside_extrusion_depth,height_under_extrusion_clearance,z_motor_mount_large_rounded_diam);
         }
       }
 
-      translate([-z_motor_mount_side/2+inside_extrusion_width/2,z_motor_mount_side/2 - inside_extrusion_depth/2,overall_height/2]) {
-        rounded_cube(inside_extrusion_width,inside_extrusion_depth,overall_height,z_motor_mount_large_rounded_diam);
+      translate([-z_motor_mount_side/2+z_motor_mount_leadscrew_inside_extrusion_width/2,z_motor_mount_side/2 - z_motor_mount_leadscrew_inside_extrusion_depth/2,overall_height/2]) {
+        rounded_cube(z_motor_mount_leadscrew_inside_extrusion_width,z_motor_mount_leadscrew_inside_extrusion_depth,overall_height,z_motor_mount_large_rounded_diam);
       }
     }
 

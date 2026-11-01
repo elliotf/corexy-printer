@@ -330,7 +330,122 @@ module fan_4020() {
   }
 }
 
+module deck_plate_profile() {
+  tolerance = 0.5;
+
+  rounded_diam = 6;
+  internal_side = extrusion_main_length - 2*tolerance;
+
+  module body() {
+    rounded_square(internal_side,internal_side,rounded_diam);
+  }
+
+  module holes() {
+    for(x=[left,right]) {
+      mirror([x-1,0,0]) {
+        // front leadscrew steppers
+        width = 2*(z_motor_mount_leadscrew_inside_extrusion_width+extrusion_side/2+tolerance);
+        depth = 2*(z_motor_mount_leadscrew_inside_extrusion_depth+extrusion_side/2+tolerance);
+        translate([extrusion_vertical_spacing_x/2,-extrusion_vertical_spacing_y/2,0]) {
+          rounded_square(width,depth,rounded_diam);
+
+          translate([-width/2,extrusion_side/2+tolerance,0]) {
+            rotate([0,0,90]) {
+              round_corner_filler_profile(rounded_diam);
+            }
+          }
+          translate([-extrusion_side/2-tolerance,depth/2,0]) {
+            rotate([0,0,90]) {
+              round_corner_filler_profile(rounded_diam);
+            }
+          }
+        }
+
+        // A/B stepper cables
+        translate([extrusion_vertical_spacing_x/2-extrusion_side/2,extrusion_vertical_spacing_y/2-extrusion_side/2,0]) {
+          width = 10+tolerance;
+          depth = 5+tolerance;
+          rounded_square(2*width,2*depth,rounded_diam);
+
+          translate([-width,-tolerance,0]) {
+            rotate([0,0,180]) {
+              round_corner_filler_profile(rounded_diam/2);
+            }
+          }
+          translate([-tolerance,-depth,0]) {
+            rotate([0,0,180]) {
+              round_corner_filler_profile(rounded_diam/2);
+            }
+            
+          }
+        }
+      }
+    }
+
+    //translate([leadscrew_rear_motor_offset_x,extrusion_vertical_spacing_y/2-leadscrew_rear_motor_offset_y,0]) {
+    translate([leadscrew_rear_motor_offset_x,extrusion_vertical_spacing_y/2,0]) {
+      rounded_square(z_motor_mount_side+tolerance*2,2*(z_motor_mount_side/2+leadscrew_rear_motor_offset_y+tolerance),rounded_diam);
+      for(x=[left,right]) {
+        mirror([x-1,0,0]) {
+          translate([z_motor_mount_side/2+tolerance,-extrusion_side/2-tolerance,0]) {
+            rotate([0,0,-90]) {
+              round_corner_filler_profile(rounded_diam);
+            }
+          }
+
+          // bed/umbilical cables
+          width = 8+tolerance;
+          depth = 8+tolerance;
+          translate([z_motor_mount_side/2 + floor_plate_lip_width*2 + width/2,-extrusion_side/2,0]) {
+            rounded_square(width,2*depth,rounded_diam/2);
+
+            for(x=[left,right]) {
+              mirror([x-1,0,0]) {
+                translate([width/2,-tolerance,0]) {
+                  rotate([0,0,-90]) {
+                    round_corner_filler_profile(rounded_diam/2);
+                  }
+                }
+              }
+            }
+            translate([-tolerance,-depth,0]) {
+              rotate([0,0,180]) {
+                //round_corner_filler_profile(rounded_diam/2);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
+module deck_plate_printed() {
+  module body() {
+    linear_extrude(height=deck_plate_thickness,center=true) {
+      deck_plate_profile();
+    }
+  }
+
+  module holes() {
+  }
+
+  difference() {
+    body();
+    holes();
+  }
+}
+
 module electronics_assembly() {
+  translate([0,0,extrusion_side - deck_plate_thickness/2]) {
+    color("#444") deck_plate_printed();
+  }
+
   translate([0,crossbar_pos_y,crossbar_pos_z]) {
     rotate([0,90,0]) {
       //% extrusion_l(extrusion_main_length);
@@ -441,13 +556,13 @@ module electronics_assembly() {
   //}
   translate([crossbar_pos_x,0,crossbar_pos_z]) {
     rotate([90,0,0]) {
-      % extrusion_l(extrusion_main_length);
+      //% extrusion_l(extrusion_main_length);
     }
   }
   translate([crossbar_pos_x - extrusion_side/2 - 2 - mcu_width/2,-extrusion_main_length / 2 + 50 + mcu_length/2,crossbar_pos_z-extrusion_side/2+2]) {
     rotate([0,0,0]) {
       rotate([0,0,90]) {
-        % pcb(mcu_type);
+        //% pcb(mcu_type);
       }
     }
   }
@@ -464,7 +579,7 @@ module electronics_assembly() {
     translate([0,0,0]) {
       rotate([0,-90,0]) {
         rotate([0,0,180]) {
-          % color("#333") fan_5015();
+          //% color("#333") fan_5015();
         }
       }
     }
@@ -482,7 +597,7 @@ module electronics_assembly() {
   translate([- extrusion_main_length/2 + pi_width/2 + 1,pi_length/2-26,extrusion_side-5]) {
     rotate([180,0,0]) {
       rotate([0,0,90]) {
-        % pcb(pi_type);
+        //% pcb(pi_type);
       }
     }
   }
