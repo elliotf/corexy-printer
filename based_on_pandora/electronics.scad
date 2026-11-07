@@ -178,72 +178,176 @@ module pi_crossbar_mount() {
   }
 }
 
+function deck_plate_screw_hole_pos(x,y) = [
+  deck_plate_screw_min_x+x*deck_plate_screw_spacing_x,
+  deck_plate_screw_min_y+y*deck_plate_screw_spacing_y,
+  //extrusion_side - deck_plate_thickness,
+  0,
+];
+
 module pi_mount() {
+  spanner_height = pcb_mount_thickness/2;
+  spanner_width = 3;
+  post_height = pcb_mount_thickness;
+
+  pi_hole_diam = 2.5;
+  pi_post_diam = pi_hole_diam + spanner_width;
+
+  deck_hole_diam = 2.9;
+  deck_post_diam = deck_hole_diam + spanner_width;
+
+  module position_deck_plate_hole(i) {
+    positions = [
+      // clockwise from front left
+      deck_plate_screw_hole_pos(0,3),
+      deck_plate_screw_hole_pos(0,4),
+      deck_plate_screw_hole_pos(1,4),
+      deck_plate_screw_hole_pos(1,3),
+    ];
+
+    translate(positions[i]) {
+      children();
+    }
+  }
+
+  module pi_post() {
+    hull() {
+    }
+  }
+
+  module deck_post() {
+    hull() {
+    }
+  }
+
+  module position_pi_hole(i) {
+    center_x = -pi_length/2+3.5+pi_hole_spacing_x/2;
+    center_y = 0;
+    positions = [
+      // clockwise from front left
+      [center_x+pi_hole_spacing_x/2,pi_hole_spacing_y/2],
+      [center_x-pi_hole_spacing_x/2,pi_hole_spacing_y/2],
+      [center_x-pi_hole_spacing_x/2,-pi_hole_spacing_y/2],
+      [center_x+pi_hole_spacing_x/2,-pi_hole_spacing_y/2],
+    ];
+    position_pi() {
+      translate(positions[i]) {
+        children();
+      }
+    }
+  }
+
   module position_pi() {
-    translate([pi_offset_x,pi_pos_y,0]) {
-      rotate([0,180,0]) {
-        rotate([0,0,180]) {
+    translate([-extrusion_main_length/2+pi_width/2+10,extrusion_main_length/2-pi_length/2-3,0]) {
+      rotate([0,0,90]) {
+        rotate([0,180,0]) {
           children();
         }
       }
     }
   }
   
-  module position_mounting_brackets() {
-    for(x=[left,right]) {
-      translate([pi_offset_x+pi_holes_offset_x,0,0]) {
-        mirror([x-1,0,0]) {
-          translate([pi_hole_spacing_x/2,0,0]) {
-            children();
+  translate([0,0,pcb_pos_z]) {
+    position_pi() {
+      % pcb(pi_type);
+    }
+  }
+
+  module body() {
+    translate([0,0,pcb_pos_z+pcb_mount_thickness]) {
+      translate([0,0,-post_height/2]) {
+        for(i=[0:3]) {
+          position_deck_plate_hole(i) {
+            hole(deck_post_diam,post_height,resolution);
+          }
+          position_pi_hole(i) {
+            hole(pi_post_diam,post_height,resolution);
+          }
+        }
+      }
+
+      translate([0,0,-spanner_height/2]) {
+        for(i=[0:3]) {
+          hull() {
+            position_deck_plate_hole(i) {
+              hole(spanner_width,spanner_height,resolution);
+            }
+            position_pi_hole(i) {
+              hole(spanner_width,spanner_height,resolution);
+            }
+          }
+        }
+        hull() {
+          position_pi_hole(0) {
+            hole(spanner_width,spanner_height,resolution);
+          }
+          position_pi_hole(3) {
+            hole(spanner_width,spanner_height,resolution);
+          }
+        }
+
+        hull() {
+          position_pi_hole(2) {
+            hole(spanner_width,spanner_height,resolution);
+          }
+          position_pi_hole(1) {
+            hole(spanner_width,spanner_height,resolution);
+          }
+        }
+
+        hull() {
+          position_deck_plate_hole(0) {
+            hole(spanner_width,spanner_height,resolution);
+          }
+          position_deck_plate_hole(1) {
+            hole(spanner_width,spanner_height,resolution);
+          }
+        }
+
+        hull() {
+          position_deck_plate_hole(2) {
+            hole(spanner_width,spanner_height,resolution);
+          }
+          position_deck_plate_hole(3) {
+            hole(spanner_width,spanner_height,resolution);
           }
         }
       }
     }
   }
 
-  position_pi() {
-    //% pcb(pi_type);
-  }
-
-  position_mounting_brackets() {
-    //pi_crossbar_mount();
-    // debug_axes(1);
-  }
-
-  module body() {
-  }
-
   module holes() {
+    for(i=[0:3]) {
+      position_deck_plate_hole(i) {
+        hole(deck_hole_diam,100,resolution);
+      }
+      position_pi_hole(i) {
+        hole(pi_hole_diam,100,resolution);
+      }
+    }
   }
 
   difference() {
     body();
     holes();
-  }
-}
-
-module position_pi_mount() {
-  translate([0,-extrusion_main_length/2,extrusion_side/2]) {
-  //translate([left*(extrusion_vertical_spacing_x/2-extrusion_side/2),rear*(extrusion_vertical_spacing_y/2-extrusion_side/2),extrusion_side/2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,0]) {
-        children();
-      }
-    }
   }
 }
 
 module mcu_mount() {
   module position_mcu() {
-    translate([0,0,0]) {
-      rotate([0,0,180]) {
-        children();
+    translate([25,-30,0]) {
+      rotate([0,0,0]) {
+        rotate([0,180,0]) {
+          children();
+        }
       }
     }
   }
 
-  position_mcu() {
-    % pcb(mcu_type);
+  translate([0,0,pcb_pos_z]) {
+    position_mcu() {
+      % pcb(mcu_type);
+    }
   }
 
   module body() {
@@ -255,16 +359,6 @@ module mcu_mount() {
   difference() {
     body();
     holes();
-  }
-}
-
-module position_mcu_mount() {
-  translate([5,-30,psu_pos_z + psu_height + 5]) {
-    rotate([0,0,0]) {
-      rotate([0,0,0]) {
-        children();
-      }
-    }
   }
 }
 
@@ -474,19 +568,19 @@ module deck_plate_printed() {
 
 module wago_333() {
   rotate([0,180,0]) {
-    import("external/wago/wago-333.stl", convexity=2);
+    import("stl/wago-mount-333.stl", convexity=2);
   }
 }
 
 module wago_55() {
   rotate([0,180,0]) {
-    import("external/wago/wago-55.stl", convexity=2);
+    import("stl/wago-mount-55.stl", convexity=2);
   }
 }
 
 module wago_555() {
   rotate([0,180,0]) {
-    import("external/wago/wago-555.stl", convexity=2);
+    import("stl/wago-mount-555.stl", convexity=2);
   }
 }
 
@@ -529,19 +623,19 @@ module electronics_assembly() {
   //translate([extrusion_main_length/2,0,extrusion_side/2]) {
   translate([extrusion_main_length/2,30,extrusion_side/2]) {
     rotate([0,0,-90]) {
-      //wago_555();
+      wago_555();
     }
   }
 
   translate([0,-extrusion_main_length/2,extrusion_side/2]) {
     rotate([0,0,180]) {
-      //wago_55();
+      wago_55();
     }
   }
 
   // left side
   // translate([left*(extrusion_main_length/2-50-2),-5,extrusion_side - deck_plate_thickness - 2 - 15/2]) {
-  translate([left*(extrusion_main_length/2-50-2),-50-9,psu_pos_z + psu_height + 3 + 15/2]) {
+  translate([left*(extrusion_main_length/2-50-2-20),-50-9,psu_pos_z + psu_height + 3 + 15/2]) {
     rotate([0,0,-90]) {
       rotate([0,0,180]) {
         % color("#333") fan_5015();
@@ -549,63 +643,6 @@ module electronics_assembly() {
     }
   }
 
-  translate([left*(extrusion_main_length/2-40/2-2),-40/2 - 18,psu_pos_z + psu_height + 3 + 15/2]) {
-    rotate([0,0,-90]) {
-      rotate([0,0,180]) {
-        //% color("#333") fan_4020();
-      }
-    }
-  }
-
-  // front
-  translate([left*(25),front*(extrusion_main_length/2-50-15),extrusion_side - 2 - deck_plate_thickness - 15/2]) {
-    rotate([0,0,-45]) {
-      rotate([180,0,0]) {
-        //% color("#333") fan_5015();
-      }
-    }
-  }
-
-  // right side
-  translate([extrusion_main_length/2-50,-25,extrusion_side - 2 - deck_plate_thickness - 15/2]) {
-    rotate([0,0,90]) {
-      rotate([180,0,0]) {
-        //% color("#333") fan_5015();
-      }
-    }
-  }
-
-  translate([-extrusion_main_length/2+pi_width/2+10,extrusion_main_length/2-pi_length/2-3,pcb_pos_z]) {
-    rotate([0,0,90]) {
-      rotate([0,180,0]) {
-        % pcb(pi_type);
-      }
-    }
-  }
-
-  translate([5,-30,psu_pos_z + psu_height + 5]) {
-    rotate([0,0,180]) {
-      rotate([0,0,0]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-
-  translate([15,-20,psu_pos_z + psu_height + 5]) {
-    rotate([0,0,0]) {
-      rotate([0,0,180]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-
-  translate([15,-30,pcb_pos_z]) {
-    rotate([0,0,0]) {
-      rotate([0,180,0]) {
-        % pcb(mcu_type);
-      }
-    }
-  }
   translate([0,0,extrusion_side - deck_plate_thickness/2]) {
     # linear_extrude(height=deck_plate_thickness,center=true) {
       //deck_plate_screw_holes();
@@ -616,11 +653,6 @@ module electronics_assembly() {
     psu(psu_type);
   }
 
-  position_mcu_mount() {
-    //mcu_mount();
-  }
-
-  position_pi_mount() {
-    //pi_mount();
-  }
+  mcu_mount();
+  pi_mount();
 }
