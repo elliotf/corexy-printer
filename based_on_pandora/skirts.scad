@@ -5,7 +5,7 @@ use <./z_axis.scad>;
 foot_hole_spacing = max(leadscrew_base_motor_offset_x, leadscrew_base_motor_offset_y) + 4 + z_motor_side / 2 + 6/2;
 skirt_lock_feature_length = 8;
 foot_plate_thickness = 6;
-over_extrusion_by = 2; // ensure we cover the sharp corner
+over_extrusion_by = 1; // ensure we cover the sharp corner
 skirt_rounded_diam = 2;
 foot_cover_side = ceil(extrusion_side / 2 + foot_hole_spacing + m3_head_diam / 2 + 1 + skirt_lock_feature_length); // 65*2 = 130, leaving 100mm side/front skirt, which fits well on the bed
 gap_between = 0.4;
@@ -14,8 +14,9 @@ skirt_thickness = extrusion_side + over_extrusion_by;
 skirt_wall_thickness = 3;
 
 slot_filler_height = extrusion_slot_width - extrude_height*2;
-slot_filler_length = foot_hole_spacing-20; // -20 to make room for t slot nuts
-slot_filler_depth = 0.5;
+//slot_filler_length = foot_hole_spacing-20; // -20 to make room for t slot nuts
+slot_filler_length = foot_cover_side-extrusion_side - skirt_rounded_diam * 0.75 ;
+slot_filler_depth = 0.8;
 top_skirt_hole_spacing = skirt_cover_side - 2 * (skirt_wall_thickness + m3_head_diam);
 
 //bottom_panel_side = 213;
@@ -222,75 +223,6 @@ module skirt_mesh() {
   }
 }
 
-module skirt_plug_panel() {
-  mesh_thickness = 3;
-
-  tolerance = 0.4;
-
-  plug_type = IEC_320_C14_switched_fused_inlet;
-  plug_screw_diam = m3_thread_into_plastic_diam;
-
-  plug_hole_width = iec_body_w(plug_type) + tolerance;
-  plug_hole_height = iec_body_h(plug_type) + tolerance;
-
-  skew_socket_to_side = 10;
-
-  module plug_hole(height, swell_by = 0) {
-    rounded_cube(plug_hole_width + swell_by * 2, plug_hole_height + swell_by * 2, height, (iec_body_r(plug_type) * 2) - tolerance + swell_by * 2);
-  }
-
-  module position_plug() {
-    translate([skew_socket_to_side, 0, extrusion_side / 2 + over_extrusion_by / 2]) {
-      rotate([0, 0, 0]) {
-        rotate([0, 0, 180]) {
-          children();
-        }
-      }
-    }
-  }
-
-  module body() {
-    translate([0, 0, over_extrusion_by / 2]) {
-      difference() {
-        skirt_base();
-        translate([0, 0, -mesh_thickness]) {
-          skirt_base(skirt_wall_thickness);
-        }
-      }
-    }
-
-    position_plug() {
-      plug_wall_height = extrusion_side * 0.7;
-      translate([0, 0, -plug_wall_height / 2]) {
-        plug_hole(plug_wall_height, skirt_wall_thickness);
-
-        hull() {
-          iec_screw_positions(plug_type) {
-            hole(plug_screw_diam + skirt_wall_thickness * 2, plug_wall_height, resolution);
-          }
-        }
-      }
-    }
-  }
-
-  module holes() {
-    skirt_holes();
-    position_plug() {
-      %iec(plug_type);
-      plug_hole(100);
-
-      iec_screw_positions(plug_type) {
-        hole(plug_screw_diam, 100, resolution);
-      }
-    }
-  }
-
-  difference() {
-    body();
-    holes();
-  }
-}
-
 module skirt_plug_foot() {
   tolerance = 0.4;
 
@@ -322,7 +254,7 @@ module skirt_plug_foot() {
   }
 
   module body() {
-    z_stepper_foot() {
+    foot() {
       position_plug() {
         translate([0, 0, -plug_wall_height / 2]) {
           plug_hole(plug_wall_height, skirt_wall_thickness);
@@ -407,34 +339,17 @@ module foot(stepper_carveout=false) {
   dist_to_panel_hole_y = (extrusion_vertical_spacing_y/2 - bottom_panel_hole_spacing/2);
 
   module body() {
-    difference() {
-      union() {
-        // front
-        translate([extrusion_side / 2 + over_extrusion_by - overall_length / 2, -over_extrusion_by / 2, -skirt_height / 2]) {
-          rotate([0, 90, 0]) {
-            rounded_cube(skirt_height, extrusion_side + over_extrusion_by, overall_length, skirt_rounded_diam);
-          }
-        }
-        // side
-        translate([over_extrusion_by / 2, -over_extrusion_by - extrusion_side / 2 + overall_length / 2, -skirt_height / 2]) {
-          rotate([0, 0, 90]) {
-            rotate([90, 0, 0]) {
-              rounded_cube(overall_length, skirt_height, extrusion_side + over_extrusion_by, skirt_rounded_diam);
-            }
-          }
-        }
+    // front
+    translate([extrusion_side / 2 + over_extrusion_by - overall_length / 2, -over_extrusion_by / 2, -skirt_height / 2]) {
+      rotate([0, 90, 0]) {
+        rounded_cube(skirt_height, extrusion_side + over_extrusion_by, overall_length, skirt_rounded_diam);
       }
-
-      if (stepper_carveout) {
-        translate([leadscrew_base_motor_offset_x, leadscrew_base_motor_offset_y, 0]) {
-          extra_room = 2;
-          rounded_diam = z_motor_side - z_motor_hole_spacing + extra_room;
-          hull() {
-            rounded_cube(z_motor_side + extra_room, z_motor_side + extra_room, skirt_height * 3, rounded_diam);
-            translate([-5, 0, 0]) {
-              rounded_cube(z_motor_side + extra_room, z_motor_side + extra_room, skirt_height * 3, rounded_diam);
-            }
-          }
+    }
+    // side
+    translate([over_extrusion_by / 2, -over_extrusion_by - extrusion_side / 2 + overall_length / 2, -skirt_height / 2]) {
+      rotate([0, 0, 90]) {
+        rotate([90, 0, 0]) {
+          rounded_cube(overall_length, skirt_height, extrusion_side + over_extrusion_by, skirt_rounded_diam);
         }
       }
     }
@@ -457,7 +372,7 @@ module foot(stepper_carveout=false) {
 
     // extrusion slot alignment
     union() {
-      translate([0,foot_hole_spacing/2,0]) {
+      translate([0,extrusion_side/2 + slot_filler_length/2,0]) {
         hull() {
           rotate([0,90,0]) {
             rounded_cube(slot_filler_depth*2,slot_filler_length,slot_filler_height-slot_filler_depth*2,slot_filler_depth);
@@ -470,14 +385,15 @@ module foot(stepper_carveout=false) {
         }
       }
 
-      translate([-foot_hole_spacing/2,0,0]) {
+      translate([-extrusion_side/2 - slot_filler_length/2,0,0]) {
         hull() {
           rotate([0,90,0]) {
-            rounded_cube(slot_filler_depth*2,slot_filler_height-slot_filler_depth*2,slot_filler_length,slot_filler_depth);
+            //# rounded_cube(slot_filler_depth*2,slot_filler_height-slot_filler_depth*2,slot_filler_length,slot_filler_depth);
+            rounded_cube(slot_filler_depth*2,slot_filler_height,slot_filler_length,slot_filler_depth);
           }
           translate([0,0,-slot_filler_depth/2]) {
             rotate([0,90,0]) {
-              rounded_cube(slot_filler_depth,slot_filler_height,slot_filler_length+slot_filler_depth*2,slot_filler_depth);
+              //rounded_cube(slot_filler_depth,slot_filler_height,slot_filler_length+slot_filler_depth*2,slot_filler_depth);
             }
           }
         }
@@ -522,6 +438,20 @@ module foot(stepper_carveout=false) {
     translate([0,0,-skirt_height+2]) {
       translate([0,0,-100/2]) {
         //cube([100,100,100],center=true);
+      }
+    }
+
+    if (stepper_carveout) {
+      stepper_carveout_height = skirt_height - foot_screw_area_thickness;
+      translate([leadscrew_base_motor_offset_x, leadscrew_base_motor_offset_y, 0]) {
+        extra_room = 2;
+        rounded_diam = z_motor_side - z_motor_hole_spacing + extra_room;
+        hull() {
+          rounded_cube(z_motor_side + extra_room, z_motor_side + extra_room, stepper_carveout_height * 2, rounded_diam);
+          translate([-5, 0, 0]) {
+            rounded_cube(z_motor_side + extra_room, z_motor_side + extra_room, stepper_carveout_height * 2, rounded_diam);
+          }
+        }
       }
     }
 
@@ -571,7 +501,20 @@ module z_stepper_foot() {
     }
   }
 
+  // vent/finger holes to see if Z stepper is warm and/or keep it cooler
+  // unsure if dumb or not
   module holes() {
+    translate([0,leadscrew_base_motor_offset_y,- z_motor_plate_thickness - 27/2]) {
+      for(s=[-1,1]) {
+        hole_diam = 12;
+        space_between = 8;
+        translate([0,s*(space_between/2+hole_diam/2),0]) {
+          rotate([0,90,0]) {
+            hole(hole_diam,200,resolution);
+          }
+        }
+      }
+    }
   }
 
   difference() {
@@ -593,6 +536,22 @@ module bottom_cover_panel_profile() {
       translate([x * (bottom_panel_hole_spacing / 2), y * (bottom_panel_hole_spacing / 2), 0]) {
         accurate_circle(4, resolution);
       }
+    }
+
+    for(x=[left,right],y=[front,rear]) {
+      //mirror([x-1,0,0]) {
+        mirror([0,y-1,0]) {
+          for(y=[0,40]) {
+            translate([0,y,0]) {
+              position_psu() {
+                psu_screw_positions(psu_type) {
+                  accurate_circle(4, resolution);
+                }
+              }
+            }
+          }
+        }
+      //}
     }
   }
 
@@ -629,13 +588,6 @@ module skirt_assembly() {
     }
   }
 
-  translate([extrusion_vertical_spacing_y / 2, 0, -skirt_height / 2]) {
-    rotate([0, 0, 90]) {
-      rotate([90, 0, 0]) {
-        //skirt_plug_panel();
-      }
-    }
-  }
   mirror([0, 1, 0]) {
     translate([extrusion_vertical_spacing_x / 2, -extrusion_vertical_spacing_y / 2, 0]) {
       skirt_plug_foot();
@@ -656,20 +608,16 @@ module skirt_assembly() {
     }
   }
   position_skirt(90) {
-    psu_skirt_mount_terminal();
+    //psu_skirt_mount_terminal();
   }
   position_skirt(-90) {
-    psu_skirt_mount_non_terminal();
+    //psu_skirt_mount_non_terminal();
   }
 
-  for (r = [0,180]) {
+  for (r = [0,90,180,270]) {
     position_skirt(r) {
-      //skirt_mesh();
+      skirt_mesh();
     }
-  }
-
-  translate([0, 0, -skirt_height - bottom_panel_thickness / 2]) {
-    bottom_cover_panel_printed();
   }
 }
 

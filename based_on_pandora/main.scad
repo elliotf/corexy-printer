@@ -30,6 +30,12 @@ use <./skirts.scad>;
 // mgn7 rail inside euro 2020 + euro 2020 height: 23.8
 // rail is dropped by ~0.86mm
 
+// TODO
+// * wiring
+//   * how many wagos for mains?
+//   * live,neutral,gnd
+//   * from plug, to bed, and to PSU (so three x3 wagos?)
+
 $fn=24;
 
 is_final = false;
@@ -47,8 +53,10 @@ size_large_2020 = 5;
 //printer_size = size_medium;
 // FIXME:
 // Rear cable chain anchor is disconnected from rear z carriage
+
 printer_size = size_small; // a little b0rken
 //printer_size = size_small_2020; // mostly not b0rken
+//printer_size = size_medium_1515; // mostly b0rken
 //printer_size = size_medium_2020; // mostly b0rken
 //printer_size = size_large_2020; // mostly b0rken
 
@@ -85,7 +93,6 @@ belt_idler_spacer_od = 6;
 belt_idler_spacer_length = 9; // f623*2 + 2*0.5 shim
 belt_idler_stack_height = belt_idler_spacer_length*2;
 
-psu_mount_gap = 4;
 //height_above_z_motor = 1;
 height_below_z_motor = 4;
 //z_motor_type = NEMA17_47; // belted
@@ -194,8 +201,8 @@ sizes = [
     ], // extrusion_lengths
     [
       [MGN9H_carriage,MGN9,250], // X axis
-      [MGN7H_carriage,MGN7,220], // Y axis
-      [MGN7H_carriage,MGN7,220], // Z axis
+      [MGN7H_carriage,MGN7,200], // Y axis
+      [MGN7H_carriage,MGN7,200], // Z axis
     ],
     [NEMA17_47,NEMA17_47,NEMA17_27,250],
     //[NEMA14_52,NEMA17_47,NEMA17_27,200], // untested
@@ -297,6 +304,7 @@ bottom_pos_z = 0;
 bottom_panel_rounded_diam = 8;
 bottom_panel_hole_spacing = 197;
 bottom_panel_thickness = 3;
+deck_plate_thickness = 3;
 
 height_above_z_motor = 2;
 z_motor_pos_z = bottom_pos_z-z_motor_side/2-height_above_z_motor;
@@ -336,6 +344,7 @@ gantry_pos_z = new_gantry_pos_z;
 //gantry_pos_z = 180+15/2;
 
 psu_mount_wall_thickness = 2;
+psu_plate_mount_gap = 0;
 tolerance = 0.2;
 psu_type = sizes[printer_size][ELECTRONICS][0];
 //psu_length = (psu_type == LRS_150_24) ? 159  : psu_length(psu_type);
@@ -355,8 +364,6 @@ crossbar_pos_x = 0;
 crossbar_pos_y = 45;
 //crossbar_pos_z = -extrusion_side/2;
 crossbar_pos_z = - skirt_height + psu_air_gap + psu_height + tolerance + psu_mount_wall_thickness + extrusion_side/2;
-
-deck_plate_thickness = 3;
 
 effective_radius = 6.68-1.38/2; // effective radius of F623 + belt
 
@@ -517,17 +524,20 @@ leadscrew_rear_motor_offset_x = 0;
 leadscrew_rear_motor_offset_y = extrusion_side/2+z_motor_mount_side/2;
 //leadscrew_rear_motor_offset_x = 0;
 //leadscrew_rear_motor_offset_y = extrusion_side/2+mgn_height+leadscrew_nut_shaft_diam+1;
+z_motor_plate_thickness = 18;
 
 z_motor_mount_leadscrew_inside_extrusion_width = abs(leadscrew_base_motor_offset_x)-extrusion_side/2+z_motor_mount_side/2;
 z_motor_mount_leadscrew_inside_extrusion_depth = abs(leadscrew_base_motor_offset_y)-extrusion_side/2+z_motor_mount_side/2;
 
-psu_pos_x = -extrusion_main_length/2 + psu_length/2+10;
+psu_pos_x = -extrusion_main_length/2 + psu_length/2+4; // the +4 makes the PSU holes are symmetric
 //psu_pos_x = -10;
 //psu_pos_y = 0;
-psu_pos_y = extrusion_vertical_spacing_y/2 - leadscrew_base_motor_offset_y - z_motor_side/2 - psu_width/2- 4;
+//psu_pos_y = extrusion_vertical_spacing_y/2 - leadscrew_base_motor_offset_y - z_motor_side/2 - psu_width/2- 4;
+psu_pos_y = 0;
 echo("psu_pos_y: ", psu_pos_y);
 //psu_pos_z = crossbar_pos_z - extrusion_side/2 - tolerance - psu_mount_wall_thickness;
-psu_pos_z = extrusion_side - deck_plate_thickness - psu_mount_wall_thickness;
+//psu_pos_z = extrusion_side - deck_plate_thickness - psu_mount_wall_thickness;
+psu_pos_z = - skirt_height + psu_plate_mount_gap;
 
 //rear_z_offset_x = motor_xy_width/2;
 //rear_z_offset_x = right*(5+extrusion_side/2);
@@ -1258,6 +1268,14 @@ module assembly(pct_x,pct_y,pct_z) {
   skirt_assembly();
 
   tool_assembly();
+
+  translate([0,0,extrusion_side - deck_plate_thickness/2]) {
+    color("#444") deck_plate_printed();
+  }
+
+  translate([0, 0, -skirt_height - bottom_panel_thickness / 2]) {
+    bottom_cover_panel_printed();
+  }
 }
 
 module dummy() {

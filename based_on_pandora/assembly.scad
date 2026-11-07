@@ -5,7 +5,8 @@ use <./tools.scad>;
 pct_x = 0;
 
 //assembly(1,1.01,0);
-assembly(1,0,0);
+//assembly(1,0,0);
+assembly(1,0.5,0);
 //assembly(1,0.25,0);
 //assembly(1,1.015,0);
 //assembly(1,-0.005,0);

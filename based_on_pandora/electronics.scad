@@ -6,8 +6,8 @@ psu_clamp_screw_area_width = 10;
 
 //pi_type = RPI0;
 //pi_type = RPI3A;
-pi_type = RPI3;
-//pi_type = RPI4;
+//pi_type = RPI3;
+pi_type = RPI4;
 
 ssr_height = 27.9;
 ssr_width = 12.7;
@@ -30,6 +30,7 @@ crossbar_pos_z = - skirt_height + psu_air_gap + psu_height + tolerance + psu_mou
 
 pi_width = pcb_width(pi_type);
 pi_length = pcb_length(pi_type);
+pi_height = 20;
 pi_hole_spacing_x = 58;
 pi_hole_spacing_y = 49;
 pi_holes_offset_x = -pi_length/2+3.5+pi_hole_spacing_x/2;
@@ -38,9 +39,28 @@ pi_offset_y = 8;
 pi_pos_y = pi_offset_y + pi_width/2;
 pi_pcb_thickness = pcb_thickness(pi_type);
 
+//mcu_type = BTT_SKR_V1_4_TURBO;
+mcu_type = MELLOW_FLY_D5;
+mcu_width = pcb_width(mcu_type);
+mcu_length = pcb_length(mcu_type);
+
 psu_mount_overall_width = psu_cavity_width+psu_mount_wall_thickness*2;
 psu_mount_overall_height = psu_cavity_height+psu_mount_wall_thickness*2;
 psu_mount_screw_body_diam = (psu_pos_z-psu_height/2+psu_mount_overall_height/2-extrusion_side/2)*2;
+
+pcb_mount_thickness = 5;
+pcb_pos_z = extrusion_side - deck_plate_thickness - pcb_mount_thickness;
+
+deck_plate_screw_hole_diam = 3.2;
+deck_plate_screw_area_x = 185;
+deck_plate_screw_area_y = 150;
+deck_plate_screw_area_y_bias = -20;
+deck_plate_screws_across_y = 5;
+deck_plate_screws_across_x = 4;
+deck_plate_screw_spacing_x = deck_plate_screw_area_x/(deck_plate_screws_across_x-1);
+deck_plate_screw_spacing_y = deck_plate_screw_area_y/(deck_plate_screws_across_y-1);
+deck_plate_screw_min_x = -deck_plate_screw_area_x/2;
+deck_plate_screw_min_y = deck_plate_screw_area_y_bias + extrusion_main_length/2 - deck_plate_screw_area_y;
 
 // TODO:
 // * rpi mount
@@ -213,14 +233,11 @@ module position_pi_mount() {
   }
 }
 
-//mcu_type = BTT_SKR_V1_4_TURBO;
-mcu_type = MELLOW_FLY_D5;
-
 module mcu_mount() {
   module position_mcu() {
-    translate([0,-4,-extrusion_side/2+4]) {
-      rotate([0,0,0]) {
-        //children();
+    translate([0,0,0]) {
+      rotate([0,0,180]) {
+        children();
       }
     }
   }
@@ -242,7 +259,7 @@ module mcu_mount() {
 }
 
 module position_mcu_mount() {
-  translate([0,crossbar_pos_y-extrusion_side/2-pcb_width(mcu_type)/2,crossbar_pos_z]) {
+  translate([5,-30,psu_pos_z + psu_height + 5]) {
     rotate([0,0,0]) {
       rotate([0,0,0]) {
         children();
@@ -256,7 +273,7 @@ module position_psu() {
   union() {
     translate([psu_pos_x,psu_pos_y,psu_pos_z]) {
       rotate([0,0,180]) {
-        rotate([180,0,0]) {
+        rotate([0,0,0]) {
           children();
         }
       }
@@ -330,10 +347,28 @@ module fan_4020() {
   }
 }
 
-module deck_plate_profile() {
-  tolerance = 0.5;
+module deck_plate_screw_holes() {
+  difference() {
+    union() {
+      for(x=[0:deck_plate_screws_across_x-1]) {
+        for(y=[0:deck_plate_screws_across_y-1]) {
+          translate([deck_plate_screw_min_x+x*deck_plate_screw_spacing_x,deck_plate_screw_min_y+y*deck_plate_screw_spacing_y,0]) {
+            accurate_circle(deck_plate_screw_hole_diam, resolution);
+          }
+        }
+      }
+    }
 
-  rounded_diam = 6;
+    translate([0,deck_plate_screw_min_y+deck_plate_screw_spacing_y,0]) {
+      // square([deck_plate_screw_spacing_x*2,deck_plate_screw_spacing_y],center=true);
+    }
+  }
+}
+
+module deck_plate_profile() {
+  tolerance = 0.8;
+
+  rounded_diam = 5;
   internal_side = extrusion_main_length - 2*tolerance;
 
   module body() {
@@ -341,13 +376,20 @@ module deck_plate_profile() {
   }
 
   module holes() {
+    deck_plate_screw_holes();
+
+    // large enough to pass a stepper motor plug through
+    hole_opening_width = 10+tolerance;
+    hole_opening_depth = 8+tolerance;
+    stepper_opening_tolerance = tolerance*2;
+    stepper_opening_rounded_diam = 10;
     for(x=[left,right]) {
       mirror([x-1,0,0]) {
         // front leadscrew steppers
-        width = 2*(z_motor_mount_leadscrew_inside_extrusion_width+extrusion_side/2+tolerance);
-        depth = 2*(z_motor_mount_leadscrew_inside_extrusion_depth+extrusion_side/2+tolerance);
+        width = 2*(z_motor_mount_leadscrew_inside_extrusion_width+extrusion_side/2+stepper_opening_tolerance);
+        depth = 2*(z_motor_mount_leadscrew_inside_extrusion_depth+extrusion_side/2+stepper_opening_tolerance);
         translate([extrusion_vertical_spacing_x/2,-extrusion_vertical_spacing_y/2,0]) {
-          rounded_square(width,depth,rounded_diam);
+          rounded_square(width,depth,stepper_opening_rounded_diam);
 
           translate([-width/2,extrusion_side/2+tolerance,0]) {
             rotate([0,0,90]) {
@@ -363,18 +405,16 @@ module deck_plate_profile() {
 
         // A/B stepper cables
         translate([extrusion_vertical_spacing_x/2-extrusion_side/2,extrusion_vertical_spacing_y/2-extrusion_side/2,0]) {
-          width = 10+tolerance;
-          depth = 5+tolerance;
-          rounded_square(2*width,2*depth,rounded_diam);
+          rounded_square(2*hole_opening_width,2*hole_opening_depth,rounded_diam);
 
-          translate([-width,-tolerance,0]) {
+          translate([-hole_opening_width,-tolerance,0]) {
             rotate([0,0,180]) {
-              round_corner_filler_profile(rounded_diam/2);
+              round_corner_filler_profile(rounded_diam);
             }
           }
-          translate([-tolerance,-depth,0]) {
+          translate([-tolerance,-hole_opening_depth,0]) {
             rotate([0,0,180]) {
-              round_corner_filler_profile(rounded_diam/2);
+              round_corner_filler_profile(rounded_diam);
             }
             
           }
@@ -384,34 +424,25 @@ module deck_plate_profile() {
 
     //translate([leadscrew_rear_motor_offset_x,extrusion_vertical_spacing_y/2-leadscrew_rear_motor_offset_y,0]) {
     translate([leadscrew_rear_motor_offset_x,extrusion_vertical_spacing_y/2,0]) {
-      rounded_square(z_motor_mount_side+tolerance*2,2*(z_motor_mount_side/2+leadscrew_rear_motor_offset_y+tolerance),rounded_diam);
+      // rear leadscrew stepper
+      stepper_opening_width = z_motor_mount_side+stepper_opening_tolerance*2;
+      stepper_opening_depth = z_motor_mount_side/2+leadscrew_rear_motor_offset_y+stepper_opening_tolerance;
+      overall_opening_width = z_motor_mount_side + 2*(floor_plate_lip_width+hole_opening_width);
+      overall_opening_depth = extrusion_side/2+tolerance+hole_opening_depth;
+      rounded_square(stepper_opening_width,2*stepper_opening_depth,stepper_opening_rounded_diam);
+
+      // bed/umbilical cables
+      rounded_square(overall_opening_width,2*overall_opening_depth,rounded_diam);
       for(x=[left,right]) {
         mirror([x-1,0,0]) {
-          translate([z_motor_mount_side/2+tolerance,-extrusion_side/2-tolerance,0]) {
+          translate([overall_opening_width/2,-extrusion_side/2-tolerance,0]) {
             rotate([0,0,-90]) {
               round_corner_filler_profile(rounded_diam);
             }
           }
-
-          // bed/umbilical cables
-          width = 8+tolerance;
-          depth = 8+tolerance;
-          translate([z_motor_mount_side/2 + floor_plate_lip_width*2 + width/2,-extrusion_side/2,0]) {
-            rounded_square(width,2*depth,rounded_diam/2);
-
-            for(x=[left,right]) {
-              mirror([x-1,0,0]) {
-                translate([width/2,-tolerance,0]) {
-                  rotate([0,0,-90]) {
-                    round_corner_filler_profile(rounded_diam/2);
-                  }
-                }
-              }
-            }
-            translate([-tolerance,-depth,0]) {
-              rotate([0,0,180]) {
-                //round_corner_filler_profile(rounded_diam/2);
-              }
+          translate([stepper_opening_width/2,-overall_opening_depth,0]) {
+            rotate([0,0,-90]) {
+              round_corner_filler_profile(rounded_diam);
             }
           }
         }
@@ -441,195 +472,23 @@ module deck_plate_printed() {
   }
 }
 
-module electronics_assembly() {
-  translate([0,0,extrusion_side - deck_plate_thickness/2]) {
-    color("#444") deck_plate_printed();
-  }
-
-  translate([0,crossbar_pos_y,crossbar_pos_z]) {
-    rotate([0,90,0]) {
-      //% extrusion_l(extrusion_main_length);
-    }
-  }
-
-  // right rear position
-  translate([extrusion_main_length/2 - 50 - 2,0,crossbar_pos_z+extrusion_side/2+15/2]) {
-    translate([0,0,0]) {
-      rotate([0,0,90]) {
-        rotate([180,0,0]) {
-          //% color("#333") fan_5015();
-        }
-      }
-    }
-  }
-  // left position
-  //translate([- extrusion_main_length/2+50,45,crossbar_pos_z+extrusion_side/2+15/2]) {
-  translate([- extrusion_main_length/2+50,crossbar_pos_y - extrusion_side/2 - 1,crossbar_pos_z+extrusion_side/2+15/2]) {
-    translate([0,0,0]) {
-      rotate([0,0,-90]) {
-        rotate([180,0,0]) {
-          //% color("#333") fan_5015();
-        }
-      }
-    }
-  }
-
-  // fan is vertical pointing back
-  //translate([crossbar_pos_x - extrusion_side/2 - 2 - 15/2 - 8, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
-  translate([extrusion_main_length/2 - 42 - 12.5 - 15/2, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
-    translate([0,0,0]) {
-      rotate([0,-90,0]) {
-        rotate([0,0,180]) {
-          //% color("#333") fan_5015();
-        }
-      }
-    }
-  }
-
-  // fan is in front pointing back
-  translate([crossbar_pos_x - extrusion_side/2 - 2 - 15/2 - 8, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
-    translate([0,0,0]) {
-      rotate([0,-90,0]) {
-        rotate([0,0,180]) {
-          //% color("#333") fan_5015();
-        }
-      }
-    }
-  }
-  translate([crossbar_pos_x + extrusion_side/2 + 40/2,-25,crossbar_pos_z+extrusion_side/2+10/2]) {
-    translate([0,40+1,0]) {
-      rotate([180,0,0]) {
-        //fan_4010();
-      }
-    }
-    rotate([0,0,0]) {
-      rotate([180,0,0]) {
-        //fan_4010();
-      }
-    }
-  }
-
-  // behind crossbar
-  translate([-extrusion_main_length/2+50+15+pcb_length(mcu_type)/2,20,crossbar_pos_z-extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,180]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-
-  // left side
-  translate([- extrusion_main_length/2 + pi_width/2 + 1,-10, crossbar_pos_z - extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,90]) {
-        //% pcb(pi_type);
-      }
-    }
-  }
-
-  crossbar_pos_x = rear_z_offset_x + extrusion_side * 2 + 5;
-  // on top of psu
-  mcu_width = pcb_width(mcu_type);
-  mcu_length = pcb_length(mcu_type);
-  translate([extrusion_main_length/2-50-4-mcu_length/2,-10,crossbar_pos_z-extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,180]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-  translate([mcu_width/2 - 10,-extrusion_main_length / 2 + 50 + mcu_length/2,crossbar_pos_z-extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,90]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-
-  //mirror([1,0,0]) {
-    //translate([rear_z_offset_x-extrusion_side-15,0,crossbar_pos_z]) {
-    translate([crossbar_pos_x,crossbar_pos_y,crossbar_pos_z]) {
-      rotate([0,90,0]) {
-        //% extrusion_l(extrusion_main_length);
-      }
-    }
-  //}
-  translate([crossbar_pos_x,0,crossbar_pos_z]) {
-    rotate([90,0,0]) {
-      //% extrusion_l(extrusion_main_length);
-    }
-  }
-  translate([crossbar_pos_x - extrusion_side/2 - 2 - mcu_width/2,-extrusion_main_length / 2 + 50 + mcu_length/2,crossbar_pos_z-extrusion_side/2+2]) {
-    rotate([0,0,0]) {
-      rotate([0,0,90]) {
-        //% pcb(mcu_type);
-      }
-    }
-  }
-  translate([crossbar_pos_x - extrusion_side/2 - 10 - 15/2, - extrusion_main_length/2 + 5 + 40/2,crossbar_pos_z]) {
-    translate([0,0,0]) {
-      rotate([0,-90,0]) {
-        rotate([0,0,180]) {
-          //% color("#333") fan_4020();
-        }
-      }
-    }
-  }
-  translate([crossbar_pos_x - extrusion_side/2 - 10 - 15/2, - extrusion_main_length/2 + 50,crossbar_pos_z + extrusion_side * 1.5]) {
-    translate([0,0,0]) {
-      rotate([0,-90,0]) {
-        rotate([0,0,180]) {
-          //% color("#333") fan_5015();
-        }
-      }
-    }
-  }
-
-  // back left corner
-  translate([- extrusion_main_length/2 + pi_width/2 + 1,extrusion_main_length/2- pi_length/2 - 5,extrusion_side-5]) {
-    rotate([180,0,0]) {
-      rotate([0,0,90]) {
-        //% pcb(pi_type);
-      }
-    }
-  }
-  // left side, upside down
-  translate([- extrusion_main_length/2 + pi_width/2 + 1,pi_length/2-26,extrusion_side-5]) {
-    rotate([180,0,0]) {
-      rotate([0,0,90]) {
-        //% pcb(pi_type);
-      }
-    }
-  }
-
-  // angled at the front
-  translate([10,-extrusion_main_length/2 + extrusion_side,- skirt_height + 5]) {
-    rotate([-45,0,0]) {
-      translate([0,0,pcb_width(pi_type)/2]) {
-        rotate([90,0,0]) {
-          rotate([0,0,180]) {
-            //% pcb(pi_type);
-          }
-        }
-      }
-    }
-  }
-
-  position_psu() {
-    psu(psu_type);
-  }
-
-  position_mcu_mount() {
-    mcu_mount();
-  }
-
-  position_pi_mount() {
-    pi_mount();
+module wago_333() {
+  rotate([0,180,0]) {
+    import("external/wago/wago-333.stl", convexity=2);
   }
 }
 
-electronics_assembly();
-position_z_modules(0);
+module wago_55() {
+  rotate([0,180,0]) {
+    import("external/wago/wago-55.stl", convexity=2);
+  }
+}
+
+module wago_555() {
+  rotate([0,180,0]) {
+    import("external/wago/wago-555.stl", convexity=2);
+  }
+}
 
 module minimal_frame_assembly() {
   for(z=[bottom_pos_z+extrusion_side/2]) {
@@ -663,3 +522,105 @@ module minimal_frame_assembly() {
   }
 }
 minimal_frame_assembly();
+electronics_assembly();
+position_z_modules(0);
+
+module electronics_assembly() {
+  //translate([extrusion_main_length/2,0,extrusion_side/2]) {
+  translate([extrusion_main_length/2,30,extrusion_side/2]) {
+    rotate([0,0,-90]) {
+      //wago_555();
+    }
+  }
+
+  translate([0,-extrusion_main_length/2,extrusion_side/2]) {
+    rotate([0,0,180]) {
+      //wago_55();
+    }
+  }
+
+  // left side
+  // translate([left*(extrusion_main_length/2-50-2),-5,extrusion_side - deck_plate_thickness - 2 - 15/2]) {
+  translate([left*(extrusion_main_length/2-50-2),-50-9,psu_pos_z + psu_height + 3 + 15/2]) {
+    rotate([0,0,-90]) {
+      rotate([0,0,180]) {
+        % color("#333") fan_5015();
+      }
+    }
+  }
+
+  translate([left*(extrusion_main_length/2-40/2-2),-40/2 - 18,psu_pos_z + psu_height + 3 + 15/2]) {
+    rotate([0,0,-90]) {
+      rotate([0,0,180]) {
+        //% color("#333") fan_4020();
+      }
+    }
+  }
+
+  // front
+  translate([left*(25),front*(extrusion_main_length/2-50-15),extrusion_side - 2 - deck_plate_thickness - 15/2]) {
+    rotate([0,0,-45]) {
+      rotate([180,0,0]) {
+        //% color("#333") fan_5015();
+      }
+    }
+  }
+
+  // right side
+  translate([extrusion_main_length/2-50,-25,extrusion_side - 2 - deck_plate_thickness - 15/2]) {
+    rotate([0,0,90]) {
+      rotate([180,0,0]) {
+        //% color("#333") fan_5015();
+      }
+    }
+  }
+
+  translate([-extrusion_main_length/2+pi_width/2+10,extrusion_main_length/2-pi_length/2-3,pcb_pos_z]) {
+    rotate([0,0,90]) {
+      rotate([0,180,0]) {
+        % pcb(pi_type);
+      }
+    }
+  }
+
+  translate([5,-30,psu_pos_z + psu_height + 5]) {
+    rotate([0,0,180]) {
+      rotate([0,0,0]) {
+        //% pcb(mcu_type);
+      }
+    }
+  }
+
+  translate([15,-20,psu_pos_z + psu_height + 5]) {
+    rotate([0,0,0]) {
+      rotate([0,0,180]) {
+        //% pcb(mcu_type);
+      }
+    }
+  }
+
+  translate([15,-30,pcb_pos_z]) {
+    rotate([0,0,0]) {
+      rotate([0,180,0]) {
+        % pcb(mcu_type);
+      }
+    }
+  }
+  translate([0,0,extrusion_side - deck_plate_thickness/2]) {
+    # linear_extrude(height=deck_plate_thickness,center=true) {
+      //deck_plate_screw_holes();
+    }
+  }
+
+  position_psu() {
+    psu(psu_type);
+  }
+
+  position_mcu_mount() {
+    //mcu_mount();
+  }
+
+  position_pi_mount() {
+    //pi_mount();
+  }
+}
