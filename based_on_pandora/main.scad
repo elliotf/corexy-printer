@@ -325,9 +325,7 @@ z_carriage = printer_config[1][z][0];
 z_rail = printer_config[1][z][1];
 z_rail_length = printer_config[1][z][2];
 
-bottom_panel_side = extrusion_main_length + 13; // based on voron 0 bottom panel
-bottom_panel_hole_spacing_x = extrusion_main_length - 3.14; // voron 0 bottom panel hole spacing is 196.86 and 196.91.
-bottom_panel_hole_spacing_y = extrusion_main_length - 3.09; // voron 0 bottom panel hole spacing is 196.86 and 196.91.
+//bottom_panel_side = extrusion_main_length + 13; // based on voron 0 bottom panel
 
 printed_height_extension_height = 0;
 //top_pos_z = extrusion_vertical_length+printed_height_extension_height;
@@ -352,8 +350,6 @@ psu_length = psu_length(psu_type);
 psu_width = psu_width(psu_type);
 psu_height = psu_height(psu_type);
 
-//psu_pos_y = 0;
-//psu_pos_z = - skirt_height;
 psu_cavity_width = psu_width+tolerance;
 psu_cavity_height = psu_height+tolerance;
 psu_air_gap = 4;
@@ -529,11 +525,11 @@ z_motor_plate_thickness = 18;
 z_motor_mount_leadscrew_inside_extrusion_width = abs(leadscrew_base_motor_offset_x)-extrusion_side/2+z_motor_mount_side/2;
 z_motor_mount_leadscrew_inside_extrusion_depth = abs(leadscrew_base_motor_offset_y)-extrusion_side/2+z_motor_mount_side/2;
 
-psu_pos_x = -extrusion_main_length/2 + psu_length/2+4; // the +4 makes the PSU holes are symmetric
+psu_pos_x = extrusion_main_length/2 - psu_length/2 - 21; // the +4 makes the PSU holes are symmetric
 //psu_pos_x = -10;
-//psu_pos_y = 0;
 //psu_pos_y = extrusion_vertical_spacing_y/2 - leadscrew_base_motor_offset_y - z_motor_side/2 - psu_width/2- 4;
-psu_pos_y = 0;
+//psu_pos_y = 0;
+psu_pos_y = extrusion_vertical_spacing_y/2 - leadscrew_base_motor_offset_y - z_motor_side/2 - psu_width/2- 3;
 echo("psu_pos_y: ", psu_pos_y);
 //psu_pos_z = crossbar_pos_z - extrusion_side/2 - tolerance - psu_mount_wall_thickness;
 //psu_pos_z = extrusion_side - deck_plate_thickness - psu_mount_wall_thickness;
@@ -1274,7 +1270,7 @@ module assembly(pct_x,pct_y,pct_z) {
   }
 
   translate([0, 0, -skirt_height - bottom_panel_thickness / 2]) {
-    bottom_cover_panel_printed();
+    bottom_panel_printed();
   }
 }
 

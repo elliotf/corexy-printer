@@ -1,3 +1,3 @@
 include <../../main.scad>;
 
-bottom_cover_panel_profile();
+bottom_panel_profile();

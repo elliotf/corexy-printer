@@ -12,6 +12,7 @@ module frame_assembly() {
   }
 
   for(z=[bottom_pos_z+extrusion_side/2,top_pos_z-extrusion_side/2]) {
+  //for(z=[]) {
   //for(z=[bottom_pos_z+extrusion_side/2]) {
     translate([0,0,z]) {
       for(x=[left,right]) {
@@ -22,9 +23,16 @@ module frame_assembly() {
         }
       }
       for(y=[front,rear]) {
-        translate([0,y*extrusion_vertical_spacing_y/2,0]) {
-          rotate([0,90,0]) {
-            % extrusion_l(extrusion_main_length);
+        % difference() {
+          translate([0,y*extrusion_vertical_spacing_y/2,0]) {
+            rotate([0,90,0]) {
+              extrusion_l(extrusion_main_length);
+            }
+          }
+          if (z < extrusion_side) {
+            translate([0,extrusion_vertical_spacing_y/2,0]) {
+              color("white") hole(hole_diam,extrusion_side,resolution);
+            }
           }
         }
       }
@@ -39,13 +47,19 @@ module frame_assembly() {
         extrusion_l(extrusion_main_length);
         translate([0,0,-extrusion_main_length/2+extrusion_side/2]) {
           rotate([90,0,0]) {
-            hole(hole_diam,extrusion_side,resolution);
+            //color("white") hole(hole_diam,extrusion_side,resolution);
           }
         }
       }
     }
   }
 
+  vertical_holes = [
+    [top*(extrusion_vertical_length/2-extrusion_side/2), [0,90]],
+    [bottom*(extrusion_vertical_length/2-extrusion_side/2- extrusion_length_as_leg), [0,90]],
+    [-extrusion_vertical_pos_z+gantry_pos_z, [0]],
+  ];
+  echo("vertical_holes: ", vertical_holes);
   for(x=[left,right]) {
     for(y=[front,rear]) {
       translate([x*(extrusion_vertical_spacing_x/2),y*(extrusion_vertical_spacing_y/2),extrusion_vertical_pos_z]) {
@@ -58,24 +72,18 @@ module frame_assembly() {
             }
           }
           //for(z=[top,bottom],r=[0,90]) {
-          vertical_holes = [
-            [top*(extrusion_vertical_length/2-extrusion_side/2), [0,90]],
-            [bottom*(extrusion_vertical_length/2-extrusion_side/2- extrusion_length_as_leg), [0,90]],
-            [-extrusion_vertical_pos_z+gantry_pos_z, [0]],
-          ];
           for(hole=vertical_holes) {
             z = hole[0];
             translate([0,0,z]) {
               for(r=hole[1]) {
                 rotate([0,0,r]) {
                   rotate([90,0,0]) {
-                    hole(hole_diam,extrusion_side,resolution);
+                    color("white") hole(hole_diam,extrusion_side,resolution);
                   }
                 }
               }
             }
           }
-          echo("vertical_holes: ", vertical_holes);
           /*
           for(z=[top],r=[0,90]) {
             translate([0,0,z*(extrusion_vertical_length/2-extrusion_side/2)]) {

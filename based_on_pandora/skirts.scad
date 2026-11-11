@@ -11,7 +11,7 @@ foot_cover_side = ceil(extrusion_side / 2 + foot_hole_spacing + m3_head_diam / 2
 gap_between = 0.4;
 skirt_cover_side = extrusion_main_length + 2 * extrusion_side - 2 * (foot_cover_side + gap_between);
 skirt_thickness = extrusion_side + over_extrusion_by;
-skirt_wall_thickness = 3;
+skirt_wall_thickness = 2;
 
 slot_filler_height = extrusion_slot_width - extrude_height*2;
 //slot_filler_length = foot_hole_spacing-20; // -20 to make room for t slot nuts
@@ -20,7 +20,7 @@ slot_filler_depth = 0.8;
 top_skirt_hole_spacing = skirt_cover_side - 2 * (skirt_wall_thickness + m3_head_diam);
 
 //bottom_panel_side = 213;
-bottom_panel_side = extrusion_main_length + extrusion_side - extrusion_slot_width/2;
+bottom_panel_side = extrusion_main_length + extrusion_side - extrusion_slot_width;
 
 panel_lip_height = 2;
 panel_lip_depth = (extrusion_main_length+extrusion_side*2 - bottom_panel_side)/2 - panel_lip_height + over_extrusion_by - 0.5;
@@ -525,33 +525,40 @@ module z_stepper_foot() {
   }
 }
 
-module bottom_cover_panel_profile() {
+module bottom_panel_holes() {
+  for(x=[left,right],y=[front,rear]) {
+    mirror([0,y-1,0]) {
+      for(y=[0]) {
+        translate([0,y,0]) {
+          position_psu() {
+            psu_screw_positions(psu_type) {
+              accurate_circle(4, resolution);
+            }
+          }
+        }
+      }
+    }
+  }
+  for(x=[left,0,right],y=[front,rear]) {
+    hole_spacing_x = 80;
+    translate([x*hole_spacing_x/2,front*(extrusion_main_length/2-25),0]) {
+      accurate_circle(4, resolution);
+    }
+  }
+}
+
+module bottom_panel_profile() {
   echo("bottom_panel_side: ", bottom_panel_side);
   module body() {
     rounded_square(bottom_panel_side, bottom_panel_side, bottom_panel_rounded_diam);
   }
 
   module holes() {
+    bottom_panel_holes();
     for (x = [left, right], y = [front, rear]) {
       translate([x * (bottom_panel_hole_spacing / 2), y * (bottom_panel_hole_spacing / 2), 0]) {
         accurate_circle(4, resolution);
       }
-    }
-
-    for(x=[left,right],y=[front,rear]) {
-      //mirror([x-1,0,0]) {
-        mirror([0,y-1,0]) {
-          for(y=[0,40]) {
-            translate([0,y,0]) {
-              position_psu() {
-                psu_screw_positions(psu_type) {
-                  accurate_circle(4, resolution);
-                }
-              }
-            }
-          }
-        }
-      //}
     }
   }
 
@@ -561,10 +568,10 @@ module bottom_cover_panel_profile() {
   }
 }
 
-module bottom_cover_panel_printed() {
+module bottom_panel_printed() {
   color(frame_color) {
     linear_extrude(height=bottom_panel_thickness, center=true) {
-      bottom_cover_panel_profile();
+      bottom_panel_profile();
     }
   }
 }
@@ -617,6 +624,12 @@ module skirt_assembly() {
   for (r = [0,90,180,270]) {
     position_skirt(r) {
       skirt_mesh();
+    }
+  }
+
+  translate([0, 0, -skirt_height - bottom_panel_thickness / 2]) {
+    # linear_extrude(height=deck_plate_thickness,center=true) {
+      //bottom_panel_holes();
     }
   }
 }

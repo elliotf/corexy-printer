@@ -155,10 +155,10 @@ module wago_1515(blocks=[3,3,3]) {
 
 // EDIT THIS
 // blocks = [2,2];
-blocks = [3, 3, 3]; // a set of 5 conductor, 3 conductor, 2 conductor blocks
+//blocks = [3, 3, 3]; // a set of 5 conductor, 3 conductor, 2 conductor blocks
 // blocks = [2,2,2,2,2]; // a single 5 conductor blocks 
 // blocks = [5, 3, 2]; // a set of 5 conductor, 3 conductor, 2 conductor blocks
 // blocks = [5, 5, 5]; // a set of three 5 conductor blocks
 // blocks = [2]; // a single 2 conductor block
 // blocks = [3]; // a single 3 conductor block
-wago_1515(blocks);
+//wago_1515(blocks);
